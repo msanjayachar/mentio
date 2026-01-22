@@ -1,7 +1,11 @@
+import Home from "./components/home";
+import Landing from "./components/landing";
+
 export default function Page() {
   return (
     <div>
-      <h1>Hello World</h1>
+      <Home />
+      {/* <Landing /> */}
     </div>
   );
 }

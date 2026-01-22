@@ -1,0 +1,26 @@
+<svg 
+
+      xmlns="http://www.w3.org/2000/svg"
+  width="350" height="300" viewBox="-50 -50 400 350">
+      <polygon
+        points="0,100 60,60 100,0 140,60 200,100 140,140 100,200 60,140"
+        stroke-width="4"
+        stroke="#5769E7"
+        fill="#5769E7"
+      />
+      <polygon
+        points="0,100 60,60 100,0 140,60 200,100 140,140 100,200 60,140"
+        stroke-width="4"
+        stroke="#323C7C"
+        fill="#323C7C"
+        transform="scale(0.5) translate(300 300)"
+      />
+
+      <polygon
+        points="0,100 60,60 100,0 140,60 200,100 140,140 100,200 60,140"
+        stroke-width="4"
+        stroke="#8A9BFF"
+        fill="#8A9BFF"
+        transform="scale(0.25) translate(800 0)"
+      />
+    </svg>

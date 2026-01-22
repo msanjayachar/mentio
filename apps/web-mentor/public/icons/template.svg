@@ -1,0 +1,28 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="300"
+  height="300"
+  viewBox="0 0 200 200"
+>
+  <rect width="200" height="200" fill="#FF7471" rx="20" ry="20" />
+
+  <rect
+    x="15"
+    y="20"
+    rx="20"
+    ry="20"
+    width="80"
+    height="80"
+    fill="#FFDEDD"
+  />
+
+  <rect
+    x="105"
+    y="20"
+    rx="20"
+    ry="20"
+    width="80"
+    height="160"
+    fill="#FFA6A4"
+  />
+</svg>

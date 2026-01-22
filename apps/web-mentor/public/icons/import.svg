@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="180"
+  height="180"
+  viewBox="0 0 220 220"
+>
+  <!-- curved path -->
+  <g transform="translate(20, 40)">
+    <path
+      d="M 20 20 q 70 0 100 100"
+      stroke="#2f6641"
+      stroke-width="30"
+      fill="none"
+    />
+  </g>
+
+  <!-- polyline -->
+  <polyline
+    points="50,160 160,160 160,50"
+    stroke="#2f6641"
+    stroke-width="30"
+    fill="none"
+  />
+</svg>
