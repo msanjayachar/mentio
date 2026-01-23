@@ -38,8 +38,7 @@ const Sidebar = ({
         </span>
       </div>
       <button
-        // onClick={toggleSidebar}
-        onClick={() => console.log("clicked")}
+        onClick={toggleSidebar}
         className="sidebar-toggle cursor-pointer bg-red-200"
       >
         Toggle Sidebar
