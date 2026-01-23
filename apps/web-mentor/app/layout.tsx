@@ -19,7 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={geist.className}>
-        <Navbar />
+        {/* TODO: This should only show up on the landing page */}
+        {/* <Navbar /> */}
         {children}
       </body>
     </html>

@@ -3,15 +3,17 @@ import { FilePlus, Home, Inbox, User, Users } from "lucide-react";
 const Sidebar = ({
   isOpen,
   toggleSidebar,
+  page,
 }: {
   isOpen: boolean;
-  toggleSidebar: () => void;
+  toggleSidebar?: () => void;
+  page: string;
 }) => {
   const sidebarClass = isOpen ? "sidebar open" : "sidebar";
 
   return (
     <div
-      className={`flex h-[calc(100vh-80px)] w-72 flex-col justify-start gap-16 bg-red-400 p-8 text-sm ${sidebarClass}`}
+      className={`mt-5 flex h-[calc(100vh-80px)] flex-col justify-start gap-16 p-8 text-sm font-light ${sidebarClass}`}
     >
       <div className="flex flex-col gap-4">
         <span className="flex items-center gap-2">
@@ -37,12 +39,14 @@ const Sidebar = ({
           Shared templates
         </span>
       </div>
-      <button
-        onClick={toggleSidebar}
-        className="sidebar-toggle cursor-pointer bg-red-200"
-      >
-        Toggle Sidebar
-      </button>
+      {page !== "home" && (
+        <button
+          onClick={toggleSidebar}
+          className="sidebar-toggle cursor-pointer bg-red-200"
+        >
+          Toggle Sidebar
+        </button>
+      )}
     </div>
   );
 };

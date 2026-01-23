@@ -1,0 +1,14 @@
+<svg
+  width="100"
+  height="100"
+  viewBox="25 25 220 160"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <!-- Evenly spaced stylized M -->
+  <rect x="70"  y="40" width="26" height="120" fill="#0EA5E9"/>
+  <rect x="100" y="62" width="22" height="98"  fill="#38BDF8"/>
+  <rect x="126" y="82" width="18" height="78"  fill="#7DD3FC"/>
+  <rect x="148" y="62" width="22" height="98"  fill="#38BDF8"/>
+  <rect x="174" y="40" width="26" height="120" fill="#0EA5E9"/>
+</svg>

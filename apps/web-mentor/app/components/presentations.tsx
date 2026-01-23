@@ -16,6 +16,7 @@ const Presentations = () => {
           </div>
         </div>
       </div>
+      {/* ATHERE: Make these resize and re-arrange right on page resize */}
       <div className="flex-1 bg-gray-50">
         <div className="flex h-full items-center justify-center gap-6">
           <div className="flex h-64 w-60 flex-col items-center gap-8 rounded-3xl border-2 bg-red-200 p-4 text-black">

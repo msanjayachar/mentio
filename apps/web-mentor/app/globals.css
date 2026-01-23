@@ -46,16 +46,12 @@ header {
   left: 0;
   right: 0;
   height: 60px;
-  background-color: lightcoral;
 }
 .sidebar {
   position: absolute;
   top: 60px;
   left: -15vw;
-  height: 100%;
-  width: 15vw;
   transition: left 0.3s ease-in-out;
-  background-color: lightgray;
 }
 .sidebar-toggle {
   position: absolute;
@@ -143,10 +139,7 @@ header {
   position: absolute;
   top: 60px;
   left: -15vw;
-  height: 100%;
-  width: 15vw;
   transition: left 0.3s ease-in-out;
-  background-color: lightgray;
 }
 .sidebar-toggle {
   position: absolute;
@@ -163,7 +156,6 @@ header {
   right: 0;
   height: 100%;
   transition: left 0.3s ease-in-out;
-  background-color: lightgray;
 }
 .sidebar.open {
   left: 0;

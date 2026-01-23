@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -10,15 +10,18 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
+} from "../components/ui/drawer";
 import { Menu } from "lucide-react";
 
 export function Menudrawer() {
   return (
-    <div className="flex flex-wrap gap-2 bg-red-400">
+    <div className="flex flex-wrap gap-2">
       <Drawer key={"right"} direction={"right"}>
         <DrawerTrigger asChild>
-          <Button variant="outline" className="ml-auto capitalize">
+          <Button
+            variant="outline"
+            className="mr-4 ml-auto bg-red-400 capitalize"
+          >
             <Menu />
           </Button>
         </DrawerTrigger>
