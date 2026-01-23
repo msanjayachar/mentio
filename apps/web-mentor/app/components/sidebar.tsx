@@ -37,7 +37,11 @@ const Sidebar = ({
           Shared templates
         </span>
       </div>
-      <button onClick={toggleSidebar} className="sidebar-toggle cursor-pointer">
+      <button
+        // onClick={toggleSidebar}
+        onClick={() => console.log("clicked")}
+        className="sidebar-toggle cursor-pointer bg-red-200"
+      >
         Toggle Sidebar
       </button>
     </div>

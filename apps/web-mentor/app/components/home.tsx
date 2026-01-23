@@ -10,6 +10,8 @@ import { useState } from "react";
 const Home = () => {
   const [sidebarOpen, setSideBarOpen] = useState(false);
   const handleViewSidebar = () => {
+    console.log("handleViewSidebar");
+
     setSideBarOpen(!sidebarOpen);
   };
 
