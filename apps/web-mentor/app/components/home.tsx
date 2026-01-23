@@ -4,19 +4,18 @@ import Aichat from "./aichat";
 import Create from "./create";
 import Features from "./features";
 import Sidebar from "./sidebar";
-import Presentations from "./presentations";
 import { useState } from "react";
+import { Menudrawer } from "./menudrawer";
 
 const Home = () => {
   const [sidebarOpen, setSideBarOpen] = useState(false);
   const handleViewSidebar = () => {
-    console.log("handleViewSidebar");
-
     setSideBarOpen(!sidebarOpen);
   };
 
   return (
     <div>
+      <Menudrawer />
       <div className="flex">
         <Sidebar isOpen={sidebarOpen} toggleSidebar={handleViewSidebar} />
         <div className="flex w-full flex-col gap-12">
