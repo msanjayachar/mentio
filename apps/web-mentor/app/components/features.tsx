@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const Features = () => {
   return (
-    <div className="mt-8 flex h-80 max-w-[1570px] flex-col gap-4 rounded-lg py-8">
+    <div className="mt-8 ml-4 flex h-80 max-w-[1500px] flex-col gap-4 rounded-lg py-8">
       <div className="flex flex-wrap justify-start gap-4 rounded-xl bg-blue-100 px-8 py-8 text-black sm:flex-nowrap sm:justify-between md:justify-start xl:justify-between">
         {/* TODO: Fix this  */}
         {/* <h1 className="w-full pl-8 font-medium text-black">Popular features</h1> */}
