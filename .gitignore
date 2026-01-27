@@ -6,7 +6,7 @@ todos.md
 node_modules
 .pnp
 .pnp.js
-test/
+
 
 # testing
 coverage
@@ -37,3 +37,4 @@ yarn-error.log*
 
 # ui
 dist/
+apps/web-mentor/app/test
