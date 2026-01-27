@@ -1,0 +1,8 @@
+<svg height="200" width="200" viewBox="-30 -30 60 60">
+      <circle cx="0" cy="0" r="4" fill="#FF7471" />
+
+      <circle cx="-3.5" cy="-3.5" r="4" fill="#FF7471" />
+      <circle cx="3.5" cy="-3.5" r="4" fill="#FF7471" />
+      <circle cx="-3.5" cy="3.5" r="4" fill="#FF7471" />
+      <circle cx="3.5" cy="3.5" r="4" fill="#FF7471" />
+    </svg>
