@@ -1,13 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg"  width="400" height="400" viewBox="-3 -9 12 12">
-<rect
-    x="-3"
-    y="-9"
-    width="12"
-    height="12"
-    fill="none"
-    stroke="blue"
-    stroke-width="0.2"
-            />
 <polygon
   points="
     0,-6
