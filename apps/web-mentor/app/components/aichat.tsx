@@ -1,20 +1,22 @@
 import { ArrowUp, Sparkles } from "lucide-react";
-
 const Aichat = () => {
   return (
     <div className="flex flex-col gap-4">
-      <div className="mx-4 flex w-auto max-w-[900px] min-w-5xl items-center rounded-lg border-2 border-gray-400 bg-gray-50 lg:max-w-[1500px]">
-        <div className="hidden p-4 lg:block">
-          <Sparkles size={20} fill="currentColor" className="text-gray-800" />
-        </div>
-        <input
-          placeholder="What would you like to do?"
-          className="h-12 w-full font-light text-black outline-none"
-        />
-        <div className="p-4">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-white">
-            <ArrowUp className="h-5 w-5" />
-          </span>
+      {/* ATHERE: Make the element reduce with the viewport */}
+      <div className="mx-4">
+        <div className="flex max-w-[1500px] min-w-0 items-center rounded-lg border-2 border-gray-400">
+          <div className="hidden p-4 lg:block">
+            <Sparkles size={20} fill="currentColor" className="text-gray-800" />
+          </div>
+          <input
+            placeholder="What would you like to do?"
+            className="h-12 min-w-0 flex-1 font-light text-black outline-none"
+          />
+          <div className="p-4">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-white">
+              <ArrowUp className="h-5 w-5" />
+            </span>
+          </div>
         </div>
       </div>
 

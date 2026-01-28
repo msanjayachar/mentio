@@ -3,8 +3,8 @@ import { ChevronDown, Upload } from "lucide-react";
 const Create = () => {
   return (
     <div className="w-full">
-      <div className="bg-red-400 sm:bg-blue-300 md:bg-purple-400 lg:bg-blue-500 xl:bg-green-400 2xl:bg-pink-500">
-        <span className="block sm:hidden">base</span>
+      <div className="sm:bg-blue-300 md:bg-purple-400 lg:bg-blue-500 xl:bg-green-400 2xl:bg-pink-500">
+        <span className="block bg-red-400 sm:hidden">base</span>
         <span className="hidden sm:block md:hidden">sm</span>
         <span className="hidden md:block lg:hidden">md</span>
         <span className="hidden lg:block xl:hidden">lg</span>

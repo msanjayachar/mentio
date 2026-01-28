@@ -27,13 +27,16 @@ const Home = () => {
         </aside>
         <div className="flex w-full flex-col gap-12">
           {/* <Presentations /> */}
-          <div className="w-full">
+          {/* TODO: Verify whether the Aichat isn't shrinking below lg because of the other elements/components here */}
+          <div className="w-full min-w-0">
             <Create />
           </div>
-          <div className="hidden lg:block">
+          <div className="hidden min-w-0 lg:block">
             <Aichat />
           </div>
-          <Features />
+          <div className="min-w-0">
+            <Features />
+          </div>
         </div>
       </div>
     </div>
