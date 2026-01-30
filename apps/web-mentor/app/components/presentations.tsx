@@ -1,90 +1,91 @@
+"use client";
+
 import { Plus } from "lucide-react";
 import Image from "next/image";
+import PresentationNav from "./presentationNav";
+import PresentationStarters from "./presentationStarters";
+import Question from "./question";
+import PresentationHelper from "./presentationHelper";
+import PropertiesPanel from "./propertiesPanel";
+import { useState } from "react";
+import { slides as initialSlides } from "data/slides";
+import SpeakerNotes from "./speakerNotes";
+import Comments from "./edit/comments";
 
 const Presentations = () => {
+  const [slides, setSlides] = useState(initialSlides);
+  const [selected, setSelected] = useState({
+    id: 1,
+    type: "multiple_choice",
+    question: "What is the capital of Karnataka?",
+    options: ["Bengaluru", "Tumakuru", "Mysuru", "Mangalore"],
+    correctAnswers: [],
+    allowMultiple: false,
+    required: true,
+  });
+  const [editSelected, setEditSelected] = useState<boolean>(false);
+  const [commentSelected, setCommentSelected] = useState<boolean>(false);
+
+  const createSlide = () => {};
+
+  const handleEdit = () => {
+    setEditSelected((prev) => !prev);
+  };
+
+  const handleComment = () => {
+    console.log("hello from handleComment");
+    setCommentSelected((prev) => !prev);
+  };
+
   return (
-    <div className="flex">
-      <div className="flex h-[calc(100vh-80px)] w-48 flex-col gap-4 bg-red-200 pt-4">
-        <button className="mx-auto flex h-10 w-fit items-center rounded-full bg-black px-6 text-sm font-light">
-          <Plus size={20} strokeWidth={1} />
-          <span>New slide</span>
-        </button>
-        <div className="ml-2 flex">
-          <span>1</span>
-          <div className="mx-auto h-20 w-36 rounded-md border-2 border-blue-800 bg-gray-100">
-            hi
+    <div className="relative">
+      <PresentationNav />
+      <div className="flex">
+        <div className="hidden lg:block">
+          <div className="flex h-[calc(100vh-80px)] w-48 flex-col gap-4 pt-4">
+            <button
+              className="mx-auto flex h-10 cursor-pointer items-center gap-2 rounded-full bg-black px-8 text-center text-sm font-light text-white sm:w-44"
+              onClick={() => createSlide()}
+            >
+              <Plus size={20} strokeWidth={1} />
+              <span>New slide</span>
+            </button>
+            <div className="ml-2 flex flex-col gap-4">
+              {slides.map((item) => (
+                <div key={item.id} className="flex">
+                  <span className="text-[12px]">{item.id}</span>
+                  <div
+                    className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-gray-100 hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected.id === item.id ? "border-none ring-2 ring-blue-700" : ""}`}
+                  >
+                    <span>{item.type}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-      {/* ATHERE: Make these resize and re-arrange right on page resize */}
-      <div className="flex-1 bg-gray-50">
-        <div className="flex h-full items-center justify-center gap-6">
-          <div className="flex h-64 w-60 flex-col items-center gap-8 rounded-3xl border-2 bg-red-200 p-4 text-black">
-            <Image
-              src="/icons/start-cropped.svg"
-              width={100}
-              height={300}
-              alt="testing svg images"
-            />
-            <div>
-              <h1 className="text-xl">Start from scratch</h1>
-              <p className="flex flex-col text-sm font-light text-gray-400">
-                <span>Gain insights with word clouds,</span>
-                <span>polls quizzes, and more.</span>
-              </p>
-            </div>
-          </div>
 
-          <div className="flex h-64 w-60 flex-col items-center gap-8 rounded-3xl border-2 bg-red-200 p-4 text-black">
-            <Image
-              src="/icons/template.svg"
-              width={100}
-              height={100}
-              alt="testing svg images"
-            />
+        {/* <PresentationStarters /> */}
+        <Question />
 
-            <div>
-              <h1 className="text-xl">Use a template</h1>
-              <p className="flex flex-col text-sm font-light text-gray-400">
-                <span>Start with a ready-made template,</span>
-                <span>or customize it to your needs.</span>
-              </p>
-            </div>
-          </div>
+        <div className="absolute bottom-0 flex w-[800px] items-center justify-center">
+          <SpeakerNotes />
+        </div>
+        <div className="flex">
+          <PresentationHelper
+            handleEdit={handleEdit}
+            editSelected={editSelected}
+          />
+          {/* ATHERE: */}
 
-          <div className="flex h-64 w-60 flex-col items-center gap-8 rounded-3xl border-2 bg-red-200 p-4 text-black">
-            <Image
-              src="/icons/import.svg"
-              width={100}
-              height={100}
-              alt="testing svg images"
-            />
-
-            <div>
-              <h1 className="text-xl">Start with AI</h1>
-              <p className="flex flex-col text-sm font-light text-gray-400">
-                <span>Use AI to build personalized</span>
-                <span>quizzes, polls and surveys.</span>
-              </p>
-            </div>
-          </div>
-
-          <div className="flex h-64 w-60 flex-col items-center gap-8 rounded-3xl border-2 bg-red-200 p-4 text-black">
-            <Image
-              src="/icons/gemini.svg"
-              width={100}
-              height={100}
-              alt="testing svg images"
-            />
-
-            <div>
-              <h1 className="text-xl">Start with AI</h1>
-              <p className="flex flex-col text-sm font-light text-gray-400">
-                <span>Use AI to build personalized</span>
-                <span>quizzes, polls and surveys.</span>
-              </p>
-            </div>
-          </div>
+          <Comments
+            handleComment={handleComment}
+            commentSelected={commentSelected}
+          />
+          <PropertiesPanel
+            handleComment={handleComment}
+            handleEdit={handleEdit}
+          />
         </div>
       </div>
     </div>
