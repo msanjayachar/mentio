@@ -1,0 +1,16 @@
+<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <mask id="cuts">
+    <rect width="24" height="24" fill="white" />
+
+    <g transform="scale(1,-1) translate(0,-24)">
+      <polyline
+        points="4,12 12,12 12,20 12,12 18,7"
+        style="fill: none; stroke: black; stroke-width: 1"
+      />
+  </g>
+
+  </mask>
+
+  <circle cx="12" cy="12" r="8" fill="black" mask="url(#cuts)" />
+</svg>
+
