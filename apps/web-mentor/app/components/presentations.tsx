@@ -30,11 +30,13 @@ const Presentations = () => {
 
   const handleEdit = () => {
     setEditSelected((prev) => !prev);
+    setCommentSelected(false);
   };
 
   const handleComment = () => {
     console.log("hello from handleComment");
     setCommentSelected((prev) => !prev);
+    setEditSelected(false);
   };
 
   return (
@@ -76,13 +78,13 @@ const Presentations = () => {
             handleEdit={handleEdit}
             editSelected={editSelected}
           />
-          {/* ATHERE: */}
-
           <Comments
             handleComment={handleComment}
             commentSelected={commentSelected}
           />
           <PropertiesPanel
+            commentSelected={commentSelected}
+            editSelected={editSelected}
             handleComment={handleComment}
             handleEdit={handleEdit}
           />
