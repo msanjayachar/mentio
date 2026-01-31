@@ -1,0 +1,48 @@
+export const slides = [
+  {
+    id: 1,
+    type: "multiple_choice",
+    question: "What is the capital of Karnataka?",
+    options: ["Bengaluru", "Tumakuru", "Mysuru", "Mangalore"],
+    correctAnswers: [],
+    allowMultiple: false,
+    required: true,
+  },
+  {
+    id: 2,
+    type: "ranking",
+    question: "",
+    options: [],
+    required: true,
+  },
+  {
+    id: 3,
+    type: "scales",
+    question: "",
+    min: 1,
+    max: 5,
+    labels: { min: "", max: "" },
+    required: true,
+  },
+  {
+    id: 4,
+    type: "open_ended",
+    question: "",
+    placeholder: "",
+    required: true,
+  },
+  {
+    id: 5,
+    type: "word_cloud",
+    question: "",
+    maxWords: 3,
+    required: true,
+  },
+  {
+    id: 6,
+    type: "q&a",
+    question: "",
+    allowAnonymous: false,
+    required: true,
+  },
+];
