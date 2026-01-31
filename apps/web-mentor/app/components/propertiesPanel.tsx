@@ -16,7 +16,6 @@ const PropertiesPanel = ({
 }) => {
   const [selected, setSelected] = useState<"edit" | "comment" | null>(null);
 
-  // ATHERE: Both cannot be selected at once
   useEffect(() => {
     if (commentSelected) {
       setSelected("comment");

@@ -1,7 +1,12 @@
 import { ArrowLeft, X } from "lucide-react";
 
-// ATHERE:
-const Questionpanel = ({ questionSelected }: { questionSelected: boolean }) => {
+const Questionpanel = ({
+  questionSelected,
+  handleQuestionSelect,
+}: {
+  questionSelected: boolean;
+  handleQuestionSelect: () => void;
+}) => {
   return (
     <div
       className={`${questionSelected ? "block" : "hidden"} relative mx-4 my-8 h-[calc(100vh-8rem)] w-[360px] rounded-xl border-2 border-gray-200 p-8`}
@@ -11,7 +16,12 @@ const Questionpanel = ({ questionSelected }: { questionSelected: boolean }) => {
           <ArrowLeft size={20} />
           <span>Question</span>
         </div>
-        <X size={16} />
+        <button
+          className="cursor-pointer"
+          onClick={() => handleQuestionSelect()}
+        >
+          <X size={16} />
+        </button>
       </div>
 
       <br />

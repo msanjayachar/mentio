@@ -14,7 +14,7 @@ const Comments = ({
     >
       <div className="flex items-center justify-between">
         <span className="text-lg font-light text-gray-700">Comments</span>
-        <button onClick={() => handleComment()}>
+        <button onClick={() => handleComment()} className="cursor-pointer">
           <X size={16} />
         </button>
       </div>

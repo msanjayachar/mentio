@@ -25,7 +25,7 @@ const PresentationHelper = ({
             <ArrowLeft size={16} />
             <span>Multiple Choice</span>
           </div>
-          <button onClick={() => handleEdit()}>
+          <button className="cursor-pointer" onClick={() => handleEdit()}>
             <X size={16} />
           </button>
         </div>
