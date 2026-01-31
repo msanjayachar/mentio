@@ -10,7 +10,7 @@ const Comments = ({
 }) => {
   return (
     <div
-      className={`${commentSelected ? "block" : "hidden"} relative mx-4 my-8 h-[calc(100vh-8rem)] w-[360px] rounded-xl border-2 border-gray-200 p-8`}
+      className={`${commentSelected ? "block" : "hidden"} relative mx-4 my-8 h-[calc(100vh-8rem)] w-[360px] rounded-xl border-2 border-gray-200 bg-white p-8`}
     >
       <div className="flex items-center justify-between">
         <span className="text-lg font-light text-gray-700">Comments</span>

@@ -55,14 +55,14 @@ const Presentations = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative bg-[#F2F1F0]">
       <PresentationNav />
       <div className="flex flex-col">
         <div className="flex">
           <div className="hidden lg:block">
             <div className="flex h-[calc(100vh-80px)] w-48 flex-col gap-4 pt-4">
               <button
-                className="mx-auto flex h-10 cursor-pointer items-center gap-2 rounded-full bg-black px-8 text-center text-sm font-light text-white sm:w-44"
+                className="mx-auto flex h-12 cursor-pointer items-center gap-2 rounded-full bg-black px-8 text-center text-sm font-light text-white sm:w-44"
                 onClick={() => createSlide()}
               >
                 <Plus size={20} strokeWidth={1} />
@@ -73,7 +73,7 @@ const Presentations = () => {
                   <div key={item.id} className="flex">
                     <span className="text-[12px]">{item.id}</span>
                     <div
-                      className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-gray-100 hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected.id === item.id ? "border-none ring-2 ring-blue-700" : ""}`}
+                      className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected.id === item.id ? "ring ring-blue-700" : ""}`}
                     >
                       <span>{item.type}</span>
                     </div>
@@ -85,14 +85,14 @@ const Presentations = () => {
 
           {/* <PresentationStarters /> */}
           {/* Canvas Input  */}
-          <div className="flex min-w-0 flex-1 flex-col justify-between">
+          <div className="mb-4 flex min-w-0 flex-1 flex-col justify-between">
             <Question
               handleEdit={handleEdit}
               handleQuestionSelect={handleQuestionSelect}
             />
 
             <button
-              className="mx-16 h-16 w-auto cursor-pointer items-center rounded-lg text-lg font-light hover:bg-gray-200"
+              className="mx-16 h-16 w-auto cursor-pointer items-center rounded-lg text-lg font-light hover:bg-white"
               onClick={() => setSpeakerNotes((prev) => !prev)}
             >
               Speaker Notes

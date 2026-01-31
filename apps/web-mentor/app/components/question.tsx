@@ -11,12 +11,12 @@ const Question = ({
   const [speakerNotes, setSpeakerNotes] = useState(false);
 
   return (
-    <div className="m-8 h-[700px] w-auto rounded-md border-2 hover:border-blue-800">
-      <span className="flex justify-end px-4 py-2">Mentio</span>
+    <div className="m-8 h-[700px] w-auto rounded-md border-2 bg-white hover:border-blue-800">
+      <span className="flex justify-end pt-4 pr-4">Mentio</span>
       <div className="flex flex-col gap-6 px-4">
         <div className="px-8 pt-6">
           <input
-            className="h-14 w-full rounded-md border-2 px-2 text-2xl hover:border-blue-800 focus:border-transparent focus:outline-2 focus:outline-blue-800"
+            className="h-18 w-full rounded-md border-2 px-4 text-2xl hover:border-blue-800 focus:border-transparent focus:outline-2 focus:outline-blue-800"
             onSelect={() => {
               handleQuestionSelect();
             }}

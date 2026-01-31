@@ -19,7 +19,7 @@ const PresentationHelper = ({
 
   return (
     <div className={`${editSelected ? "block" : "hidden"}`}>
-      <div className="mx-4 my-8 h-[calc(100vh-8rem)] w-[360px] rounded-xl border-2 border-gray-200 p-8">
+      <div className="mx-4 my-8 h-[calc(100vh-8rem)] w-[360px] rounded-xl border-2 border-gray-200 bg-white p-8">
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <ArrowLeft size={16} />

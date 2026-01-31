@@ -26,10 +26,10 @@ const PropertiesPanel = ({
 
   return (
     <div
-      className={`mt-8 mr-4 flex h-50 w-28 flex-col justify-between gap-2 rounded-md border-2 border-gray-200 px-2 py-2`}
+      className={`mt-8 mr-4 flex h-50 w-28 flex-col justify-between gap-2 rounded-md border-2 border-gray-200 bg-white px-2 py-2`}
     >
       <button
-        className={`${selected === "edit" ? "border border-blue-900 hover:bg-blue-300/20" : "hover:bg-gray-100"} flex h-24 cursor-pointer flex-col items-center justify-around rounded-md`}
+        className={`${selected === "edit" ? "border hover:border-blue-900 hover:bg-blue-300/20" : "hover:bg-gray-300/20"} flex h-24 cursor-pointer flex-col items-center justify-around rounded-md px-6 py-2 pt-2`}
         onClick={() => handleEdit()}
       >
         <Image
@@ -41,7 +41,7 @@ const PropertiesPanel = ({
         <span>Edit</span>
       </button>
       <button
-        className="flex h-24 cursor-pointer flex-col items-center justify-around rounded-md border border-blue-900 px-6 py-2 pt-2 hover:bg-blue-300/20"
+        className={`${selected === "comment" ? "border hover:border-blue-900 hover:bg-blue-300/20" : "hover:bg-gray-300/20"} flex h-24 cursor-pointer flex-col items-center justify-around rounded-md px-6 py-2 pt-2`}
         onClick={() => handleComment()}
       >
         <Image

@@ -2,7 +2,6 @@ import { ArrowUp, Sparkles } from "lucide-react";
 const Aichat = () => {
   return (
     <div className="flex flex-col gap-4">
-      {/* ATHERE: Make the element reduce with the viewport */}
       <div className="mx-4">
         <div className="flex max-w-[1500px] min-w-0 items-center rounded-lg border-2 border-gray-400">
           <div className="hidden p-4 lg:block">
