@@ -1,41 +1,27 @@
 "use client";
 
-import { Plus } from "lucide-react";
-import Image from "next/image";
 import PresentationNav from "./presentationNav";
-import PresentationStarters from "./presentationStarters";
 import Question from "./question";
 import PresentationHelper from "./presentationHelper";
 import PropertiesPanel from "./propertiesPanel";
 import { useState } from "react";
-import { slides as initialSlides } from "data/slides";
 import SpeakerNotes from "./speakerNotes";
 import Comments from "./edit/comments";
 import Questionpanel from "./edit/questionpanel";
 import { useRouter } from "next/navigation";
 import { options as initialOptions } from "@/data/slides";
+import SlidesSidebar from "./slidesSidebar";
+import { slides as initialSlides } from "data/slides";
 
 const Presentations = () => {
   const [options, setOptions] = useState<Option[]>(initialOptions);
   const [speakerNotes, setSpeakerNotes] = useState(false);
-  const [slides, setSlides] = useState(initialSlides);
-  const [selected, setSelected] = useState({
-    id: 1,
-    type: "multiple_choice",
-    question: "What is the capital of Karnataka?",
-    options: ["Bengaluru", "Tumakuru", "Mysuru", "Mangalore"],
-    correctAnswers: [],
-    allowMultiple: false,
-    required: true,
-  });
+  const [selected, setSelected] = useState<number>(1);
   const [editSelected, setEditSelected] = useState<boolean>(false);
   const [commentSelected, setCommentSelected] = useState<boolean>(false);
   const [questionSelected, setQuestionSelected] = useState<boolean>(false);
+  const [slides, setSlides] = useState(initialSlides);
   const navigate = useRouter();
-
-  const createSlide = () => {
-    console.log("hello from create slide");
-  };
 
   const handleSpeakerNotes = () => {
     setSpeakerNotes((prev) => !prev);
@@ -65,34 +51,20 @@ const Presentations = () => {
       <PresentationNav />
       <div className="flex flex-col">
         <div className="flex">
-          <div className="hidden lg:block">
-            <div className="flex h-[calc(100vh-80px)] w-48 flex-col gap-4 pt-4">
-              <button
-                className="mx-auto flex h-12 cursor-pointer items-center gap-2 rounded-full bg-black px-8 text-center text-sm font-light text-white sm:w-44"
-                onClick={() => createSlide()}
-              >
-                <Plus size={20} strokeWidth={1} />
-                <span>New slide</span>
-              </button>
-              <div className="ml-2 flex flex-col gap-4">
-                {slides.map((item) => (
-                  <div key={item.id} className="flex">
-                    <span className="text-[12px]">{item.id}</span>
-                    <div
-                      className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected.id === item.id ? "ring ring-blue-700" : ""}`}
-                    >
-                      <span>{item.type}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <SlidesSidebar
+            selected={selected}
+            setSelected={setSelected}
+            slides={slides}
+            setSlides={setSlides}
+          />
 
           {/* <PresentationStarters /> */}
           {/* Canvas Input  */}
           <div className="mb-4 flex min-w-0 flex-1 flex-col justify-between">
             <Question
+              slides={slides}
+              setSlides={setSlides}
+              selected={selected}
               options={options}
               handleEdit={handleEdit}
               handleQuestionSelect={handleQuestionSelect}
@@ -111,7 +83,10 @@ const Presentations = () => {
 
           <div className="flex shrink-0">
             <PresentationHelper
+              selected={selected}
+              slides={slides}
               options={options}
+              setSlides={setSlides}
               setOptions={setOptions}
               handleEdit={handleEdit}
               editSelected={editSelected}

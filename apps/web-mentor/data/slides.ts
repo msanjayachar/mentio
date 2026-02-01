@@ -16,51 +16,59 @@ export const options: Option[] = [
   },
 ];
 
-export const slides = [
+export const slides: (MCQSlide | PlainTextSlide)[] = [
   {
     id: 1,
     type: "multiple_choice",
     question: "What is the capital of Karnataka?",
-    options: ["Bengaluru", "Tumakuru", "Mysuru", "Mangalore"],
+    options: [
+      {
+        id: 1,
+        text: "Bengaluru",
+        correctAnswer: undefined,
+      },
+      {
+        id: 2,
+        text: "Tumakuru",
+        correctAnswer: undefined,
+      },
+      {
+        id: 3,
+        text: "Mysuru",
+        correctAnswer: undefined,
+      },
+      {
+        id: 4,
+        text: "Mangalore",
+        correctAnswer: undefined,
+      },
+    ],
     correctAnswers: [],
     allowMultiple: false,
     required: true,
   },
   {
     id: 2,
-    type: "ranking",
-    question: "",
-    options: [],
-    required: true,
+    type: "plain_text",
+    contents: [],
   },
   {
     id: 3,
-    type: "scales",
-    question: "",
-    min: 1,
-    max: 5,
-    labels: { min: "", max: "" },
-    required: true,
+    type: "plain_text",
+    contents: [],
   },
   {
     id: 4,
-    type: "open_ended",
-    question: "",
-    placeholder: "",
-    required: true,
+    type: "plain_text",
+    contents: [],
   },
   {
     id: 5,
-    type: "word_cloud",
+    type: "multiple_choice",
     question: "",
-    maxWords: 3,
-    required: true,
-  },
-  {
-    id: 6,
-    type: "q&a",
-    question: "",
-    allowAnonymous: false,
+    options: options,
+    correctAnswers: [],
+    allowMultiple: false,
     required: true,
   },
 ];

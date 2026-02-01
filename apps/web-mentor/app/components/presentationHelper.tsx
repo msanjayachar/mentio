@@ -13,11 +13,17 @@ import {
 // - [ ] Checking multiple options when the toggle isn't on should not be supported
 
 const PresentationHelper = ({
+  selected,
+  slides,
+  setSlides,
   editSelected,
   handleEdit,
   options,
   setOptions,
 }: {
+  selected: number;
+  slides: (MCQSlide | PlainTextSlide)[];
+  setSlides: Dispatch<SetStateAction<(MCQSlide | PlainTextSlide)[]>>;
   editSelected: boolean;
   handleEdit: () => void;
   options: Option[];
@@ -30,6 +36,10 @@ const PresentationHelper = ({
   >(null);
   const [optionValue, setOptionValue] = useState<string | null>(null);
 
+  const slide = slides.find((slide) => slide.id === selected);
+
+  if (!slide) return;
+
   const colors = [
     "bg-blue-500",
     "bg-rose-400",
@@ -40,6 +50,7 @@ const PresentationHelper = ({
 
   const handleOptions = (
     e: ChangeEvent<HTMLInputElement>,
+    selected: number,
     optionId: number,
   ) => {
     setOptionValue(e.target.value);
@@ -55,6 +66,24 @@ const PresentationHelper = ({
         ),
       );
     }
+
+    setSlides((slides) =>
+      slides.map((slide) =>
+        slide.id === selected && slide.type === "multiple_choice"
+          ? {
+              ...slide,
+              options: slide.options.map((option) =>
+                option.id === optionId
+                  ? {
+                      ...option,
+                      text: e.target.value,
+                    }
+                  : option,
+              ),
+            }
+          : slide,
+      ),
+    );
   };
 
   const addOption = () => {
@@ -154,58 +183,65 @@ const PresentationHelper = ({
         <hr className="mb-4 bg-gray-300" />
 
         {/* Dynamic Options */}
+        {/* AT_HERE: Make the options editable */}
         <div>
           <h1 className="mb-2">Options</h1>
           <div className="flex flex-col gap-2">
-            {options.map((option) => (
-              <div key={option.id} className="flex items-center gap-4">
-                <div
-                  className={`${setCorrectAnswer ? "flex items-center" : "hidden"}`}
-                >
-                  <label className="group relative inline-flex h-8 w-8 cursor-pointer items-center justify-center">
-                    {/* Real checkbox (invisible but functional) */}
-                    <input
-                      type="checkbox"
-                      className="peer absolute h-0 w-0 opacity-0"
-                    />
-
-                    {/* Custom box */}
-                    <div className="h-8 w-8 rounded-md border border-gray-400 bg-white transition group-hover:border-2 group-hover:border-[#5E59B3] peer-checked:border-none peer-checked:bg-[#5E59B3] peer-focus:ring-2 peer-focus:ring-blue-400" />
-
-                    {/* Check mark */ option.id}
-                    <svg
-                      className="pointer-events-none absolute h-5 w-5 text-white opacity-0 transition peer-checked:opacity-100"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  </label>
-                </div>
-
-                <div className="flex h-12 items-center gap-2 rounded-md border-3 border-transparent bg-gray-200 focus-within:ring-4 focus-within:ring-blue-800/40 focus-within:ring-offset-2 hover:border-indigo-500">
+            {slide.type === "multiple_choice" ? (
+              slide.options.map((option) => (
+                <div key={option.id} className="flex items-center gap-4">
                   <div
-                    className={`ml-2 h-6 w-6 shrink-0 rounded-full ${colors[option.id - 1]}`}
-                  />
-                  <input
-                    onChange={(e) => handleOptions(e, option.id)}
-                    placeholder={`Option ${option.id}`}
-                    className="w-full min-w-0 font-light outline-none"
-                  />
-                </div>
+                    className={`${setCorrectAnswer ? "flex items-center" : "hidden"}`}
+                  >
+                    <label className="group relative inline-flex h-8 w-8 cursor-pointer items-center justify-center">
+                      {/* Real checkbox (invisible but functional) */}
+                      <input
+                        type="checkbox"
+                        className="peer absolute h-0 w-0 opacity-0"
+                      />
 
-                <button
-                  className="cursor-pointer"
-                  onClick={() => handleCancel(option.id, option)}
-                >
-                  <X size={16} />
-                </button>
-              </div>
-            ))}
+                      {/* Custom box */}
+                      <div className="h-8 w-8 rounded-md border border-gray-400 bg-white transition group-hover:border-2 group-hover:border-[#5E59B3] peer-checked:border-none peer-checked:bg-[#5E59B3] peer-focus:ring-2 peer-focus:ring-blue-400" />
+
+                      {/* Check mark */ option.id}
+                      <svg
+                        className="pointer-events-none absolute h-5 w-5 text-white opacity-0 transition peer-checked:opacity-100"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </label>
+                  </div>
+
+                  <div className="flex h-12 items-center gap-2 rounded-md border-3 border-transparent bg-gray-200 focus-within:ring-4 focus-within:ring-blue-800/40 focus-within:ring-offset-2 hover:border-indigo-500">
+                    <div
+                      className={`ml-2 h-6 w-6 shrink-0 rounded-full ${colors[option.id - 1]}`}
+                    />
+                    {/* THREAD: */}
+                    <input
+                      value={option.text}
+                      onChange={(e) => handleOptions(e, selected, option.id)}
+                      placeholder={`Option ${option.id}`}
+                      className="w-full min-w-0 font-light outline-none"
+                    />
+                  </div>
+
+                  <button
+                    className="cursor-pointer"
+                    onClick={() => handleCancel(option.id, option)}
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ))
+            ) : (
+              <div key={slide.id}>Type: {slide.type}</div>
+            )}
           </div>
         </div>
 

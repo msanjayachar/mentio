@@ -80,7 +80,6 @@ const SpeakerNotes = ({
           placeholder="Write some helpful text to fall back on during presentation..."
         />
 
-        {/* ATHERE: this should go out of view and the div should not be collapsable to below a certain limit */}
         <span className="bottom-0 mx-auto my-4 block text-center font-light">
           <span>
             Notes are shown on the <b className="">Mentimote</b>

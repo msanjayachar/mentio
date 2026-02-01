@@ -3,3 +3,19 @@ type Option = {
   text: string | undefined;
   correctAnswer: boolean | undefined;
 };
+
+type MCQSlide = {
+  id: number;
+  type: "multiple_choice";
+  question: string;
+  options: Option[];
+  correctAnswers: Option[];
+  allowMultiple: boolean;
+  required: boolean;
+};
+
+type PlainTextSlide = {
+  id: number;
+  type: "plain_text";
+  contents: string[];
+};
