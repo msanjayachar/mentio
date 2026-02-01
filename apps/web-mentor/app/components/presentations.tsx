@@ -12,8 +12,11 @@ import { slides as initialSlides } from "data/slides";
 import SpeakerNotes from "./speakerNotes";
 import Comments from "./edit/comments";
 import Questionpanel from "./edit/questionpanel";
+import { useRouter } from "next/navigation";
+import { options as initialOptions } from "@/data/slides";
 
 const Presentations = () => {
+  const [options, setOptions] = useState<Option[]>(initialOptions);
   const [speakerNotes, setSpeakerNotes] = useState(false);
   const [slides, setSlides] = useState(initialSlides);
   const [selected, setSelected] = useState({
@@ -28,8 +31,11 @@ const Presentations = () => {
   const [editSelected, setEditSelected] = useState<boolean>(false);
   const [commentSelected, setCommentSelected] = useState<boolean>(false);
   const [questionSelected, setQuestionSelected] = useState<boolean>(false);
+  const navigate = useRouter();
 
-  const createSlide = () => {};
+  const createSlide = () => {
+    console.log("hello from create slide");
+  };
 
   const handleSpeakerNotes = () => {
     setSpeakerNotes((prev) => !prev);
@@ -87,6 +93,7 @@ const Presentations = () => {
           {/* Canvas Input  */}
           <div className="mb-4 flex min-w-0 flex-1 flex-col justify-between">
             <Question
+              options={options}
               handleEdit={handleEdit}
               handleQuestionSelect={handleQuestionSelect}
             />
@@ -104,6 +111,8 @@ const Presentations = () => {
 
           <div className="flex shrink-0">
             <PresentationHelper
+              options={options}
+              setOptions={setOptions}
               handleEdit={handleEdit}
               editSelected={editSelected}
             />

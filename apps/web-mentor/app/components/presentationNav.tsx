@@ -1,26 +1,35 @@
+"use client";
+
 import { ArrowLeft, ChevronDown, Play, Settings, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const PresentationNav = () => {
+  const [presentationTitle, setPresentationTitle] = useState<string | null>(
+    null,
+  );
+  const router = useRouter();
+
+  // TODO: Submit to the backend
+  const submitTitle = () => {
+    console.log("presentationTitle: ", presentationTitle);
+  };
+
+  useEffect(() => {
+    console.log("presentationTitle: ", presentationTitle);
+  }, [presentationTitle]);
+
   return (
     <div>
-      {/* <div className="sm:bg-blue-300 md:bg-purple-400 lg:bg-blue-500 xl:bg-green-400 2xl:bg-pink-500"> */}
-      {/*   <span className="block bg-red-400 sm:hidden">base</span> */}
-      {/*   <span className="hidden sm:block md:hidden">sm</span> */}
-      {/*   <span className="hidden md:block lg:hidden">md</span> */}
-      {/*   <span className="hidden lg:block xl:hidden">lg</span> */}
-      {/*   <span className="hidden xl:block 2xl:hidden">xl</span> */}
-      {/*   <span className="3xl:hidden hidden 2xl:block">2xl</span> */}
-      {/*   <span className="3xl:block hidden">3xl</span> */}
-      {/* </div> */}
-
       <div className="flex justify-between px-4 py-2">
         <div className="flex items-center gap-4">
-          <div>
+          <button className="cursor-pointer" onClick={() => router.push("/")}>
             <ArrowLeft size={20} />
-          </div>
+          </button>
           <div>
             <div>
               <input
+                onChange={(e) => setPresentationTitle(e.target.value)}
                 placeholder="Untitled presentation"
                 className="font-light text-black"
               />

@@ -2,20 +2,88 @@
 
 import { ArrowLeft, Plus, X } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
+
+// - [ ] Checking multiple options when the toggle isn't on should not be supported
 
 const PresentationHelper = ({
   editSelected,
   handleEdit,
+  options,
+  setOptions,
 }: {
   editSelected: boolean;
   handleEdit: () => void;
+  options: Option[];
+  setOptions: Dispatch<SetStateAction<Option[]>>;
 }) => {
   const [selectMultiple, setSelectMultiple] = useState<boolean>(false);
   const [setCorrectAnswer, setSetCorrectAnswer] = useState<boolean>(false);
   const [visualizationType, setVisualizationType] = useState<
     "bar" | "pie" | "split" | "dots" | null
   >(null);
+  const [optionValue, setOptionValue] = useState<string | null>(null);
+
+  const colors = [
+    "bg-blue-500",
+    "bg-rose-400",
+    "bg-indigo-300",
+    "bg-indigo-900",
+    "bg-red-800",
+  ];
+
+  const handleOptions = (
+    e: ChangeEvent<HTMLInputElement>,
+    optionId: number,
+  ) => {
+    setOptionValue(e.target.value);
+
+    const last = options[options.length - 1];
+
+    if (!last) return;
+
+    if (optionValue !== null) {
+      setOptions((prev) =>
+        prev.map((option) =>
+          option.id === optionId ? { ...option, text: e.target.value } : option,
+        ),
+      );
+    }
+  };
+
+  const addOption = () => {
+    console.log("hello from add option");
+    const last = options[options.length - 1];
+
+    if (options.length == 5) return;
+
+    if (!last) return;
+
+    setOptions((prev) => [
+      ...prev,
+      {
+        id: last.id + 1,
+        text: undefined,
+        correctAnswer: undefined,
+      },
+    ]);
+  };
+
+  const handleCancel = (optionId: number, option: Option) => {
+    if (options.length == 2) return;
+
+    setOptions((prev) => prev.filter((option) => option.id !== optionId));
+  };
+
+  useEffect(() => {
+    console.log("options: ", options);
+  }, [options]);
 
   return (
     <div className={`${editSelected ? "block" : "hidden"}`}>
@@ -85,134 +153,71 @@ const PresentationHelper = ({
 
         <hr className="mb-4 bg-gray-300" />
 
+        {/* Dynamic Options */}
         <div>
           <h1 className="mb-2">Options</h1>
           <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-4">
-              <div
-                className={`${setCorrectAnswer ? "flex items-center" : "hidden"}`}
-              >
-                <label className="group relative inline-flex h-8 w-8 cursor-pointer items-center justify-center">
-                  {/* Real checkbox (invisible but functional) */}
-                  <input
-                    type="checkbox"
-                    className="peer absolute h-0 w-0 opacity-0"
+            {options.map((option) => (
+              <div key={option.id} className="flex items-center gap-4">
+                <div
+                  className={`${setCorrectAnswer ? "flex items-center" : "hidden"}`}
+                >
+                  <label className="group relative inline-flex h-8 w-8 cursor-pointer items-center justify-center">
+                    {/* Real checkbox (invisible but functional) */}
+                    <input
+                      type="checkbox"
+                      className="peer absolute h-0 w-0 opacity-0"
+                    />
+
+                    {/* Custom box */}
+                    <div className="h-8 w-8 rounded-md border border-gray-400 bg-white transition group-hover:border-2 group-hover:border-[#5E59B3] peer-checked:border-none peer-checked:bg-[#5E59B3] peer-focus:ring-2 peer-focus:ring-blue-400" />
+
+                    {/* Check mark */ option.id}
+                    <svg
+                      className="pointer-events-none absolute h-5 w-5 text-white opacity-0 transition peer-checked:opacity-100"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </label>
+                </div>
+
+                <div className="flex h-12 items-center gap-2 rounded-md border-3 border-transparent bg-gray-200 focus-within:ring-4 focus-within:ring-blue-800/40 focus-within:ring-offset-2 hover:border-indigo-500">
+                  <div
+                    className={`ml-2 h-6 w-6 shrink-0 rounded-full ${colors[option.id - 1]}`}
                   />
-
-                  {/* Custom box */}
-                  <div className="h-8 w-8 rounded-md border border-gray-400 bg-white transition group-hover:border-2 group-hover:border-[#5E59B3] peer-checked:border-none peer-checked:bg-[#5E59B3] peer-focus:ring-2 peer-focus:ring-blue-400" />
-
-                  {/* Check mark */}
-                  <svg
-                    className="pointer-events-none absolute h-5 w-5 text-white opacity-0 transition peer-checked:opacity-100"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </label>
-              </div>
-
-              <div className="flex h-12 items-center gap-2 rounded-md bg-gray-200">
-                <div className="ml-2 h-6 w-6 shrink-0 rounded-full bg-blue-500" />
-                <input
-                  placeholder="Option 1"
-                  className="w-full min-w-0 font-light"
-                />
-              </div>
-
-              <X size={16} />
-            </div>
-
-            <div className="flex w-full items-center gap-4">
-              <div
-                className={`${setCorrectAnswer ? "flex items-center" : "hidden"}`}
-              >
-                <label className="group relative inline-flex h-8 w-8 cursor-pointer items-center justify-center">
-                  {/* Real checkbox (invisible but functional) */}
                   <input
-                    type="checkbox"
-                    className="peer absolute h-0 w-0 opacity-0"
+                    onChange={(e) => handleOptions(e, option.id)}
+                    placeholder={`Option ${option.id}`}
+                    className="w-full min-w-0 font-light outline-none"
                   />
+                </div>
 
-                  {/* Custom box */}
-                  <div className="h-8 w-8 rounded-md border border-gray-400 bg-white transition group-hover:border-2 group-hover:border-[#5E59B3] peer-checked:border-none peer-checked:bg-[#5E59B3] peer-focus:ring-2 peer-focus:ring-blue-400" />
-
-                  {/* Check mark */}
-                  <svg
-                    className="pointer-events-none absolute h-5 w-5 text-white opacity-0 transition peer-checked:opacity-100"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </label>
+                <button
+                  className="cursor-pointer"
+                  onClick={() => handleCancel(option.id, option)}
+                >
+                  <X size={16} />
+                </button>
               </div>
-
-              <div className="flex h-12 items-center gap-2 rounded-md bg-gray-200">
-                <div className="ml-2 h-6 w-6 shrink-0 rounded-full bg-red-400" />
-                <input
-                  placeholder="Option 2"
-                  className="w-full min-w-0 font-light"
-                />
-              </div>
-
-              <X size={16} />
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div
-                className={`${setCorrectAnswer ? "flex items-center" : "hidden"}`}
-              >
-                <label className="group relative inline-flex h-8 w-8 cursor-pointer items-center justify-center">
-                  {/* Real checkbox (invisible but functional) */}
-                  <input
-                    type="checkbox"
-                    className="peer absolute h-0 w-0 opacity-0"
-                  />
-
-                  {/* Custom box */}
-                  <div className="h-8 w-8 rounded-md border border-gray-400 bg-white transition group-hover:border-2 group-hover:border-[#5E59B3] peer-checked:border-none peer-checked:bg-[#5E59B3] peer-focus:ring-2 peer-focus:ring-blue-400" />
-
-                  {/* Check mark */}
-                  <svg
-                    className="pointer-events-none absolute h-5 w-5 text-white opacity-0 transition peer-checked:opacity-100"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </label>
-              </div>
-              <div className="flex h-12 items-center gap-2 rounded-md bg-gray-200">
-                <div className="ml-2 h-6 w-6 shrink-0 rounded-full bg-blue-900" />
-                <input
-                  placeholder="Option 3"
-                  className="w-full min-w-0 font-light"
-                />
-              </div>
-
-              <X size={16} />
-            </div>
+            ))}
           </div>
         </div>
 
-        <button className="mt-6 flex h-12 w-full items-center justify-center gap-2 rounded-3xl bg-gray-200">
+        <button
+          onClick={() => addOption()}
+          className="mt-6 flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-3xl bg-gray-200"
+        >
           <Plus size={18} />
           <span className="font-light">Add option</span>
         </button>
+
+        {/* Additional Options */}
 
         <div className="mt-8 flex flex-col gap-4">
           <div className="flex justify-between">
