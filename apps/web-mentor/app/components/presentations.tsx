@@ -9,12 +9,10 @@ import SpeakerNotes from "./speakerNotes";
 import Comments from "./edit/comments";
 import Questionpanel from "./edit/questionpanel";
 import { useRouter } from "next/navigation";
-import { options as initialOptions } from "@/data/slides";
 import SlidesSidebar from "./slidesSidebar";
 import { slides as initialSlides } from "data/slides";
 
 const Presentations = () => {
-  const [options, setOptions] = useState<Option[]>(initialOptions);
   const [speakerNotes, setSpeakerNotes] = useState(false);
   const [selected, setSelected] = useState<number>(1);
   const [editSelected, setEditSelected] = useState<boolean>(false);
@@ -65,7 +63,6 @@ const Presentations = () => {
               slides={slides}
               setSlides={setSlides}
               selected={selected}
-              options={options}
               handleEdit={handleEdit}
               handleQuestionSelect={handleQuestionSelect}
             />
@@ -85,9 +82,7 @@ const Presentations = () => {
             <PresentationHelper
               selected={selected}
               slides={slides}
-              options={options}
               setSlides={setSlides}
-              setOptions={setOptions}
               handleEdit={handleEdit}
               editSelected={editSelected}
             />

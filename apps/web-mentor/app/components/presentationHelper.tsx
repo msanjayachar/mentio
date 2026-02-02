@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 
+// TODO:
 // - [ ] Checking multiple options when the toggle isn't on should not be supported
 
 const PresentationHelper = ({
@@ -18,27 +19,19 @@ const PresentationHelper = ({
   setSlides,
   editSelected,
   handleEdit,
-  options,
-  setOptions,
 }: {
   selected: number;
   slides: (MCQSlide | PlainTextSlide)[];
   setSlides: Dispatch<SetStateAction<(MCQSlide | PlainTextSlide)[]>>;
   editSelected: boolean;
   handleEdit: () => void;
-  options: Option[];
-  setOptions: Dispatch<SetStateAction<Option[]>>;
 }) => {
   const [selectMultiple, setSelectMultiple] = useState<boolean>(false);
   const [setCorrectAnswer, setSetCorrectAnswer] = useState<boolean>(false);
   const [visualizationType, setVisualizationType] = useState<
     "bar" | "pie" | "split" | "dots" | null
   >(null);
-  const [optionValue, setOptionValue] = useState<string | null>(null);
-
   const slide = slides.find((slide) => slide.id === selected);
-
-  if (!slide) return;
 
   const colors = [
     "bg-blue-500",
@@ -48,24 +41,23 @@ const PresentationHelper = ({
     "bg-red-800",
   ];
 
+  if (!slide) return;
+
+  useEffect(() => {
+    console.log(
+      "slide.options: ",
+      slide.type === "multiple_choice" ? slide.options : slide.type,
+    );
+  }, [slide]);
+
   const handleOptions = (
     e: ChangeEvent<HTMLInputElement>,
     selected: number,
     optionId: number,
   ) => {
-    setOptionValue(e.target.value);
-
-    const last = options[options.length - 1];
+    const last = slide.type === "multiple_choice" ? slide.options.at(-1) : null;
 
     if (!last) return;
-
-    if (optionValue !== null) {
-      setOptions((prev) =>
-        prev.map((option) =>
-          option.id === optionId ? { ...option, text: e.target.value } : option,
-        ),
-      );
-    }
 
     setSlides((slides) =>
       slides.map((slide) =>
@@ -87,32 +79,48 @@ const PresentationHelper = ({
   };
 
   const addOption = () => {
-    console.log("hello from add option");
-    const last = options[options.length - 1];
+    if (!slide) return null;
 
-    if (options.length == 5) return;
+    const last = slide.type === "multiple_choice" ? slide.options.at(-1) : null;
 
-    if (!last) return;
+    if (!last) return null;
 
-    setOptions((prev) => [
-      ...prev,
-      {
-        id: last.id + 1,
-        text: undefined,
-        correctAnswer: undefined,
-      },
-    ]);
+    if (slide.type === "multiple_choice" && slide.options.length == 5)
+      return null;
+
+    setSlides((prev) =>
+      prev.map((slide) =>
+        slide.id === selected && slide.type === "multiple_choice"
+          ? {
+              ...slide,
+              options: [
+                ...slide.options,
+                {
+                  id: last.id + 1,
+                  text: "",
+                  correctAnswer: false,
+                },
+              ],
+            }
+          : slide,
+      ),
+    );
   };
 
   const handleCancel = (optionId: number, option: Option) => {
-    if (options.length == 2) return;
+    if (slide.type === "multiple_choice" && slide.options!.length == 2) return;
 
-    setOptions((prev) => prev.filter((option) => option.id !== optionId));
+    setSlides((slides) =>
+      slides.map((slide) =>
+        slide.id === selected && slide.type === "multiple_choice"
+          ? {
+              ...slide,
+              options: slide.options.filter((option) => option.id !== optionId),
+            }
+          : slide,
+      ),
+    );
   };
-
-  useEffect(() => {
-    console.log("options: ", options);
-  }, [options]);
 
   return (
     <div className={`${editSelected ? "block" : "hidden"}`}>

@@ -1,18 +1,18 @@
 export const options: Option[] = [
   {
     id: 1,
-    text: "Option 1",
-    correctAnswer: undefined,
+    text: "",
+    correctAnswer: false,
   },
   {
     id: 2,
-    text: "Option 2",
-    correctAnswer: undefined,
+    text: "",
+    correctAnswer: false,
   },
   {
     id: 3,
-    text: "Option 3",
-    correctAnswer: undefined,
+    text: "",
+    correctAnswer: false,
   },
 ];
 
@@ -25,5 +25,10 @@ export const slides: (MCQSlide | PlainTextSlide)[] = [
     correctAnswers: [],
     allowMultiple: false,
     required: true,
+  },
+  {
+    id: 2,
+    type: "plain_text",
+    contents: [""],
   },
 ];

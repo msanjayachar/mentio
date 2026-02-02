@@ -11,10 +11,6 @@ const SpeakerNotes = ({
   const [height, setHeight] = useState(228);
   const [offset, setOffset] = useState(0);
 
-  useEffect(() => {
-    console.log("height: ", height);
-  }, [height]);
-
   return (
     <div className="relative w-full">
       <div

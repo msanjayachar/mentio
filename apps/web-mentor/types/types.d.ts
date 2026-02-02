@@ -1,7 +1,7 @@
 type Option = {
   id: number;
-  text: string | undefined;
-  correctAnswer: boolean | undefined;
+  text: string;
+  correctAnswer: boolean;
 };
 
 type MCQSlide = {
