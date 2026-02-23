@@ -92,11 +92,16 @@ const Question = ({
         >
           {slide.type === "multiple_choice" ? (
             slide.options.map((opt) => (
-              <div key={opt.id} className="flex flex-col items-center gap-2">
+              <div
+                key={opt.id}
+                className="flex w-full flex-col items-center gap-2"
+              >
                 <span className="flex w-full justify-start pl-2 text-2xl font-light">
                   0
                 </span>
-                <div className={`h-2 w-64 rounded-md ${colors[opt.id - 1]}`} />
+                <div
+                  className={`h-2 w-full max-w-64 min-w-28 rounded-md ${colors[opt.id - 1]}`}
+                />
                 <span className="flex w-full justify-start text-2xl font-light">
                   {/* Option {opt.id} */}
                   {opt.text}

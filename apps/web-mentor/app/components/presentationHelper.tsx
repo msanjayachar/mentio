@@ -1,5 +1,6 @@
 "use client";
 
+import { options } from "@/data/slides";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import Image from "next/image";
 import {
@@ -249,15 +250,18 @@ const PresentationHelper = ({
               <div key={slide.id}>Type: {slide.type}</div>
             )}
           </div>
-        </div>
 
-        <button
-          onClick={() => addOption()}
-          className="mt-6 flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-3xl bg-gray-200"
-        >
-          <Plus size={18} />
-          <span className="font-light">Add option</span>
-        </button>
+          <button
+            onClick={() => addOption()}
+            className={`mt-6 flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-3xl bg-gray-200 transition-colors hover:bg-gray-300 ${slide.type === "multiple_choice" && slide.options.length >= 5 ? "pointer-events-none cursor-not-allowed bg-gray-300 text-gray-500 opacity-60" : ""}`}
+          >
+            <Plus size={18} />
+            <span className="font-light">Add option</span>
+            <span>
+              {slide.type === "multiple_choice" && slide.options.length}
+            </span>
+          </button>
+        </div>
 
         {/* Additional Options */}
 

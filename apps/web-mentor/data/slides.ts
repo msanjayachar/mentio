@@ -24,7 +24,6 @@ export const slides: (MCQSlide | PlainTextSlide)[] = [
     options: options,
     correctAnswers: [],
     allowMultiple: false,
-    required: true,
   },
   {
     id: 2,
