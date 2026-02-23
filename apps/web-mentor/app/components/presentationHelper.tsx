@@ -191,7 +191,6 @@ const PresentationHelper = ({
         <hr className="mb-4 bg-gray-300" />
 
         {/* Dynamic Options */}
-        {/* AT_HERE: Make the options editable */}
         <div>
           <h1 className="mb-2">Options</h1>
           <div className="flex flex-col gap-2">
@@ -211,7 +210,7 @@ const PresentationHelper = ({
                       {/* Custom box */}
                       <div className="h-8 w-8 rounded-md border border-gray-400 bg-white transition group-hover:border-2 group-hover:border-[#5E59B3] peer-checked:border-none peer-checked:bg-[#5E59B3] peer-focus:ring-2 peer-focus:ring-blue-400" />
 
-                      {/* Check mark */ option.id}
+                      {/* Check mark */}
                       <svg
                         className="pointer-events-none absolute h-5 w-5 text-white opacity-0 transition peer-checked:opacity-100"
                         viewBox="0 0 24 24"
@@ -230,7 +229,6 @@ const PresentationHelper = ({
                     <div
                       className={`ml-2 h-6 w-6 shrink-0 rounded-full ${colors[option.id - 1]}`}
                     />
-                    {/* THREAD: */}
                     <input
                       value={option.text}
                       onChange={(e) => handleOptions(e, selected, option.id)}
@@ -296,9 +294,9 @@ const PresentationHelper = ({
                 className="peer sr-only"
               />
 
-              <div className="h-6 w-11 rounded-full bg-gray-300 transition-colors duration-200 peer-checked:bg-blue-600"></div>
+              <div className="h-6 w-11 rounded-full bg-gray-300 transition-colors duration-200 peer-checked:bg-blue-600" />
 
-              <div className="absolute top-1 left-1 h-4 w-4 rounded-full bg-white transition-transform duration-200 peer-checked:translate-x-5"></div>
+              <div className="absolute top-1 left-1 h-4 w-4 rounded-full bg-white transition-transform duration-200 peer-checked:translate-x-5" />
             </label>
           </div>
 

@@ -2,22 +2,27 @@
 
 import { ArrowLeft, ChevronDown, Play, Settings, User } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-const PresentationNav = () => {
+const PresentationNav = ({
+  slides,
+}: {
+  slides: (MCQSlide | PlainTextSlide)[];
+}) => {
   const [presentationTitle, setPresentationTitle] = useState<string | null>(
     null,
   );
   const router = useRouter();
+  const presentationId = "randomPresentationId";
 
-  // TODO: Submit to the backend
-  const submitTitle = () => {
-    console.log("presentationTitle: ", presentationTitle);
+  // THREAD:
+  // AT_HERE: How to start the presentation we've got the slides and the presentationTitle
+  const startPresentation = () => {
+    // Send to the database
+    // slides and presentationTitle
+
+    router.push(`/presentation/${presentationId}`);
   };
-
-  useEffect(() => {
-    console.log("presentationTitle: ", presentationTitle);
-  }, [presentationTitle]);
 
   return (
     <div>
@@ -61,7 +66,10 @@ const PresentationNav = () => {
           </div>
         </div>
         <div className="w-fit rounded-full bg-[#5768e7] pl-4">
-          <button className="flex h-12 items-center justify-between">
+          <button
+            onClick={() => startPresentation()}
+            className="flex h-12 cursor-pointer items-center justify-between"
+          >
             <span className="px-2 text-white">
               <div className="sm:hidden">
                 <Play fill="white" />

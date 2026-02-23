@@ -20,7 +20,7 @@ export function Menudrawer() {
         <DrawerTrigger asChild>
           <Button
             variant="outline"
-            className="mr-4 ml-auto bg-red-400 capitalize"
+            className="mr-4 ml-auto cursor-pointer capitalize"
           >
             <Menu />
           </Button>

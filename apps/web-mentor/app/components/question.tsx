@@ -72,7 +72,6 @@ const Question = ({
       <div className="flex flex-col gap-6 px-4">
         {slide.type === "multiple_choice" && (
           <div className="px-8 pt-6">
-            {/* THREAD: */}
             <input
               value={slide.question}
               className="h-18 w-full rounded-md border-2 px-4 text-2xl hover:border-blue-800 focus:border-transparent focus:outline-2 focus:outline-blue-800"

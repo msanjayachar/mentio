@@ -11,11 +11,18 @@ type MCQSlide = {
   options: Option[];
   correctAnswers: Option[];
   allowMultiple: boolean;
-  required: boolean;
 };
 
 type PlainTextSlide = {
   id: number;
   type: "plain_text";
   contents: string[];
+};
+
+type Slides = (MCQSlide | PlainTextSlide)[];
+type Slides = MCQSlide[];
+
+type Presentation = {
+  title: string;
+  slides: MCQSlide[];
 };

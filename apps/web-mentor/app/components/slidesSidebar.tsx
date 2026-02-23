@@ -42,7 +42,6 @@ const SlidesSidebar = ({
 
       <div className="flex h-[calc(100vh-80px)] w-48 flex-col gap-4 overflow-auto pt-4">
         <div className="ml-2 flex flex-col gap-4">
-          {/* THREAD: */}
           {slides.map((item) => (
             <div
               onClick={() => setSelected(item.id)}

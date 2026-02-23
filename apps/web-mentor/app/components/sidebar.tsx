@@ -16,25 +16,25 @@ const Sidebar = ({
       className={`mt-5 flex h-[calc(100vh-80px)] flex-col justify-start gap-16 p-8 text-sm font-light ${sidebarClass}`}
     >
       <div className="flex flex-col gap-4">
-        <span className="flex items-center gap-2">
+        <span className="flex cursor-pointer items-center gap-2">
           <Home size={20} />
           Home
         </span>
-        <span className="flex items-center gap-2">
+        <span className="flex cursor-pointer items-center gap-2">
           <User size={20} />
           My Presentations
         </span>
-        <span className="flex items-center gap-2">
+        <span className="flex cursor-pointer items-center gap-2">
           <Inbox size={20} />
           Shared with me
         </span>
       </div>
       <div className="flex flex-col gap-4">
         <span className="text-sm text-gray-400">Workspace</span>
-        <span className="flex items-center gap-2">
+        <span className="flex cursor-pointer items-center gap-2">
           <Users size={20} /> Workspace presentations
         </span>
-        <span className="flex items-center gap-2">
+        <span className="flex cursor-pointer items-center gap-2">
           <FilePlus size={20} />
           Shared templates
         </span>

@@ -45,8 +45,8 @@ const Presentations = () => {
   };
 
   return (
-    <div className="relative bg-[#F2F1F0]">
-      <PresentationNav />
+    <div className="relative h-screen overflow-hidden bg-[#F2F1F0]">
+      <PresentationNav slides={slides} />
       <div className="flex flex-col">
         <div className="flex">
           <SlidesSidebar
@@ -68,7 +68,7 @@ const Presentations = () => {
             />
 
             <button
-              className="mx-16 h-16 w-auto cursor-pointer items-center rounded-lg text-lg font-light hover:bg-white"
+              className="mx-16 h-16 w-auto cursor-pointer items-center rounded-lg pb-8 text-lg font-light hover:bg-white"
               onClick={() => setSpeakerNotes((prev) => !prev)}
             >
               Speaker Notes

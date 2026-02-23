@@ -21,7 +21,7 @@ const Create = () => {
             <ChevronDown />
           </span>
         </button>
-        <button className="flex h-10 w-48 items-center gap-1 rounded-full border-2 border-black bg-white px-4 text-sm text-black">
+        <button className="flex h-10 w-48 cursor-pointer items-center gap-1 rounded-full border-2 border-black bg-white px-4 text-sm text-black">
           <Upload size={16} />
           Import presentation
         </button>

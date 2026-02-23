@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const SpeakerNotes = ({
   handleSpeakerNotes,
@@ -12,7 +12,7 @@ const SpeakerNotes = ({
   const [offset, setOffset] = useState(0);
 
   return (
-    <div className="relative w-full">
+    <div className="relative mb-4 w-full">
       <div
         // style={{ height, transform: `translateY(${offset}px)` }}
         style={{ height }}

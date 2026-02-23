@@ -20,19 +20,19 @@ const Aichat = () => {
       </div>
 
       <div className="bg-green-250 ml-4 flex max-w-[1050px] justify-start gap-1 sm:flex-wrap lg:max-w-[700px] xl:max-w-[900px] 2xl:max-w-[1050px]">
-        <div className="flex h-8 items-center gap-2 rounded-lg bg-gray-100 px-4 text-sm font-light text-black">
+        <div className="flex h-8 cursor-pointer items-center gap-2 rounded-lg bg-gray-100 px-4 text-sm font-light text-black">
           <Sparkles size={10} fill="currentColor" className="text-gray-400" />
           <span>Spark creativity with an icebreaker</span>
         </div>
-        <div className="flex h-8 items-center gap-2 rounded-lg bg-gray-100 px-4 text-sm font-light text-black">
+        <div className="flex h-8 cursor-pointer items-center gap-2 rounded-lg bg-gray-100 px-4 text-sm font-light text-black">
           <Sparkles size={10} fill="currentColor" className="text-gray-400" />
           <span>Engage my audience in a meeting</span>
         </div>
-        <div className="flex h-8 items-center gap-2 rounded-lg bg-gray-100 px-4 text-sm font-light text-black">
+        <div className="flex h-8 cursor-pointer items-center gap-2 rounded-lg bg-gray-100 px-4 text-sm font-light text-black">
           <Sparkles size={10} fill="currentColor" className="text-gray-400" />
           <span>Have fun with a competitive quiz</span>
         </div>
-        <div className="flex h-8 items-center gap-2 rounded-lg bg-gray-100 px-4 text-sm font-light text-black">
+        <div className="flex h-8 cursor-pointer items-center gap-2 rounded-lg bg-gray-100 px-4 text-sm font-light text-black">
           <Sparkles size={10} fill="currentColor" className="text-gray-400" />
           <span>Capture feedback in a survey</span>
         </div>
