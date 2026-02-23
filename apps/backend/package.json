@@ -1,0 +1,24 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "scripts": {
+    "main": "index.js",
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "ts-node main.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/express": "^5.0.6",
+    "@types/pg": "^8.16.0",
+    "express": "^5.2.1",
+    "pg": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^6.1.1",
+    "ts-node": "^10.9.2"
+  }
+}
