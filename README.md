@@ -1,58 +1,76 @@
-# Turborepo Tailwind CSS starter
+# Mentio
 
-This Turborepo starter is maintained by the Turborepo core team.
+A real-time interactive quiz platform designed for live mentor–mentee sessions.
 
-## Using this example
+Mentio is built with a Turborepo architecture consisting of two separate Next.js frontends (mentor and participant) and a Node.js + Express backend with PostgreSQL. The system is structured to support live session-based quizzes with scalable real-time extensions.
 
-Run the following command:
+---
 
-```sh
-npx create-turbo@latest -e with-tailwind
-```
+## Architecture
 
-## What's inside?
+Monorepo using Turborepo:
 
-This Turborepo includes the following packages/apps:
+- `mentor-app` – Host dashboard for creating and managing quizzes  
+- `mentee-app` – Participant interface for joining sessions and submitting answers  
+- `backend` – Node.js + Express API server  
+- `database` – PostgreSQL  
 
-### Apps and Packages
+Communication currently happens via REST APIs. The architecture is structured to support future real-time upgrades (e.g., WebSockets).
 
-- `docs`: a [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
-- `web`: another [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
-- `ui`: a stub React component library with [Tailwind CSS](https://tailwindcss.com/) shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+---
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## Current Features (WIP)
 
-### Building packages/ui
+- Multiple choice quiz creation  
+- Session-based quiz joining  
+- Mentor and participant separation  
+- Express-based authentication  
+- PostgreSQL-backed session storage  
+- Turborepo-based monorepo structure  
 
-This example is set up to produce compiled styles for `ui` components into the `dist` directory. The component `.tsx` files are consumed by the Next.js apps directly using `transpilePackages` in `next.config.ts`. This was chosen for several reasons:
+---
 
-- Make sharing one `tailwind.config.ts` to apps and packages as easy as possible.
-- Make package compilation simple by only depending on the Next.js Compiler and `tailwindcss`.
-- Ensure Tailwind classes do not overwrite each other. The `ui` package uses a `ui-` prefix for it's classes.
-- Maintain clear package export boundaries.
+## Tech Stack
 
-Another option is to consume `packages/ui` directly from source without building. If using this option, you will need to update the `tailwind.config.ts` in your apps to be aware of your package locations, so it can find all usages of the `tailwindcss` class names for CSS compilation.
+Frontend:
+- Next.js
+- TypeScript
+- Turborepo
 
-For example, in [tailwind.config.ts](packages/tailwind-config/tailwind.config.ts):
+Backend:
+- Node.js
+- Express
 
-```js
-  content: [
-    // app content
-    `src/**/*.{js,ts,jsx,tsx}`,
-    // include packages if not transpiling
-    "../../packages/ui/*.{js,ts,jsx,tsx}",
-  ],
-```
+Database:
+- PostgreSQL
 
-If you choose this strategy, you can remove the `tailwindcss` and `autoprefixer` dependencies from the `ui` package.
+Authentication:
+- Express-based authentication middleware
 
-### Utilities
+---
 
-This Turborepo has some additional tools already setup for you:
+## System Design Intent
 
-- [Tailwind CSS](https://tailwindcss.com/) for styles
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+Mentio is being designed as a scalable live quiz platform with:
+
+- Session-based architecture
+- Clear separation of roles (mentor vs participant)
+- Centralized backend validation
+- Extensible real-time communication layer (planned)
+
+---
+
+## Planned Improvements
+
+- Real-time result broadcasting (WebSockets)
+- Live result visualization
+- Vote validation and anti-duplicate protection
+- Session analytics
+- Deployment and production hardening
+- Rate limiting and concurrency handling
+
+---
+
+## Status
+
+This project is currently under active development.
