@@ -1,9 +1,16 @@
+"use client";
+
 import { Bell, Search } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Menudrawer } from "./menudrawer";
 import Logo from "./logo";
+import Profile from "./user";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Homenavbar = () => {
+  const [user, setUser] = useState(null);
+  const router = useRouter();
+
   return (
     <div className="flex justify-between">
       <div className="flex w-86 items-center justify-start pl-6">
@@ -21,18 +28,31 @@ const Homenavbar = () => {
         </div>
 
         <div className="hidden lg:block">
-          <div className="flex items-center gap-4">
-            <div className="rounded-full border bg-gray-100 p-2">
-              <Bell size={18} strokeWidth={2} />
-            </div>
-            <Avatar className="h-10 w-10">
-              <AvatarImage
-                src="https://github.com/shadcn.png"
-                alt="@shadcn"
-                className="grayscale"
-              />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
+          <div className="flex cursor-pointer items-center gap-4">
+            {user && (
+              <div className="rounded-full border bg-gray-100 p-2">
+                <Bell size={18} strokeWidth={2} />
+              </div>
+            )}
+
+            {user ? (
+              <Profile />
+            ) : (
+              <div className="flex gap-2">
+                <button
+                  className="cursor-pointer underline"
+                  onClick={() => router.push("/signup")}
+                >
+                  Signup
+                </button>
+                <button
+                  className="cursor-pointer underline"
+                  onClick={() => router.push("/login")}
+                >
+                  Login
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
