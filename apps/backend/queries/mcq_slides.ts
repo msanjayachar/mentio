@@ -6,7 +6,7 @@ export function createMcqSlides(
   correct_answers: string,
   allow_multiple: boolean,
 ) {
-  const query = `INSERT INTO mcq_questions (question, options, correct_answers, allow_multiple) VALUES ($1, $2, $3, $4) RETURNING *;`;
+  const query = `INSERT INTO mcq_slide (question, options, correct_answers, allow_multiple) VALUES ($1, $2, $3, $4) RETURNING *;`;
 
   return pool.query(query, [
     question,

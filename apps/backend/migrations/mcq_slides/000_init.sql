@@ -1,4 +1,4 @@
-CREATE TABLE mcq_slide (
+CREATE TABLE mcq_slides (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     question TEXT NOT NULL,

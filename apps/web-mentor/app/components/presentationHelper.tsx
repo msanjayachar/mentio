@@ -1,15 +1,8 @@
 "use client";
 
-import { options } from "@/data/slides";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import Image from "next/image";
-import {
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 
 // TODO:
 // - [ ] Checking multiple options when the toggle isn't on should not be supported
@@ -43,13 +36,6 @@ const PresentationHelper = ({
   ];
 
   if (!slide) return;
-
-  useEffect(() => {
-    console.log(
-      "slide.options: ",
-      slide.type === "multiple_choice" ? slide.options : slide.type,
-    );
-  }, [slide]);
 
   const handleOptions = (
     e: ChangeEvent<HTMLInputElement>,
@@ -124,9 +110,9 @@ const PresentationHelper = ({
   };
 
   return (
-    <div className={`${editSelected ? "block" : "hidden"}`}>
-      <div className="mx-4 my-8 h-[calc(100vh-8rem)] w-[360px] rounded-xl border-2 border-gray-200 bg-white p-8">
-        <div className="mb-8 flex items-center justify-between">
+    <div className={`${editSelected ? "block" : "hidden"} `}>
+      <div className="mx-4 my-8 h-[calc(100vh-8rem)] w-[360px] overflow-y-auto rounded-xl border-2 border-gray-200 bg-white px-8 pb-4">
+        <div className="sticky top-0 z-10 mb-8 flex h-20 w-auto items-center justify-between bg-white">
           <div className="flex items-center gap-4">
             <ArrowLeft size={16} />
             <span>Multiple Choice</span>
@@ -257,9 +243,9 @@ const PresentationHelper = ({
           >
             <Plus size={18} />
             <span className="font-light">Add option</span>
-            <span>
-              {slide.type === "multiple_choice" && slide.options.length}
-            </span>
+            {/* <span> */}
+            {/*   {slide.type === "multiple_choice" && slide.options.length} */}
+            {/* </span> */}
           </button>
         </div>
 
