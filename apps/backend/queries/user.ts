@@ -18,9 +18,5 @@ export const getUser = async (email: string) => {
 
   const result = await pool.query(query, [email]);
 
-  console.log("*************************");
-  console.log("result.rows: ", result.rows);
-  console.log("*************************");
-
   return result.rows[0];
 };

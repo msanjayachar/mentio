@@ -3,6 +3,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import Navbar from "./components/navbar";
+import { Toaster } from "sonner";
 
 const geist = Geist({ subsets: ["latin"] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({
         {/* TODO: This should only show up on the landing page */}
         {/* <Navbar /> */}
         {children}
+        <Toaster />
       </body>
     </html>
   );
