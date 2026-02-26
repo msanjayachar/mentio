@@ -8,8 +8,6 @@ const saltRounds = 10;
 const secret = process.env.SECRET;
 
 authRouter.post("/signup", async (req, res) => {
-  console.log("hello from signup");
-
   const body = req.body;
   const { email, name, password, role } = body;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -33,8 +31,6 @@ authRouter.post("/signup", async (req, res) => {
 });
 
 authRouter.post("/login", async (req, res) => {
-  console.log("hello from login");
-
   const body = req.body;
   const { email, password } = body;
 

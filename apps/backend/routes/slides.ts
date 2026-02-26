@@ -10,8 +10,6 @@ slideRouter.post("/slide", async (req, res) => {
   try {
     await createMcqSlides(question, options, correct_answers, allow_multiple);
   } catch (error) {
-    console.log("error: ", error);
-
     return res.status(400).json({
       success: false,
       data: null,
@@ -32,8 +30,6 @@ slideRouter.get("/slide/:id", async (req, res) => {
   try {
     await getMcqSlidesById(id);
   } catch (error) {
-    console.log("error: ", error);
-
     return res.status(400).json({
       success: false,
       data: null,
