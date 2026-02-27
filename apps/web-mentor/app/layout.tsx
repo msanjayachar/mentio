@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import Navbar from "./components/navbar";
 import { Toaster } from "sonner";
+import { Providers } from "./providers";
 
 const geist = Geist({ subsets: ["latin"] });
 
@@ -20,10 +21,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={geist.className}>
-        {/* TODO: This should only show up on the landing page */}
-        {/* <Navbar /> */}
-        {children}
-        <Toaster />
+        <Providers>
+          {/* TODO: This should only show up on the landing page */}
+          {/* <Navbar /> */}
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );
