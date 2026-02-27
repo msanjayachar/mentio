@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import "dotenv/config";
 
 export const middleware = (req: any, res: any, next: any) => {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.header.authorization;
   const secret = process.env.SECRET;
 
   if (!authHeader) {

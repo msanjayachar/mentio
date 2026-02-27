@@ -11,42 +11,30 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const { setCurrentUser } = useCurrentUser();
+  const { login } = useCurrentUser();
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        toast.error("Invalid credentials", {
-          position: "top-center",
-        });
-        return;
-      }
-
-      const result = await response.json();
-      setCurrentUser(result.data);
-
-      localStorage.setItem("token", result.JWT_TOKEN);
-
-      toast.success("Login successful", {
-        position: "top-center",
-        style: {
-          background: "green",
-          color: "white",
-        },
-      });
+      await login(email, password);
 
       router.push("/");
     } catch {
       toast.error("Something went wrong", {
         position: "top-center",
+        style: {
+          background: "red",
+          color: "white",
+        },
       });
     }
+
+    toast.success("Login successful", {
+      position: "top-center",
+      style: {
+        background: "green",
+        color: "white",
+      },
+    });
   };
 
   return (

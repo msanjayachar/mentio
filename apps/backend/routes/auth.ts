@@ -2,10 +2,31 @@ import { Router } from "express";
 import { createUser, getUser } from "../queries/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { middleware } from "../middleware/auth";
+import { Request, Response } from "express";
 
 const authRouter = Router();
 const saltRounds = 10;
 const secret = process.env.SECRET;
+
+authRouter.post("/me", middleware, async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const { userId, role } = req.user;
+
+  console.log("*************************");
+  console.log("userId: ", userId);
+  console.log("role: ", role);
+  console.log("*************************");
+
+  return res.status(200).json({
+    success: true,
+    data: {},
+    error: null,
+  });
+});
 
 authRouter.post("/signup", async (req, res) => {
   const body = req.body;
