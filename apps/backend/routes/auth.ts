@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUser, getUser } from "../queries/user";
+import { createUser, getUser, getUserByUserId } from "../queries/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { middleware } from "../middleware/auth";
@@ -9,17 +9,31 @@ const authRouter = Router();
 const saltRounds = 10;
 const secret = process.env.SECRET;
 
-authRouter.post("/me", middleware, async (req: Request, res: Response) => {
-  const { userId, role } = req.user;
+authRouter.get("/me", middleware, async (req: Request, res: Response) => {
+  const { userId } = req.user;
 
-  console.log("*************************");
-  console.log("userId: ", userId);
-  console.log("role: ", role);
-  console.log("*************************");
+  let user;
+
+  try {
+    user = await getUserByUserId(userId);
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      data: null,
+      error: "UNAUTHORIZED",
+    });
+  }
+
+  const finalUser = {
+    userId: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
 
   return res.status(200).json({
     success: true,
-    data: {},
+    data: finalUser,
     error: null,
   });
 });
@@ -105,22 +119,14 @@ authRouter.post("/login", async (req, res) => {
     role: user.role,
   };
 
-  if (match) {
-    return res.status(200).json({
-      success: true,
-      data: {
-        token: JWT_TOKEN,
-        user: finalUser,
-      },
-      error: null,
-    });
-  } else {
-    return res.status(400).json({
-      success: false,
-      data: {},
-      error: "USER_NOT_FOUND",
-    });
-  }
+  return res.status(200).json({
+    success: true,
+    data: {
+      token: JWT_TOKEN,
+      user: finalUser,
+    },
+    error: null,
+  });
 });
 
 export default authRouter;
