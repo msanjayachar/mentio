@@ -35,14 +35,21 @@ authRouter.post("/signup", async (req, res) => {
   } catch (error) {
     return res.status(400).json({
       success: false,
-      data: {},
+      data: null,
       error: "UNABLE_TO_CREATE_USER",
     });
   }
 
+  const finalUser = {
+    userId: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+
   return res.status(200).json({
     success: true,
-    data: {},
+    data: finalUser,
     error: null,
   });
 });
@@ -55,16 +62,32 @@ authRouter.post("/login", async (req, res) => {
   try {
     user = await getUser(email);
   } catch (error) {
-    return res.status(400).json({
+    return res.status(401).json({
       success: false,
       data: {},
-      error: "USER_NOT_FOUND",
+      error: "INVALID_CREDENTIALS",
     });
   }
 
   if (!secret) throw new Error("SECRET key is missing");
 
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      data: {},
+      error: "INVALID_CREDENTIALS",
+    });
+  }
+
   const match = await bcrypt.compare(password, user.password);
+
+  if (!match) {
+    return res.status(401).json({
+      success: false,
+      data: {},
+      error: "INVALID_CREDENTIALS",
+    });
+  }
 
   const JWT_TOKEN = jwt.sign(
     {
@@ -72,6 +95,7 @@ authRouter.post("/login", async (req, res) => {
       role: user.role,
     },
     secret,
+    { expiresIn: 60 * 60 },
   );
 
   const finalUser = {
