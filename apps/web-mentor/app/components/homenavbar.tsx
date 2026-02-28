@@ -27,7 +27,7 @@ const Homenavbar = () => {
             />
           </div>
           <p className="text-5xl text-red-300">
-            {currentUser ? currentUser.user.name : "No user name"}
+            {currentUser ? currentUser.name : "No user name"}
           </p>
         </div>
 
