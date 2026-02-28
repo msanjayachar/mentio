@@ -10,10 +10,6 @@ const saltRounds = 10;
 const secret = process.env.SECRET;
 
 authRouter.post("/me", middleware, async (req: Request, res: Response) => {
-  if (!req.user) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
   const { userId, role } = req.user;
 
   console.log("*************************");
@@ -73,7 +69,6 @@ authRouter.post("/login", async (req, res) => {
   const JWT_TOKEN = jwt.sign(
     {
       userId: user.id,
-      email: user.email,
       role: user.role,
     },
     secret,
