@@ -16,6 +16,12 @@ export function createMcqSlides(
   ]);
 }
 
+export function getMcqSlides(userId: string) {
+  const query = `SELECT * FROM mcq_slides WHERE user_id = ($1);`;
+
+  return pool.query(query, [userId]);
+}
+
 export async function getMcqSlidesById(slidesId: string) {
   const query = `SELECT id, question, options, correct_answers, allow_multiple from mcq_slide WHERE id = ($1);`;
 
