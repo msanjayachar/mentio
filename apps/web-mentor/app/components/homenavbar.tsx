@@ -26,9 +26,6 @@ const Homenavbar = () => {
               className="w-full text-sm font-light outline-none"
             />
           </div>
-          <p className="text-5xl text-red-300">
-            {currentUser ? currentUser.name : "No user name"}
-          </p>
         </div>
 
         <div className="hidden lg:block">

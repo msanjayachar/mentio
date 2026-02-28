@@ -1,6 +1,14 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import Navbar from "./navbar";
+
 const Landing = () => {
+  const router = useRouter();
+
   return (
     <div>
+      <Navbar />
       <div className="flex flex-col items-center">
         <h1 className="mt-32 flex scale-y-180 flex-col items-center text-7xl leading-18 font-bold [word-spacing:0.8rem]">
           <span>LISTEN, LEARN, AND THINK.</span>
@@ -18,7 +26,10 @@ const Landing = () => {
         </p>
       </div>
       <div className="mt-28 flex w-full items-center justify-center">
-        <button className="h-14 w-fit cursor-pointer rounded-full bg-red-400 px-4">
+        <button
+          className="h-14 w-fit cursor-pointer rounded-full bg-red-400 px-4"
+          onClick={() => router.push("/login")}
+        >
           Get started for free
         </button>
       </div>
