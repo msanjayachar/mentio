@@ -20,3 +20,11 @@ export const getUser = async (email: string) => {
 
   return result.rows[0];
 };
+
+export const getUserByUserId = async (userId: string) => {
+  const query = `SELECT * FROM users WHERE id = $1`;
+
+  const result = await pool.query(query, [userId]);
+
+  return result.rows[0];
+};

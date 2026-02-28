@@ -5,17 +5,35 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import Logo from "./logo";
+import { useCurrentUser } from "./context/authContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { login } = useCurrentUser();
 
   const handleLogin = async () => {
-    const response = await fetch("http://localhost:8000/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+    try {
+      await login(email, password);
+
+      router.push("/");
+    } catch {
+      toast.error("Something went wrong", {
+        position: "top-center",
+        style: {
+          background: "red",
+          color: "white",
+        },
+      });
+    }
+
+    toast.success("Login successful", {
+      position: "top-center",
+      style: {
+        background: "green",
+        color: "white",
+      },
     });
   };
 

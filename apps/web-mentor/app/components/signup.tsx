@@ -45,17 +45,19 @@ const Signup = () => {
         </p>
 
         <input
-          placeholder="Enter your email here."
-          className="text-md rounded-md border-2 border-gray-300 bg-gray-200 p-2 font-light hover:border-blue-900"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
           placeholder="Enter your name here."
           className="text-md rounded-md border-2 border-gray-300 bg-gray-200 p-2 font-light hover:border-blue-900"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
+
+        <input
+          placeholder="Enter your email here."
+          className="text-md rounded-md border-2 border-gray-300 bg-gray-200 p-2 font-light hover:border-blue-900"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
         <input
           placeholder="Enter your password here."
           className="text-md rounded-md border-2 border-gray-300 bg-gray-200 p-2 font-light hover:border-blue-900"
@@ -91,6 +93,7 @@ const Signup = () => {
         <button
           className="text-md h-12 cursor-pointer rounded-full bg-black text-white"
           onClick={() => {
+            router.push("/login");
             handleSignup();
             toast.success("Signup successful", {
               position: "top-center",

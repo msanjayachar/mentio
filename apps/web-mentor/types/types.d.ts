@@ -1,3 +1,15 @@
+type LoginResponse =
+  | {
+      success: true;
+      data: LoginUser;
+      error: null;
+    }
+  | {
+      success: false;
+      data: null;
+      error: string;
+    };
+
 type Option = {
   id: number;
   text: string;

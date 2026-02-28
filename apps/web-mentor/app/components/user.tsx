@@ -11,10 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
+import { useCurrentUser } from "./context/authContext";
 
 const Profile = () => {
+  const { currentUser, logout } = useCurrentUser();
+
   const handleLogout = () => {
-    console.log("Logout clicked");
+    logout();
   };
 
   return (
@@ -26,16 +29,20 @@ const Profile = () => {
               alt="@haydenbleasel"
               src="https://github.com/haydenbleasel.png"
             />
-            <AvatarFallback>HB</AvatarFallback>
+            <AvatarFallback>
+              {currentUser?.name.slice(0, 1).toUpperCase()}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm leading-none font-medium">Hayden Bleasel</p>
+            <p className="text-sm leading-none font-medium">
+              {currentUser?.name}
+            </p>
             <p className="text-muted-foreground text-xs leading-none">
-              hello@haydenbleasel.com
+              {currentUser?.email}
             </p>
           </div>
         </DropdownMenuLabel>

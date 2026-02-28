@@ -19,7 +19,6 @@ const Presentations = () => {
   const [commentSelected, setCommentSelected] = useState<boolean>(false);
   const [questionSelected, setQuestionSelected] = useState<boolean>(false);
   const [slides, setSlides] = useState(initialSlides);
-  const navigate = useRouter();
 
   const handleSpeakerNotes = () => {
     setSpeakerNotes((prev) => !prev);
@@ -32,7 +31,6 @@ const Presentations = () => {
   };
 
   const handleComment = () => {
-    console.log("hello from handleComment");
     setCommentSelected((prev) => !prev);
     setEditSelected(false);
     setQuestionSelected(false);
