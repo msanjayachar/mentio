@@ -13,7 +13,6 @@ type LoginUser = {
   userId: string;
   name: string;
   email: string;
-  role: "mentor" | "mentee";
 };
 
 const CurrentUserContext = createContext<{

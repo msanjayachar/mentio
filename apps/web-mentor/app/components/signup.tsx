@@ -11,13 +11,12 @@ const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
   const router = useRouter();
 
   const handleSignup = async () => {
     let parsed;
     try {
-      parsed = SignupUser.parse({ name, email, password, role });
+      parsed = SignupUser.parse({ name, email, password });
     } catch {
       toast.error("Signup failed", {
         position: "top-center",
@@ -28,10 +27,6 @@ const Signup = () => {
       });
     }
 
-    console.log("*************************");
-    console.log("parsed: ", parsed);
-    console.log("*************************");
-
     if (!parsed) {
       return;
     }
@@ -39,7 +34,7 @@ const Signup = () => {
     const response = await fetch("http://localhost:8000/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, name, password, role }),
+      body: JSON.stringify({ email, name, password }),
     });
 
     if (response.ok) {
@@ -107,31 +102,6 @@ const Signup = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <form className="flex gap-2">
-          <label htmlFor="mentor" className="flex cursor-pointer gap-2">
-            <input
-              type="radio"
-              id="mentor"
-              name="role"
-              value="mentor"
-              onChange={() => setRole("mentor")}
-              className="cursor-pointer border-2 border-red-100"
-            />
-            <span className="font-light">Mentor</span>
-          </label>
-
-          <label htmlFor="mentee" className="flex cursor-pointer gap-2">
-            <input
-              type="radio"
-              id="mentee"
-              name="role"
-              value="mentee"
-              onChange={() => setRole("mentee")}
-              className="cursor-pointer"
-            />
-            <span className="font-light">Mentee</span>
-          </label>
-        </form>
 
         <button
           className="text-md h-12 cursor-pointer rounded-full bg-black text-white"
