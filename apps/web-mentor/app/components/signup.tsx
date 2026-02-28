@@ -5,20 +5,63 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import Logo from "./logo";
+import { SignupUser } from "../../../../packages/shared/src/auth";
 
 const Signup = () => {
-  const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
   const router = useRouter();
 
   const handleSignup = async () => {
+    let parsed;
+    try {
+      parsed = SignupUser.parse({ name, email, password, role });
+    } catch {
+      toast.error("Signup failed", {
+        position: "top-center",
+        style: {
+          background: "red",
+          color: "white",
+        },
+      });
+    }
+
+    console.log("*************************");
+    console.log("parsed: ", parsed);
+    console.log("*************************");
+
+    if (!parsed) {
+      return;
+    }
+
     const response = await fetch("http://localhost:8000/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, name, password, role }),
     });
+
+    if (response.ok) {
+      toast.success("Signup successful", {
+        position: "top-center",
+        style: {
+          background: "green",
+          color: "white",
+        },
+      });
+
+      // AT_HERE:
+      router.push("/login");
+    } else {
+      toast.error("Signup failed", {
+        position: "top-center",
+        style: {
+          background: "red",
+          color: "white",
+        },
+      });
+    }
   };
 
   return (
@@ -93,15 +136,7 @@ const Signup = () => {
         <button
           className="text-md h-12 cursor-pointer rounded-full bg-black text-white"
           onClick={() => {
-            router.push("/login");
             handleSignup();
-            toast.success("Signup successful", {
-              position: "top-center",
-              style: {
-                background: "green",
-                color: "white",
-              },
-            });
           }}
         >
           Signup

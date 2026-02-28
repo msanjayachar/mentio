@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { middleware } from "../middleware/auth";
 import { Request, Response } from "express";
+import { SignupUser, LoginUser } from "../../../packages/shared/src/auth";
 
 const authRouter = Router();
 const saltRounds = 10;
@@ -11,7 +12,6 @@ const secret = process.env.SECRET;
 
 authRouter.get("/me", middleware, async (req: Request, res: Response) => {
   const { userId } = req.user;
-
   let user;
 
   try {
@@ -43,9 +43,37 @@ authRouter.post("/signup", async (req, res) => {
   const { email, name, password, role } = body;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+  let parsed;
+  try {
+    parsed = SignupUser.parse({ name, email, password, role });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      error: "INVALID_REQUEST",
+    });
+  }
+
+  console.log("*************************");
+  console.log("parsed: ", parsed);
+  console.log("*************************");
+
+  if (!parsed) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      error: "UNABLE_TO_CREATE_USER",
+    });
+  }
+
   let user;
   try {
-    user = await createUser(email, name, hashedPassword, role);
+    user = await createUser(
+      parsed.email,
+      parsed.name,
+      hashedPassword,
+      parsed.role,
+    );
   } catch (error) {
     return res.status(400).json({
       success: false,
@@ -72,9 +100,28 @@ authRouter.post("/login", async (req, res) => {
   const body = req.body;
   const { email, password } = body;
 
+  let parsed;
+  try {
+    parsed = LoginUser.parse({ email, password });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      error: "INVALID_REQUEST",
+    });
+  }
+
+  if (!parsed) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      error: "INVALID_REQUEST",
+    });
+  }
+
   let user;
   try {
-    user = await getUser(email);
+    user = await getUser(parsed.email);
   } catch (error) {
     return res.status(401).json({
       success: false,

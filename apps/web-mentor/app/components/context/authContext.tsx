@@ -7,6 +7,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { LoginUser } from "../../../../../packages/shared/src/auth";
 
 type LoginUser = {
   userId: string;
@@ -26,6 +27,13 @@ export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<LoginUser | null>(null);
   const [loading, setLoading] = useState(true);
   const login = async (email: string, password: string) => {
+    try {
+      LoginUser.parse({ email, password });
+    } catch (error) {
+      if (error instanceof Error) throw error;
+      throw new Error("Invalid credentials");
+    }
+
     try {
       setLoading(true);
       const response = await fetch("http://localhost:8000/api/auth/login", {

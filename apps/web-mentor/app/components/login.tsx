@@ -17,6 +17,13 @@ const Login = () => {
     try {
       await login(email, password);
 
+      toast.success("Login successful", {
+        position: "top-center",
+        style: {
+          background: "green",
+          color: "white",
+        },
+      });
       router.push("/");
     } catch {
       toast.error("Something went wrong", {
@@ -27,14 +34,6 @@ const Login = () => {
         },
       });
     }
-
-    toast.success("Login successful", {
-      position: "top-center",
-      style: {
-        background: "green",
-        color: "white",
-      },
-    });
   };
 
   return (
@@ -77,13 +76,6 @@ const Login = () => {
           className="text-md h-12 cursor-pointer rounded-full bg-black text-white"
           onClick={() => {
             handleLogin();
-            toast.success("Login successful", {
-              position: "top-center",
-              style: {
-                background: "green",
-                color: "white",
-              },
-            });
           }}
         >
           Login
