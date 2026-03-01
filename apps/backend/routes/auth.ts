@@ -13,6 +13,7 @@ const secret = process.env.SECRET;
 
 authRouter.get("/me", middleware, async (req: Request, res: Response) => {
   const { userId } = req.user;
+
   let user;
 
   try {

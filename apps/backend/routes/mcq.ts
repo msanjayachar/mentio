@@ -1,19 +1,31 @@
 import { Router } from "express";
 import {
   createMcqSlides,
+  deleteSlides,
+  deleteSlidesById,
   getMcqSlides,
   getMcqSlidesById,
+  updateMcqSlides,
 } from "../queries/mcq_slides";
+import { Request, Response } from "express";
 
 const mcqSlidesRouter = Router();
 
-// TODO: Test out. POST and GET
-mcqSlidesRouter.post("/slides", async (req, res) => {
+mcqSlidesRouter.post("/", async (req, res) => {
   const body = req.body;
-  const { question, user_id, options, correct_answers, allow_multiple } = body;
+  const { userId } = req.user;
+  const { question, options, correctAnswers, allowMultiple } = body;
+
+  let slides;
 
   try {
-    await createMcqSlides(question, options, correct_answers, allow_multiple);
+    slides = await createMcqSlides(
+      userId,
+      question,
+      options,
+      correctAnswers,
+      allowMultiple,
+    );
   } catch (error) {
     return res.status(400).json({
       success: false,
@@ -24,14 +36,13 @@ mcqSlidesRouter.post("/slides", async (req, res) => {
 
   return res.status(200).json({
     success: true,
-    data: {},
+    data: slides,
     error: null,
   });
 });
 
-mcqSlidesRouter.get("/slides", async (req, res) => {
-  const body = req.body;
-  const { userId } = body;
+mcqSlidesRouter.get("/", async (req: Request, res: Response) => {
+  const { userId } = req.user;
 
   let slides;
   try {
@@ -53,7 +64,7 @@ mcqSlidesRouter.get("/slides", async (req, res) => {
   });
 });
 
-mcqSlidesRouter.get("/slides/:id", async (req, res) => {
+mcqSlidesRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
 
   let slide;
@@ -63,7 +74,7 @@ mcqSlidesRouter.get("/slides/:id", async (req, res) => {
     return res.status(400).json({
       success: false,
       data: null,
-      error: "FAILED_TO_CREATE_SLIDE",
+      error: "FAILED_TO_GET_SLIDE",
     });
   }
 
@@ -76,10 +87,104 @@ mcqSlidesRouter.get("/slides/:id", async (req, res) => {
   });
 });
 
-mcqSlidesRouter.patch("/slides/:id", async (req, res) => {});
+mcqSlidesRouter.patch("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.user;
+  const body = req.body;
+  const { question, options, correctAnswers, allowMultiple } = body;
 
-mcqSlidesRouter.delete("/slides", async (req, res) => {});
+  let result;
+  try {
+    result = await updateMcqSlides(
+      id,
+      userId,
+      question,
+      options,
+      correctAnswers,
+      allowMultiple,
+    );
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      error: "FAILED_TO_UPDATE_SLIDE",
+    });
+  }
 
-mcqSlidesRouter.delete("/slides/:id", async (req, res) => {});
+  return res.status(200).json({
+    success: true,
+    data: result,
+    error: null,
+  });
+});
+
+mcqSlidesRouter.delete("/", async (req, res) => {
+  const { userId } = req.user;
+
+  let result: number | undefined;
+  try {
+    result = await deleteSlides(userId);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      error: "UNABLE_TO_DELETE",
+    });
+  }
+
+  if (result > 0) {
+    return res.status(200).json({
+      success: true,
+      data: {
+        message: "Slides deleted successfully",
+        slidesCount: result,
+      },
+      error: null,
+    });
+  } else {
+    return res.status(200).json({
+      success: true,
+      data: {
+        message: "No Slides to delete",
+      },
+      error: null,
+    });
+  }
+});
+
+mcqSlidesRouter.delete("/:id", async (req, res) => {
+  const { userId } = req.user;
+  const { id } = req.params;
+
+  let result: number | undefined;
+
+  try {
+    result = await deleteSlidesById(id, userId);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      data: null,
+      error: "UNABLE_TO_DELETE",
+    });
+  }
+
+  if (result > 0) {
+    return res.status(200).json({
+      success: true,
+      data: {
+        message: "Slide deleted successfully",
+      },
+      error: null,
+    });
+  } else {
+    return res.status(200).json({
+      success: true,
+      data: {
+        message: "No Slide to delete",
+      },
+      error: null,
+    });
+  }
+});
 
 export default mcqSlidesRouter;
