@@ -1,6 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { loginUserFn, me, signUpUserFn } from "../helpers/utils";
 import { signUpUser, loginUser } from "../data/index";
+import { clearDatabase } from "../../helpers/clearDatabase";
 
 describe("Test auth routes", () => {
   describe("Test /api/auth/signup", () => {
@@ -15,6 +16,7 @@ describe("Test auth routes", () => {
 
   describe("Test /api/auth/login", () => {
     it("returns message on successful user login", async () => {
+      await signUpUserFn(signUpUser);
       const res = await loginUserFn(loginUser);
 
       expect(res.body.success).toBeTruthy();
@@ -26,6 +28,8 @@ describe("Test auth routes", () => {
 
   describe("Test /api/auth/me", () => {
     it("returns message on successful me fetch", async () => {
+      await signUpUserFn(signUpUser);
+
       const res = await loginUserFn(loginUser);
       const token = res.body.data.token;
 
@@ -34,5 +38,9 @@ describe("Test auth routes", () => {
       expect(res_two.body.success).toBeTruthy();
       expect(res_two.body.data.email).toEqual(loginUser.email);
     });
+  });
+
+  beforeEach(async () => {
+    await clearDatabase();
   });
 });

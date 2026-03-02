@@ -18,9 +18,10 @@ mcqSlidesRouter.post("/", async (req, res) => {
   const { question, options, correctAnswers, allowMultiple } = body;
 
   let slides;
+  let parsed;
 
   try {
-    McqQuestionSchema.parse({
+    parsed = McqQuestionSchema.parse({
       question,
       options,
       correctAnswers,
@@ -37,10 +38,10 @@ mcqSlidesRouter.post("/", async (req, res) => {
   try {
     slides = await createMcqSlides(
       userId,
-      question,
-      options,
-      correctAnswers,
-      allowMultiple,
+      parsed.question,
+      parsed.options,
+      parsed.correctAnswers,
+      parsed.allowMultiple,
     );
   } catch (error) {
     return res.status(400).json({
@@ -96,9 +97,7 @@ mcqSlidesRouter.get("/:id", async (req, res) => {
 
   return res.status(200).json({
     success: true,
-    data: {
-      slide,
-    },
+    data: slide,
     error: null,
   });
 });
@@ -109,8 +108,9 @@ mcqSlidesRouter.patch("/:id", async (req, res) => {
   const body = req.body;
   const { question, options, correctAnswers, allowMultiple } = body;
 
+  let parsed;
   try {
-    McqQuestionSchema.parse({
+    parsed = McqQuestionSchema.parse({
       question,
       options,
       correctAnswers,
@@ -129,10 +129,10 @@ mcqSlidesRouter.patch("/:id", async (req, res) => {
     result = await updateMcqSlides(
       id,
       userId,
-      question,
-      options,
-      correctAnswers,
-      allowMultiple,
+      parsed.question,
+      parsed.options,
+      parsed.correctAnswers,
+      parsed.allowMultiple,
     );
   } catch (error) {
     return res.status(400).json({

@@ -12,10 +12,10 @@ export const LoginSchema = z.object({
 });
 
 export const McqQuestionSchema = z.object({
-  question: z.string(),
-  options: z.array(z.string()),
-  correctAnswers: z.array(z.string()),
-  allowMultiple: z.boolean(),
+  question: z.string().default(""),
+  options: z.array(z.string()).default([]),
+  correctAnswers: z.array(z.string()).default([]),
+  allowMultiple: z.boolean().default(false),
 });
 
 export type SignupUser = z.infer<typeof SignupSchema>;

@@ -37,13 +37,15 @@ export async function getMcqSlidesById(slidesId: string) {
     return null;
   }
 
-  return result.rows.map((row) => ({
+  const finalResult = result.rows.map((row) => ({
     id: row.id,
     question: row.question,
     options: row.options,
     correct_answers: row.correct_answers,
     allow_multiple: row.allow_multiple,
   }));
+
+  return finalResult[0];
 }
 
 export async function deleteSlides(userId: string): Promise<number> {
