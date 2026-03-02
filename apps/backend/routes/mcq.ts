@@ -8,6 +8,7 @@ import {
   updateMcqSlides,
 } from "../queries/mcq_slides";
 import { Request, Response } from "express";
+import { McqQuestionSchema } from "../../../packages/shared/src/auth";
 
 const mcqSlidesRouter = Router();
 
@@ -17,6 +18,21 @@ mcqSlidesRouter.post("/", async (req, res) => {
   const { question, options, correctAnswers, allowMultiple } = body;
 
   let slides;
+
+  try {
+    McqQuestionSchema.parse({
+      question,
+      options,
+      correctAnswers,
+      allowMultiple,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      error: "INVALID_REQUEST",
+    });
+  }
 
   try {
     slides = await createMcqSlides(
@@ -92,6 +108,21 @@ mcqSlidesRouter.patch("/:id", async (req, res) => {
   const { userId } = req.user;
   const body = req.body;
   const { question, options, correctAnswers, allowMultiple } = body;
+
+  try {
+    McqQuestionSchema.parse({
+      question,
+      options,
+      correctAnswers,
+      allowMultiple,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      error: "INVALID_REQUEST",
+    });
+  }
 
   let result;
   try {

@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { middleware } from "../middleware/auth";
 import { Request, Response } from "express";
-import { SignupUser, LoginUser } from "../../../packages/shared/src/auth";
+import { SignupSchema, LoginSchema } from "../../../packages/shared/src/auth";
 import "dotenv/config";
 
 const authRouter = Router();
@@ -46,7 +46,7 @@ authRouter.post("/signup", async (req, res) => {
 
   let parsed;
   try {
-    parsed = SignupUser.parse({ name, email, password });
+    parsed = SignupSchema.parse({ name, email, password });
   } catch (error) {
     return res.status(400).json({
       success: false,
@@ -93,7 +93,7 @@ authRouter.post("/login", async (req, res) => {
 
   let parsed;
   try {
-    parsed = LoginUser.parse({ email, password });
+    parsed = LoginSchema.parse({ email, password });
   } catch (error) {
     return res.status(400).json({
       success: false,
