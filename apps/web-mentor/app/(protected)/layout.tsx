@@ -1,11 +1,9 @@
 import "@repo/ui/styles.css";
-import "./globals.css";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import Navbar from "./components/navbar";
 import { Toaster } from "sonner";
-import { AuthGuard } from "./components/context/authGuard";
-import { Providers } from "./(protected)/providers";
+import { Providers } from "./providers";
+import { AuthGuard } from "../components/context/authGuard";
 
 const geist = Geist({ subsets: ["latin"] });
 
@@ -22,12 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={geist.className}>
-        <Providers>
-          {/* TODO: This should only show up on the landing page */}
-          {/* <Navbar /> */}
-          {children}
-          <Toaster />
-        </Providers>
+        <AuthGuard>
+          <Providers>
+            {children}
+            <Toaster />
+          </Providers>
+        </AuthGuard>
       </body>
     </html>
   );
