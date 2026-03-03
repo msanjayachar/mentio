@@ -1,5 +1,3 @@
-console.log("CONFIG LOADED");
-
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({

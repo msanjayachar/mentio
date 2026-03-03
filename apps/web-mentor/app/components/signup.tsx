@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import Logo from "./logo";
-import { SignupUser } from "../../../../packages/shared/src/auth";
+import { SignupSchema } from "../../../../packages/shared/src/auth";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -16,7 +16,7 @@ const Signup = () => {
   const handleSignup = async () => {
     let parsed;
     try {
-      parsed = SignupUser.parse({ name, email, password });
+      parsed = SignupSchema.parse({ name, email, password });
     } catch {
       toast.error("Signup failed", {
         position: "top-center",
@@ -34,7 +34,7 @@ const Signup = () => {
     const response = await fetch("http://localhost:8000/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, name, password }),
+      body: JSON.stringify(parsed),
     });
 
     if (response.ok) {
@@ -46,7 +46,6 @@ const Signup = () => {
         },
       });
 
-      // AT_HERE:
       router.push("/login");
     } else {
       toast.error("Signup failed", {

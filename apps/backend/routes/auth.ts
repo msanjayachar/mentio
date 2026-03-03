@@ -41,7 +41,8 @@ authRouter.get("/me", middleware, async (req: Request, res: Response) => {
 
 authRouter.post("/signup", async (req, res) => {
   const body = req.body;
-  const { email, name, password } = body;
+  const { name, email, password } = body;
+
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   let parsed;
@@ -65,7 +66,7 @@ authRouter.post("/signup", async (req, res) => {
 
   let user;
   try {
-    user = await createUser(parsed.email, parsed.name, hashedPassword);
+    user = await createUser(parsed.name, parsed.email, hashedPassword);
   } catch (error) {
     return res.status(400).json({
       success: false,
