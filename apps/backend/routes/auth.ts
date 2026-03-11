@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { middleware } from "../middleware/auth";
 import { Request, Response } from "express";
-import { SignupSchema, LoginSchema } from "../../../packages/shared/src/auth";
+import { SignupSchema, LoginSchema } from "@shared/auth";
 import "dotenv/config";
 
 const authRouter = Router();

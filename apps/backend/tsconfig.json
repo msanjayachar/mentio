@@ -14,11 +14,7 @@
 
     /* Completeness */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
-    "noEmit": true,
-
-    "baseUrl": ".",
-    "paths": {
-      "@shared/*": ["../../packages/shared/src/*"]
-    }
-  }
+    "noEmit": true
+  },
+  "extends": "../../tsconfig.base.json"
 }
