@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { middleware } from "../middleware/auth";
 import { Request, Response } from "express";
-import { SignupUser, LoginUser } from "../../../packages/shared/src/auth";
+import { SignupUser, LoginUser } from "@shared/auth";
 
 const authRouter = Router();
 const saltRounds = 10;
