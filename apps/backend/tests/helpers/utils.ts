@@ -1,9 +1,6 @@
 import { request } from "../setup";
-import {
-  SignupUser,
-  LoginUser,
-  McqQuestion,
-} from "../../../../packages/shared/src/auth";
+import { SignupUser, LoginUser } from "@shared/auth";
+import { McqQuestion } from "@shared/mcq";
 
 export const signUpUserFn = async (user: SignupUser) => {
   const result = await request.post("/api/auth/signup").send(user);

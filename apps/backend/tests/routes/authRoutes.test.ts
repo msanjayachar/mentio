@@ -1,7 +1,8 @@
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { loginUserFn, me, signUpUserFn } from "../helpers/utils";
 import { signUpUser, loginUser } from "../data/index";
 import { clearDatabase } from "../../helpers/clearDatabase";
+import "dotenv/config";
 
 describe("Test auth routes", () => {
   describe("Test /api/auth/signup", () => {

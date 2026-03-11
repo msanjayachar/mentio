@@ -8,7 +8,7 @@ import {
   updateMcqSlides,
 } from "../queries/mcq_slides";
 import { Request, Response } from "express";
-import { McqQuestionSchema } from "../../../packages/shared/src/auth";
+import { McqQuestionSchema } from "@shared/mcq";
 
 const mcqSlidesRouter = Router();
 
@@ -17,7 +17,7 @@ mcqSlidesRouter.post("/", async (req, res) => {
   const { userId } = req.user;
   const { question, options, correctAnswers, allowMultiple } = body;
 
-  let slides;
+  let slide;
   let parsed;
 
   try {
@@ -36,7 +36,7 @@ mcqSlidesRouter.post("/", async (req, res) => {
   }
 
   try {
-    slides = await createMcqSlides(
+    slide = await createMcqSlides(
       userId,
       parsed.question,
       parsed.options,
@@ -51,9 +51,18 @@ mcqSlidesRouter.post("/", async (req, res) => {
     });
   }
 
+  const finalSlide = {
+    id: slide.id,
+    type: "multiple_choice",
+    question: slide.question,
+    options: slide.options,
+    correrctAnswers: slide.correct_answers,
+    allowMultiple: slide.allow_multiple,
+  };
+
   return res.status(200).json({
     success: true,
-    data: slides,
+    data: finalSlide,
     error: null,
   });
 });
@@ -72,10 +81,15 @@ mcqSlidesRouter.get("/", async (req: Request, res: Response) => {
     });
   }
 
+  const slidesWithType = slides.map((slide) => ({
+    ...slide,
+    type: "multiple_choice",
+  }));
+
   return res.status(200).json({
     success: true,
     data: {
-      slides,
+      slides: slidesWithType,
     },
     error: null,
   });

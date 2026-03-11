@@ -1,8 +1,5 @@
-import type {
-  SignupUser,
-  LoginUser,
-  McqQuestion,
-} from "../../../../packages/shared/src/auth";
+import type { SignupUser, LoginUser } from "@shared/auth";
+import type { McqQuestion } from "@shared/mcq";
 
 export const signUpUser: SignupUser = {
   name: "John Cena",
@@ -17,7 +14,12 @@ export const loginUser: LoginUser = {
 
 export const mcqQuestion: McqQuestion = {
   question: "What is the capital of karnataka",
-  options: ["Bengaluru", "Tumakuru", "Belagavi", "Mysuru"],
+  options: [
+    { id: "one", option: "Bengaluru", correctAnswer: true },
+    { id: "two", option: "Tumakuru", correctAnswer: false },
+    { id: "three", option: "Belagavi", correctAnswer: false },
+    { id: "four", option: "Mysuru", correctAnswer: false },
+  ],
   correctAnswers: ["Bengaluru"],
   allowMultiple: false,
 };

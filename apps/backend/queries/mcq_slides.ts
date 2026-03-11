@@ -1,9 +1,10 @@
 import { pool } from "../db/db";
+import { McqOption } from "@shared/mcq";
 
 export async function createMcqSlides(
   userId: string,
   question: string,
-  options: string[],
+  options: McqOption[],
   correctAnswers: string[],
   allowMultiple: boolean,
 ) {
@@ -70,7 +71,7 @@ export async function updateMcqSlides(
   id: string,
   userId: string,
   question: string,
-  options: string[],
+  options: Object[],
   correctAnswers: string[],
   allowMultiple: boolean,
 ) {
