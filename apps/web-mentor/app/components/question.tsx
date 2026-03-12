@@ -1,5 +1,13 @@
+"use client";
+
 import { GripVertical } from "lucide-react";
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 
 const Question = ({
   slides,
@@ -10,17 +18,18 @@ const Question = ({
 }: {
   slides: (MCQSlide | PlainTextSlide)[];
   setSlides: Dispatch<SetStateAction<(MCQSlide | PlainTextSlide)[]>>;
-  selected: number;
+  selected: string | undefined;
   handleQuestionSelect: () => void;
   handleEdit: () => void;
 }) => {
+  const [token, setToken] = useState<string | null>(null);
+
   const [contents, setContents] = useState({
     id: "one",
     title: "",
     description: "",
   });
-
-  const slide = slides.find((slide) => slide.id === selected);
+  const slide = slides && slides.find((slide) => slide.id === selected);
 
   const colors = [
     "bg-blue-500",
@@ -29,6 +38,51 @@ const Question = ({
     "bg-indigo-900",
     "bg-red-800",
   ];
+
+  useEffect(() => {
+    const tkn = localStorage.getItem("token");
+    setToken(tkn);
+  }, []);
+
+  const updateSlide = async () => {
+    const url = `http://localhost:8000/slides/${slide!.id}`;
+
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(slide),
+    });
+
+    return response;
+  };
+
+  useEffect(() => {
+    const patchSlides = async () => {
+      const response = await updateSlide();
+      const result = await response.json();
+
+      const slide: MCQSlide = {
+        id: result.data.id,
+        type: "multiple_choice",
+        question: result.data.question,
+        options: result.data.options,
+        correctAnswers: result.data.correctAnswers,
+        allowMultiple: result.data.allowMultiple,
+      };
+
+      setSlides((prev) => prev.map((s) => (s.id === slide.id ? slide : s)));
+    };
+
+    // AT_HERE:
+    setTimeout(async () => {
+      if (slide) {
+        await patchSlides();
+      }
+    }, 5000);
+  }, [slide]);
 
   const handleUpdate = (e: ChangeEvent<HTMLInputElement>) => {
     setSlides((slides) =>
@@ -60,10 +114,6 @@ const Question = ({
     }
   };
 
-  // TODO:
-  // const createNewInput = (id: string) => {};
-  // const createNewTextArea = (id: string) => {};
-
   if (!slide) return null;
 
   return (
@@ -91,7 +141,7 @@ const Question = ({
           onClick={() => handleEdit()}
         >
           {slide.type === "multiple_choice" ? (
-            slide.options.map((opt) => (
+            slide.options.map((opt, idx) => (
               <div
                 key={opt.id}
                 className="flex w-full flex-col items-center gap-2"
@@ -100,11 +150,11 @@ const Question = ({
                   0
                 </span>
                 <div
-                  className={`h-2 w-full max-w-64 min-w-28 rounded-md ${colors[opt.id - 1]}`}
+                  className={`h-2 w-full max-w-64 min-w-28 rounded-md ${colors[idx]}`}
                 />
                 <span className="flex w-full justify-start text-2xl font-light">
                   {/* Option {opt.id} */}
-                  {opt.text}
+                  {opt.option !== undefined ? opt.option : `Option ${idx}`}
                 </span>
               </div>
             ))

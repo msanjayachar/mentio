@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import NewSlide from "./newSlide";
 
 const SlidesSidebar = ({
@@ -10,12 +10,38 @@ const SlidesSidebar = ({
   slides,
   setSlides,
 }: {
-  selected: number;
-  setSelected: Dispatch<SetStateAction<number>>;
+  selected: string | undefined;
+  setSelected: Dispatch<SetStateAction<string | undefined>>;
   slides: (MCQSlide | PlainTextSlide)[];
   setSlides: Dispatch<SetStateAction<(MCQSlide | PlainTextSlide)[]>>;
 }) => {
   const [showSlideOption, setShowSlideOption] = useState<boolean>(false);
+
+  const fetchSlides = async () => {
+    const url = "http://localhost:8000/slides";
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response;
+  };
+
+  // NOTE: This is where we fetch the slides on page load
+  useEffect(() => {
+    const loadSlides = async () => {
+      const response = await fetchSlides();
+      const result = await response.json();
+
+      setSlides(result.data.slides);
+    };
+
+    loadSlides();
+  }, []);
 
   return (
     <div className="hidden lg:block">
@@ -41,22 +67,29 @@ const SlidesSidebar = ({
       </div>
 
       <div className="flex h-[calc(100vh-80px)] w-48 flex-col gap-4 overflow-auto pt-4">
-        <div className="ml-2 flex flex-col gap-4">
-          {slides.map((item) => (
-            <div
-              onClick={() => setSelected(item.id)}
-              key={item.id}
-              className="flex cursor-pointer"
-            >
-              <span className="text-[12px]">{item.id}</span>
+        {slides ? (
+          <div className="ml-2 flex flex-col gap-4">
+            {slides.map((slide) => (
               <div
-                className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected === item.id ? "ring ring-blue-700" : ""}`}
+                onClick={() => setSelected(slide.id)}
+                key={slide.id}
+                className="flex cursor-pointer"
               >
-                <span>{item.type}</span>
+                {/* <span className="text-[12px]">{item.id}</span> */}
+                <span className="text-sm text-red-800">{slide.id}</span>
+
+                <span className="text-sm text-red-800">{selected}</span>
+                <div
+                  className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected === slide.id ? "ring ring-blue-700" : ""}`}
+                >
+                  <span>{slide.type}</span>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div>No slides</div>
+        )}
       </div>
     </div>
   );

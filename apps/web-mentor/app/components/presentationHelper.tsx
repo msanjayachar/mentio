@@ -2,7 +2,13 @@
 
 import { ArrowLeft, Plus, X } from "lucide-react";
 import Image from "next/image";
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 
 // TODO:
 // - [ ] Checking multiple options when the toggle isn't on should not be supported
@@ -14,7 +20,7 @@ const PresentationHelper = ({
   editSelected,
   handleEdit,
 }: {
-  selected: number;
+  selected: string;
   slides: (MCQSlide | PlainTextSlide)[];
   setSlides: Dispatch<SetStateAction<(MCQSlide | PlainTextSlide)[]>>;
   editSelected: boolean;
@@ -25,7 +31,7 @@ const PresentationHelper = ({
   const [visualizationType, setVisualizationType] = useState<
     "bar" | "pie" | "split" | "dots" | null
   >(null);
-  const slide = slides.find((slide) => slide.id === selected);
+  const slide = slides && slides.find((slide) => slide.id === selected);
 
   const colors = [
     "bg-blue-500",
@@ -39,8 +45,8 @@ const PresentationHelper = ({
 
   const handleOptions = (
     e: ChangeEvent<HTMLInputElement>,
-    selected: number,
-    optionId: number,
+    selected: string,
+    optionId: string,
   ) => {
     const last = slide.type === "multiple_choice" ? slide.options.at(-1) : null;
 
@@ -65,16 +71,17 @@ const PresentationHelper = ({
     );
   };
 
-  const addOption = () => {
+  const addOption = (slideId: string) => {
     if (!slide) return null;
-
     const last = slide.type === "multiple_choice" ? slide.options.at(-1) : null;
 
+    console.log("after:", slideId);
     if (!last) return null;
 
-    if (slide.type === "multiple_choice" && slide.options.length == 5)
-      return null;
+    // if (slide.type === "multiple_choice" && slide.options.length == 5)
+    //   return null;
 
+    // Increase the number of options
     setSlides((prev) =>
       prev.map((slide) =>
         slide.id === selected && slide.type === "multiple_choice"
@@ -84,7 +91,7 @@ const PresentationHelper = ({
                 ...slide.options,
                 {
                   id: last.id + 1,
-                  text: "",
+                  option: "",
                   correctAnswer: false,
                 },
               ],
@@ -94,7 +101,7 @@ const PresentationHelper = ({
     );
   };
 
-  const handleCancel = (optionId: number, option: Option) => {
+  const handleCancel = (optionId: string, option: Option) => {
     if (slide.type === "multiple_choice" && slide.options!.length == 2) return;
 
     setSlides((slides) =>
@@ -182,8 +189,12 @@ const PresentationHelper = ({
           <h1 className="mb-2">Options</h1>
           <div className="flex flex-col gap-2">
             {slide.type === "multiple_choice" ? (
-              slide.options.map((option) => (
-                <div key={option.id} className="flex items-center gap-4">
+              slide.options.map((option, idx) => (
+                <div key={idx} className="flex items-center gap-4">
+                  {/* AT_HERE: Handle options */}
+                  {/* <span className="text-4xl text-red-300"> */}
+                  {/*   {option.id ? option.id : "No id"} */}
+                  {/* </span> */}
                   <div
                     className={`${setCorrectAnswer ? "flex items-center" : "hidden"}`}
                   >
@@ -211,19 +222,21 @@ const PresentationHelper = ({
                       </svg>
                     </label>
                   </div>
-
                   <div className="flex h-12 items-center gap-2 rounded-md border-3 border-transparent bg-gray-200 focus-within:ring-4 focus-within:ring-blue-800/40 focus-within:ring-offset-2 hover:border-indigo-500">
                     <div
-                      className={`ml-2 h-6 w-6 shrink-0 rounded-full ${colors[option.id - 1]}`}
+                      className={`ml-2 h-6 w-6 shrink-0 rounded-full ${colors[idx]}`}
                     />
                     <input
-                      value={option.text}
+                      value={
+                        option.option !== undefined
+                          ? option.option
+                          : `Option ${idx + 1}`
+                      }
                       onChange={(e) => handleOptions(e, selected, option.id)}
-                      placeholder={`Option ${option.id}`}
+                      placeholder={`Option ${idx + 1}`}
                       className="w-full min-w-0 font-light outline-none"
                     />
                   </div>
-
                   <button
                     className="cursor-pointer"
                     onClick={() => handleCancel(option.id, option)}
@@ -238,7 +251,7 @@ const PresentationHelper = ({
           </div>
 
           <button
-            onClick={() => addOption()}
+            onClick={() => addOption(slide.id)}
             className={`mt-6 flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-3xl bg-gray-200 transition-colors hover:bg-gray-300 ${slide.type === "multiple_choice" && slide.options.length >= 5 ? "pointer-events-none cursor-not-allowed bg-gray-300 text-gray-500 opacity-60" : ""}`}
           >
             <Plus size={18} />

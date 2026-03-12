@@ -1,53 +1,63 @@
+"use client";
+
 import Image from "next/image";
-import { options } from "data/slides";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
 
 const NewSlide = ({
-  slides,
   setSlides,
-  setShowSlideOption,
 }: {
   slides: (MCQSlide | PlainTextSlide)[];
   setSlides: Dispatch<SetStateAction<(MCQSlide | PlainTextSlide)[]>>;
   setShowSlideOption: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const createSlide = (type: string) => {
-    const last = slides[slides.length - 1];
+  const [token, setToken] = useState<string | null>(null);
 
-    if (!last) return;
+  useEffect(() => {
+    const tkn = localStorage.getItem("token");
+    setToken(tkn);
+  }, []);
 
-    if (type === "multiple_choice") {
-      setSlides((prev) => [
-        ...prev,
-        {
-          id: last.id + 1,
-          type: "multiple_choice",
-          question: "",
-          options: options,
-          correctAnswers: [],
-          allowMultiple: false,
-          required: true,
-        },
-      ]);
-    } else if (type === "plain_text") {
-      setSlides((prev) => [
-        ...prev,
-        {
-          id: last.id + 1,
-          type: "plain_text",
-          contents: [""],
-        },
-      ]);
-    }
+  const emptyMcqSlide = {
+    question: "",
+    options: [
+      {
+        id: "1",
+        option: "",
+        correctAnswer: false,
+      },
+      {
+        id: "2",
+        option: "",
+        correctAnswer: false,
+      },
+    ],
+    correctAnswers: [],
+    allowMultiple: false,
+  };
 
-    setShowSlideOption(false);
+  const createSlide = async (slide: Omit<MCQSlide, "id" | "type">) => {
+    const url = "http://localhost:8000/slides";
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(slide),
+    });
+
+    const result = await response.json();
+
+    setSlides((prev) => [...prev, result.data]);
   };
 
   return (
     <div className="flex h-18 w-full justify-around rounded-lg border-2 border-gray-300 bg-white p-2">
       <button
         className="flex-1 cursor-pointer"
-        onClick={() => createSlide("multiple_choice")}
+        // onClick={() => createSlide("multiple_choice")}
+        onClick={() => createSlide(emptyMcqSlide)}
       >
         <div className="flex items-center">
           <Image

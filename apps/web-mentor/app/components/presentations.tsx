@@ -4,7 +4,7 @@ import PresentationNav from "./presentationNav";
 import Question from "./question";
 import PresentationHelper from "./presentationHelper";
 import PropertiesPanel from "./propertiesPanel";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SpeakerNotes from "./speakerNotes";
 import Comments from "./edit/comments";
 import Questionpanel from "./edit/questionpanel";
@@ -14,11 +14,17 @@ import { slides as initialSlides } from "data/slides";
 
 const Presentations = () => {
   const [speakerNotes, setSpeakerNotes] = useState(false);
-  const [selected, setSelected] = useState<number>(1);
   const [editSelected, setEditSelected] = useState<boolean>(false);
   const [commentSelected, setCommentSelected] = useState<boolean>(false);
   const [questionSelected, setQuestionSelected] = useState<boolean>(false);
-  const [slides, setSlides] = useState(initialSlides);
+  const [slides, setSlides] = useState<(MCQSlide | PlainTextSlide)[]>([]);
+  const [selected, setSelected] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (slides && slides.length > 0 && !selected) {
+      setSelected(slides[0]?.id);
+    }
+  }, [slides, selected]);
 
   const handleSpeakerNotes = () => {
     setSpeakerNotes((prev) => !prev);
@@ -78,7 +84,7 @@ const Presentations = () => {
 
           <div className="flex shrink-0">
             <PresentationHelper
-              selected={selected}
+              selected={selected!}
               slides={slides}
               setSlides={setSlides}
               handleEdit={handleEdit}
