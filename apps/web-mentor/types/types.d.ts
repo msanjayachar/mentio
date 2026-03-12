@@ -11,13 +11,13 @@ type LoginResponse =
     };
 
 type Option = {
-  id: number;
-  text: string;
+  id: string;
+  option: string;
   correctAnswer: boolean;
 };
 
 type MCQSlide = {
-  id: number;
+  id: string;
   type: "multiple_choice";
   question: string;
   options: Option[];
@@ -26,7 +26,7 @@ type MCQSlide = {
 };
 
 type PlainTextSlide = {
-  id: number;
+  id: string;
   type: "plain_text";
   contents: string[];
 };
