@@ -1,24 +1,24 @@
 export const options: Option[] = [
   {
-    id: 1,
-    text: "",
+    id: "one",
+    option: "",
     correctAnswer: false,
   },
   {
-    id: 2,
-    text: "",
+    id: "two",
+    option: "",
     correctAnswer: false,
   },
   {
-    id: 3,
-    text: "",
+    id: "three",
+    option: "",
     correctAnswer: false,
   },
 ];
 
 export const slides: (MCQSlide | PlainTextSlide)[] = [
   {
-    id: 1,
+    id: "one",
     type: "multiple_choice",
     question: "",
     options: options,
@@ -26,7 +26,7 @@ export const slides: (MCQSlide | PlainTextSlide)[] = [
     allowMultiple: false,
   },
   {
-    id: 2,
+    id: "two",
     type: "plain_text",
     contents: [""],
   },

@@ -8,6 +8,7 @@ import {
   SetStateAction,
   useEffect,
   useState,
+  useRef,
 } from "react";
 
 // TODO:
@@ -31,6 +32,14 @@ const PresentationHelper = ({
   const [visualizationType, setVisualizationType] = useState<
     "bar" | "pie" | "split" | "dots" | null
   >(null);
+  const [token, setToken] = useState<string | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  useEffect(() => {
+    const tkn = localStorage.getItem("token");
+    setToken(tkn);
+  }, []);
+
   const slide = slides && slides.find((slide) => slide.id === selected);
 
   const colors = [
@@ -48,8 +57,25 @@ const PresentationHelper = ({
     selected: string,
     optionId: string,
   ) => {
-    const last = slide.type === "multiple_choice" ? slide.options.at(-1) : null;
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
 
+    if (!slide) return;
+    if (slide.type !== "multiple_choice") return;
+
+    const updatedSlide: MCQSlide = {
+      ...slide,
+      options: slide.options.map((option) =>
+        option.id === optionId ? { ...option, option: e.target.value } : option,
+      ),
+    };
+
+    timeoutRef.current = setTimeout(() => {
+      updateSlide(updatedSlide);
+    }, 600);
+
+    const last = slide.type === "multiple_choice" ? slide.options.at(-1) : null;
     if (!last) return;
 
     setSlides((slides) =>
@@ -61,7 +87,7 @@ const PresentationHelper = ({
                 option.id === optionId
                   ? {
                       ...option,
-                      text: e.target.value,
+                      option: e.target.value,
                     }
                   : option,
               ),
@@ -71,15 +97,26 @@ const PresentationHelper = ({
     );
   };
 
+  const updateSlide = async (slide: MCQSlide) => {
+    const url = `http://localhost:8000/slides/${slide!.id}`;
+
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(slide),
+    });
+
+    return response;
+  };
+
   const addOption = (slideId: string) => {
     if (!slide) return null;
     const last = slide.type === "multiple_choice" ? slide.options.at(-1) : null;
 
-    console.log("after:", slideId);
     if (!last) return null;
-
-    // if (slide.type === "multiple_choice" && slide.options.length == 5)
-    //   return null;
 
     // Increase the number of options
     setSlides((prev) =>

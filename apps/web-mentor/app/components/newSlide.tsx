@@ -72,23 +72,6 @@ const NewSlide = ({
           </span>
         </div>
       </button>
-
-      {/* <button */}
-      {/*   className="flex-1 cursor-pointer" */}
-      {/*   onClick={() => createSlide("plain_text")} */}
-      {/* > */}
-      {/*   <div className="flex"> */}
-      {/*     <Image */}
-      {/*       src="/features/open_ended.svg" */}
-      {/*       alt="testing svg images" */}
-      {/*       width={50} */}
-      {/*       height={50} */}
-      {/*     /> */}
-      {/*     <span className="m-auto w-full cursor-pointer text-sm"> */}
-      {/*       Plain Text */}
-      {/*     </span> */}
-      {/*   </div> */}
-      {/* </button> */}
     </div>
   );
 };

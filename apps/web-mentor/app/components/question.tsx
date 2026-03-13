@@ -6,6 +6,7 @@ import {
   Dispatch,
   SetStateAction,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -23,6 +24,7 @@ const Question = ({
   handleEdit: () => void;
 }) => {
   const [token, setToken] = useState<string | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const [contents, setContents] = useState({
     id: "one",
@@ -44,7 +46,7 @@ const Question = ({
     setToken(tkn);
   }, []);
 
-  const updateSlide = async () => {
+  const updateSlide = async (slide: MCQSlide) => {
     const url = `http://localhost:8000/slides/${slide!.id}`;
 
     const response = await fetch(url, {
@@ -59,32 +61,23 @@ const Question = ({
     return response;
   };
 
-  useEffect(() => {
-    const patchSlides = async () => {
-      const response = await updateSlide();
-      const result = await response.json();
+  const handleUpdate = (e: ChangeEvent<HTMLInputElement>) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
 
-      const slide: MCQSlide = {
-        id: result.data.id,
-        type: "multiple_choice",
-        question: result.data.question,
-        options: result.data.options,
-        correctAnswers: result.data.correctAnswers,
-        allowMultiple: result.data.allowMultiple,
-      };
+    if (!slide) return;
+    if (slide.type !== "multiple_choice") return;
 
-      setSlides((prev) => prev.map((s) => (s.id === slide.id ? slide : s)));
+    const updatedSlide: MCQSlide = {
+      ...slide,
+      question: e.target.value,
     };
 
-    // AT_HERE:
-    setTimeout(async () => {
-      if (slide) {
-        await patchSlides();
-      }
-    }, 5000);
-  }, [slide]);
+    timeoutRef.current = setTimeout(() => {
+      updateSlide(updatedSlide);
+    }, 600);
 
-  const handleUpdate = (e: ChangeEvent<HTMLInputElement>) => {
     setSlides((slides) =>
       slides.map((slide) =>
         slide.id === selected
