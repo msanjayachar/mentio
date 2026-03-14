@@ -50,8 +50,7 @@ const SlidesSidebar = ({
         <button
           className="mx-auto flex h-12 cursor-pointer items-center gap-2 rounded-full bg-black px-8 text-center text-sm font-light text-white sm:w-44"
           // onClick={() => createSlide()}
-          // onClick={() => setShowSlideOption((prev) => !prev)}
-          onClick={() => console.log("hello world")}
+          onClick={() => setShowSlideOption((prev) => !prev)}
         >
           <Plus size={20} strokeWidth={1} />
           <span>New slide</span>

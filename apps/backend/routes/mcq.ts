@@ -15,19 +15,22 @@ const mcqSlidesRouter = Router();
 mcqSlidesRouter.post("/", async (req, res) => {
   const body = req.body;
   const { userId } = req.user;
-  const { question, options, correctAnswers, allowMultiple } = body;
+  const { id, type, question, options, correctAnswers, allowMultiple } = body;
 
   let slide;
   let parsed;
 
   try {
     parsed = McqQuestionSchema.parse({
+      id,
+      type,
       question,
       options,
       correctAnswers,
       allowMultiple,
     });
   } catch (error) {
+    console.log("error: ", error);
     return res.status(400).json({
       success: false,
       data: null,
