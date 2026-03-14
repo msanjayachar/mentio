@@ -1,5 +1,7 @@
+import { McqQuestion } from "@shared/mcq";
+
 // THREAD:
-const Present = ({ slides }: { slides: Slides }) => {
+const Present = ({ slides }: { slides: McqQuestion[] }) => {
   return <div></div>;
 };
 

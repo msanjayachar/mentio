@@ -3,6 +3,7 @@
 import { Plus } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import NewSlide from "./newSlide";
+import type { McqQuestion, McqOption } from "@shared/mcq";
 
 const SlidesSidebar = ({
   selected,
@@ -12,8 +13,8 @@ const SlidesSidebar = ({
 }: {
   selected: string | undefined;
   setSelected: Dispatch<SetStateAction<string | undefined>>;
-  slides: (MCQSlide | PlainTextSlide)[];
-  setSlides: Dispatch<SetStateAction<(MCQSlide | PlainTextSlide)[]>>;
+  slides: McqQuestion[];
+  setSlides: Dispatch<SetStateAction<McqQuestion[]>>;
 }) => {
   const [showSlideOption, setShowSlideOption] = useState<boolean>(false);
 
@@ -49,7 +50,8 @@ const SlidesSidebar = ({
         <button
           className="mx-auto flex h-12 cursor-pointer items-center gap-2 rounded-full bg-black px-8 text-center text-sm font-light text-white sm:w-44"
           // onClick={() => createSlide()}
-          onClick={() => setShowSlideOption((prev) => !prev)}
+          // onClick={() => setShowSlideOption((prev) => !prev)}
+          onClick={() => console.log("hello world")}
         >
           <Plus size={20} strokeWidth={1} />
           <span>New slide</span>

@@ -3,12 +3,9 @@
 import { ArrowLeft, ChevronDown, Play, Settings, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type { McqQuestion, McqOption } from "@shared/mcq";
 
-const PresentationNav = ({
-  slides,
-}: {
-  slides: (MCQSlide | PlainTextSlide)[];
-}) => {
+const PresentationNav = ({ slides }: { slides: McqQuestion[] }) => {
   const [presentationTitle, setPresentationTitle] = useState<string | null>(
     null,
   );

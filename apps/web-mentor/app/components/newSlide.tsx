@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
+import type { McqQuestion, McqOption } from "@shared/mcq";
 
 const NewSlide = ({
   setSlides,
 }: {
-  slides: (MCQSlide | PlainTextSlide)[];
-  setSlides: Dispatch<SetStateAction<(MCQSlide | PlainTextSlide)[]>>;
+  slides: McqQuestion[];
+  setSlides: Dispatch<SetStateAction<McqQuestion[]>>;
   setShowSlideOption: Dispatch<SetStateAction<boolean>>;
 }) => {
   const [token, setToken] = useState<string | null>(null);
@@ -35,7 +36,7 @@ const NewSlide = ({
     allowMultiple: false,
   };
 
-  const createSlide = async (slide: Omit<MCQSlide, "id" | "type">) => {
+  const createSlide = async (slide: Omit<McqQuestion, "id" | "type">) => {
     const url = "http://localhost:8000/slides";
 
     const response = await fetch(url, {

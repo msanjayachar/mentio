@@ -11,13 +11,14 @@ import Questionpanel from "./edit/questionpanel";
 import { useRouter } from "next/navigation";
 import SlidesSidebar from "./slidesSidebar";
 import { slides as initialSlides } from "data/slides";
+import { McqQuestion } from "@shared/mcq";
 
 const Presentations = () => {
   const [speakerNotes, setSpeakerNotes] = useState(false);
   const [editSelected, setEditSelected] = useState<boolean>(false);
   const [commentSelected, setCommentSelected] = useState<boolean>(false);
   const [questionSelected, setQuestionSelected] = useState<boolean>(false);
-  const [slides, setSlides] = useState<(MCQSlide | PlainTextSlide)[]>([]);
+  const [slides, setSlides] = useState<McqQuestion[]>([]);
   const [selected, setSelected] = useState<string | undefined>(undefined);
 
   useEffect(() => {
