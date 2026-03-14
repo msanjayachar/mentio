@@ -13,6 +13,8 @@ export const loginUser: LoginUser = {
 };
 
 export const mcqQuestion: McqQuestion = {
+  id: "one",
+  type: "multiple_choice",
   question: "What is the capital of karnataka",
   options: [
     { id: "one", option: "Bengaluru", correctAnswer: true },

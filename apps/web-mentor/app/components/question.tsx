@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
+import type { McqQuestion } from "@shared/mcq";
 
 const Question = ({
   slides,
@@ -17,8 +18,8 @@ const Question = ({
   handleQuestionSelect,
   handleEdit,
 }: {
-  slides: (MCQSlide | PlainTextSlide)[];
-  setSlides: Dispatch<SetStateAction<(MCQSlide | PlainTextSlide)[]>>;
+  slides: McqQuestion[];
+  setSlides: Dispatch<SetStateAction<McqQuestion[]>>;
   selected: string | undefined;
   handleQuestionSelect: () => void;
   handleEdit: () => void;
@@ -46,7 +47,7 @@ const Question = ({
     setToken(tkn);
   }, []);
 
-  const updateSlide = async (slide: MCQSlide) => {
+  const updateSlide = async (slide: McqQuestion) => {
     const url = `http://localhost:8000/slides/${slide!.id}`;
 
     const response = await fetch(url, {
@@ -69,7 +70,7 @@ const Question = ({
     if (!slide) return;
     if (slide.type !== "multiple_choice") return;
 
-    const updatedSlide: MCQSlide = {
+    const updatedSlide: McqQuestion = {
       ...slide,
       question: e.target.value,
     };

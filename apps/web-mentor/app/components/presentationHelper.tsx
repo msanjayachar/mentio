@@ -1,5 +1,6 @@
 "use client";
 
+import type { McqQuestion, McqOption } from "@shared/mcq";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import Image from "next/image";
 import {
@@ -11,9 +12,6 @@ import {
   useRef,
 } from "react";
 
-// TODO:
-// - [ ] Checking multiple options when the toggle isn't on should not be supported
-
 const PresentationHelper = ({
   selected,
   slides,
@@ -22,8 +20,8 @@ const PresentationHelper = ({
   handleEdit,
 }: {
   selected: string;
-  slides: (MCQSlide | PlainTextSlide)[];
-  setSlides: Dispatch<SetStateAction<(MCQSlide | PlainTextSlide)[]>>;
+  slides: McqQuestion[];
+  setSlides: Dispatch<SetStateAction<McqQuestion[]>>;
   editSelected: boolean;
   handleEdit: () => void;
 }) => {
@@ -64,7 +62,7 @@ const PresentationHelper = ({
     if (!slide) return;
     if (slide.type !== "multiple_choice") return;
 
-    const updatedSlide: MCQSlide = {
+    const updatedSlide: McqQuestion = {
       ...slide,
       options: slide.options.map((option) =>
         option.id === optionId ? { ...option, option: e.target.value } : option,
@@ -97,7 +95,7 @@ const PresentationHelper = ({
     );
   };
 
-  const updateSlide = async (slide: MCQSlide) => {
+  const updateSlide = async (slide: McqQuestion) => {
     const url = `http://localhost:8000/slides/${slide!.id}`;
 
     const response = await fetch(url, {
@@ -138,7 +136,7 @@ const PresentationHelper = ({
     );
   };
 
-  const handleCancel = (optionId: string, option: Option) => {
+  const handleCancel = (optionId: string, option: McqOption) => {
     if (slide.type === "multiple_choice" && slide.options!.length == 2) return;
 
     setSlides((slides) =>

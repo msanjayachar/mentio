@@ -1,21 +1,26 @@
-import { useEffect, useRef } from "react";
-import { Canvas, Rect } from "fabric";
+import { useEffect, useRef, useState } from "react";
+import { Canvas, Textbox } from "fabric";
 
 export const FabricJSCanvas = () => {
   const canvasEl = useRef<HTMLCanvasElement>(null);
+  const [canvasState, setCanvasState] = useState(null);
 
   const updateCanvasContext = (canvas: Canvas | null) => {};
 
-  const rect = new Rect({
-    width: 100,
-    height: 100,
-    fill: "red",
-    left: 50,
-    top: 50,
-  });
+  useEffect(() => {
+    console.log("*************************");
+    console.log("canvasState: ", canvasState);
+    console.log("*************************");
+  }, [canvasState]);
 
   useEffect(() => {
     if (!canvasEl.current) return;
+
+    const save = () => {
+      const state = canvas.toJSON();
+
+      setCanvasState(state);
+    };
 
     const canvas = new Canvas(canvasEl.current, {
       backgroundColor: "rgb(255, 255, 255)",
@@ -24,7 +29,27 @@ export const FabricJSCanvas = () => {
     });
 
     canvas.renderAll();
-    canvas.add(rect);
+
+    canvas.on("mouse:dblclick", (event) => {
+      const { x, y } = event.scenePoint;
+
+      const textBox = new Textbox("", {
+        width: canvas.getWidth() / 2,
+        left: x,
+        top: y,
+        originX: "left",
+        originY: "top",
+      });
+
+      canvas.add(textBox);
+      canvas.setActiveObject(textBox);
+      textBox.enterEditing();
+    });
+
+    canvas.on("object:added", save);
+    canvas.on("object:modified", save);
+    canvas.on("object:removed", save);
+    canvas.on("text:changed", save);
 
     // make the fabric.Canvas instance available to your app
     updateCanvasContext(canvas);
@@ -37,8 +62,8 @@ export const FabricJSCanvas = () => {
   return (
     <canvas
       style={{ border: "1px solid black" }}
-      width="300"
-      height="300"
+      width="800"
+      height="500"
       ref={canvasEl}
     />
   );

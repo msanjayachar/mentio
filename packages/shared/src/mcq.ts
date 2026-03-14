@@ -7,6 +7,8 @@ const OptionSchema = z.object({
 });
 
 export const McqQuestionSchema = z.object({
+  id: z.string(),
+  type: z.literal("multiple_choice"),
   question: z.string().default(""),
   options: z.array(OptionSchema).default([]),
   correctAnswers: z.array(z.string()).default([]),
