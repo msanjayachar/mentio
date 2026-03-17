@@ -14,12 +14,14 @@ import { FabricJSCanvas } from "@repo/ui/FabricJSCanvas";
 import CanvasToolbar from "./canvasToolbar";
 
 const Question = ({
+  tool,
   slides,
   setSlides,
   selected,
   handleQuestionSelect,
   handleEdit,
 }: {
+  tool: "text" | "image" | "shapes";
   slides: SlidesState;
   setSlides: Dispatch<SetStateAction<SlidesState>>;
   selected: string | undefined;
@@ -166,7 +168,7 @@ const Question = ({
           // TODO: Use this as well
           // <PlainTextSlide />
           <div className="h-[600px] px-4 py-2">
-            <FabricJSCanvas tool="text" backgroundColor="red" />
+            <FabricJSCanvas tool={tool} backgroundColor="red" />
           </div>
         )}
         {/* TODO: Dynamic width and height */}

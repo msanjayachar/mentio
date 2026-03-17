@@ -23,6 +23,7 @@ const Presentations = () => {
     canvasSlides: [],
   });
   const [selected, setSelected] = useState<string | undefined>(undefined);
+  const [tool, setTool] = useState<"text" | "image" | "shapes">("text");
 
   useEffect(() => {
     if (slides && slides.mcqSlides && slides.canvasSlides && !selected) {
@@ -68,8 +69,9 @@ const Presentations = () => {
           {/* <PresentationStarters /> */}
           {/* Canvas Input  */}
           <div className="mb-4 flex min-w-0 flex-1 flex-col justify-between">
-            <CanvasToolbar />
+            <CanvasToolbar tool={tool} setTool={setTool} />
             <Question
+              tool={tool}
               slides={slides}
               setSlides={setSlides}
               selected={selected}
