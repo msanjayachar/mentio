@@ -3,12 +3,14 @@
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import type { McqQuestion, McqOption } from "@shared/mcq";
+import { SlidesState } from "@shared/types";
 
 const NewSlide = ({
   setSlides,
+  setShowSlideOption,
 }: {
-  slides: McqQuestion[];
-  setSlides: Dispatch<SetStateAction<McqQuestion[]>>;
+  slides: SlidesState;
+  setSlides: Dispatch<SetStateAction<SlidesState>>;
   setShowSlideOption: Dispatch<SetStateAction<boolean>>;
 }) => {
   const [token, setToken] = useState<string | null>(null);
@@ -57,7 +59,11 @@ const NewSlide = ({
 
     const result = await response.json();
 
-    setSlides((prev) => [...prev, result.data]);
+    setShowSlideOption(false);
+    setSlides((prev) => ({
+      ...prev,
+      mcqSlides: [...prev.mcqSlides, result.data.slide],
+    }));
   };
 
   const createCanvasSlide = async (canvas: Record<string, unknown>) => {
@@ -74,13 +80,19 @@ const NewSlide = ({
 
     const result = await response.json();
 
-    setSlides((prev) => [...prev, result.data]);
+    setShowSlideOption(false);
+
+    setSlides((prev) => ({
+      ...prev,
+      canvasSlides: [...prev.canvasSlides, result.data.slide],
+    }));
   };
 
   return (
-    <div className="flex h-full w-full flex-col justify-around gap-2 rounded-lg border-2 border-gray-300 bg-white p-2">
+    <div className="z-50 flex h-full w-full flex-col justify-around gap-2 rounded-lg border-2 border-gray-300 bg-white p-2">
       <button
         className="flex-1 cursor-pointer rounded-md border-2 border-black"
+        // TODO: - use a single function to create slide. "pass the slide type as argument."
         // onClick={() => createSlide("multiple_choice")}
         onClick={() => createSlide(emptyMcqSlide)}
       >
@@ -98,10 +110,8 @@ const NewSlide = ({
         </div>
       </button>
 
-      {/* AT_HERE:  Latest*/}
       <button
         className="flex-1 cursor-pointer rounded-md border-2 border-black"
-        // onClick={() => createSlide("multiple_choice")}
         onClick={() => createCanvasSlide(emptyCanvasSlide)}
       >
         <div className="flex items-center">

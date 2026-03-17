@@ -11,6 +11,7 @@ import {
   useState,
   useRef,
 } from "react";
+import { SlidesState } from "@shared/types";
 
 const PresentationHelper = ({
   selected,
@@ -20,8 +21,8 @@ const PresentationHelper = ({
   handleEdit,
 }: {
   selected: string;
-  slides: McqQuestion[];
-  setSlides: Dispatch<SetStateAction<McqQuestion[]>>;
+  slides: SlidesState;
+  setSlides: Dispatch<SetStateAction<SlidesState>>;
   editSelected: boolean;
   handleEdit: () => void;
 }) => {
@@ -38,7 +39,13 @@ const PresentationHelper = ({
     setToken(tkn);
   }, []);
 
-  const slide = slides && slides.find((slide) => slide.id === selected);
+  const slide =
+    (Array.isArray(slides?.mcqSlides)
+      ? slides?.mcqSlides?.find((slide) => slide.id === selected)
+      : undefined) ||
+    (Array.isArray(slides.canvasSlides)
+      ? slides?.canvasSlides?.find((slide) => slide.id === selected)
+      : undefined);
 
   const colors = [
     "bg-blue-500",
@@ -76,8 +83,9 @@ const PresentationHelper = ({
     const last = slide.type === "multiple_choice" ? slide.options.at(-1) : null;
     if (!last) return;
 
-    setSlides((slides) =>
-      slides.map((slide) =>
+    setSlides((slides) => ({
+      ...slides,
+      mcqSlides: slides.mcqSlides.map((slide) =>
         slide.id === selected && slide.type === "multiple_choice"
           ? {
               ...slide,
@@ -92,7 +100,7 @@ const PresentationHelper = ({
             }
           : slide,
       ),
-    );
+    }));
   };
 
   const updateSlide = async (slide: McqQuestion) => {
@@ -117,8 +125,9 @@ const PresentationHelper = ({
     if (!last) return null;
 
     // Increase the number of options
-    setSlides((prev) =>
-      prev.map((slide) =>
+    setSlides((prev) => ({
+      ...prev,
+      mcqSlides: prev.mcqSlides.map((slide) =>
         slide.id === selected && slide.type === "multiple_choice"
           ? {
               ...slide,
@@ -133,14 +142,15 @@ const PresentationHelper = ({
             }
           : slide,
       ),
-    );
+    }));
   };
 
   const handleCancel = (optionId: string, option: McqOption) => {
     if (slide.type === "multiple_choice" && slide.options!.length == 2) return;
 
-    setSlides((slides) =>
-      slides.map((slide) =>
+    setSlides((slides) => ({
+      ...slides,
+      mcqSlides: slides.mcqSlides.map((slide) =>
         slide.id === selected && slide.type === "multiple_choice"
           ? {
               ...slide,
@@ -148,7 +158,7 @@ const PresentationHelper = ({
             }
           : slide,
       ),
-    );
+    }));
   };
 
   return (
@@ -226,10 +236,6 @@ const PresentationHelper = ({
             {slide.type === "multiple_choice" ? (
               slide.options.map((option, idx) => (
                 <div key={idx} className="flex items-center gap-4">
-                  {/* AT_HERE: Handle options */}
-                  {/* <span className="text-4xl text-red-300"> */}
-                  {/*   {option.id ? option.id : "No id"} */}
-                  {/* </span> */}
                   <div
                     className={`${setCorrectAnswer ? "flex items-center" : "hidden"}`}
                   >

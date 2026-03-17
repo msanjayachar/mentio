@@ -1,6 +1,5 @@
 "use client";
 
-import { GripVertical } from "lucide-react";
 import {
   ChangeEvent,
   Dispatch,
@@ -9,7 +8,10 @@ import {
   useRef,
   useState,
 } from "react";
-import type { McqQuestion } from "@shared/mcq";
+import type { McqOption, McqQuestion } from "@shared/mcq";
+import { SlidesState } from "@shared/types";
+import { FabricJSCanvas } from "@repo/ui/FabricJSCanvas";
+import CanvasToolbar from "./canvasToolbar";
 
 const Question = ({
   slides,
@@ -18,8 +20,8 @@ const Question = ({
   handleQuestionSelect,
   handleEdit,
 }: {
-  slides: McqQuestion[];
-  setSlides: Dispatch<SetStateAction<McqQuestion[]>>;
+  slides: SlidesState;
+  setSlides: Dispatch<SetStateAction<SlidesState>>;
   selected: string | undefined;
   handleQuestionSelect: () => void;
   handleEdit: () => void;
@@ -32,7 +34,14 @@ const Question = ({
     title: "",
     description: "",
   });
-  const slide = slides && slides.find((slide) => slide.id === selected);
+  // Getting the slide (mcq or canvas) thats selected right now
+  const slide =
+    (Array.isArray(slides?.mcqSlides)
+      ? slides?.mcqSlides?.find((slide) => slide.id === selected)
+      : undefined) ||
+    (Array.isArray(slides.canvasSlides)
+      ? slides?.canvasSlides?.find((slide) => slide.id === selected)
+      : undefined);
 
   const colors = [
     "bg-blue-500",
@@ -79,8 +88,10 @@ const Question = ({
       updateSlide(updatedSlide);
     }, 600);
 
-    setSlides((slides) =>
-      slides.map((slide) =>
+    // VERIFY: whether this works as intended
+    setSlides((slides) => ({
+      ...slides,
+      mcqSlides: slides.mcqSlides.map((slide) =>
         slide.id === selected
           ? {
               ...slide,
@@ -88,7 +99,7 @@ const Question = ({
             }
           : slide,
       ),
-    );
+    }));
   };
 
   const handleContent = (
@@ -114,8 +125,8 @@ const Question = ({
     <div className="m-8 h-[700px] w-auto rounded-md border-2 bg-white hover:border-blue-800">
       <span className="flex justify-end pt-4 pr-4">Mentio</span>
       <div className="flex flex-col gap-6 px-4">
-        {slide.type === "multiple_choice" && (
-          <div className="px-8 pt-6">
+        {slide.type === "multiple_choice" ? (
+          <div className="flex flex-col items-center gap-4 px-8 pt-6">
             <input
               value={slide.question}
               className="h-18 w-full rounded-md border-2 px-4 text-2xl hover:border-blue-800 focus:border-transparent focus:outline-2 focus:outline-blue-800"
@@ -127,61 +138,38 @@ const Question = ({
               }}
               placeholder="Ask your question here..."
             />
+            <div
+              className={`mx-8 flex ${slide.type === "multiple_choice" ? "h-[480px]" : "h-[600px]"} w-full cursor-pointer items-end justify-between gap-x-2 rounded-md border-2 px-12 pb-8 hover:border-blue-800`}
+              onClick={() => handleEdit()}
+            >
+              {slide.type === "multiple_choice" &&
+                slide.options.map((opt: McqOption, idx: number) => (
+                  <div
+                    key={opt.id}
+                    className="flex w-full flex-col items-center gap-2"
+                  >
+                    <span className="flex w-full justify-start pl-2 text-2xl font-light">
+                      0
+                    </span>
+                    <div
+                      className={`h-2 w-full max-w-64 min-w-28 rounded-md ${colors[idx]}`}
+                    />
+                    <span className="flex w-full justify-start text-2xl font-light">
+                      {/* Option {opt.id} */}
+                      {opt.option !== undefined ? opt.option : `Option ${idx}`}
+                    </span>
+                  </div>
+                ))}
+            </div>
+          </div>
+        ) : (
+          // TODO: Use this as well
+          // <PlainTextSlide />
+          <div className="h-[600px] px-4 py-2">
+            <FabricJSCanvas tool="text" backgroundColor="red" />
           </div>
         )}
         {/* TODO: Dynamic width and height */}
-        <div
-          className={`bg-yell mx-8 flex ${slide.type === "multiple_choice" ? "h-[480px]" : "h-[600px]"} w-auto cursor-pointer items-end justify-between gap-x-2 rounded-md border-2 px-12 pb-8 hover:border-blue-800`}
-          onClick={() => handleEdit()}
-        >
-          {slide.type === "multiple_choice" ? (
-            slide.options.map((opt, idx) => (
-              <div
-                key={opt.id}
-                className="flex w-full flex-col items-center gap-2"
-              >
-                <span className="flex w-full justify-start pl-2 text-2xl font-light">
-                  0
-                </span>
-                <div
-                  className={`h-2 w-full max-w-64 min-w-28 rounded-md ${colors[idx]}`}
-                />
-                <span className="flex w-full justify-start text-2xl font-light">
-                  {/* Option {opt.id} */}
-                  {opt.option !== undefined ? opt.option : `Option ${idx}`}
-                </span>
-              </div>
-            ))
-          ) : (
-            <div className="flex h-full w-full flex-col gap-8 px-8 py-4">
-              <div className="relative flex flex-col gap-4">
-                <div className="flex justify-between">
-                  <div className="m-2">
-                    <GripVertical />
-                  </div>
-                  <input
-                    value={contents.title}
-                    onChange={(e) => handleContent(e, "title")}
-                    placeholder="Enter your Title"
-                    className="w-full rounded-lg bg-gray-200 px-2"
-                  />
-                </div>
-                <div className="flex justify-between">
-                  <div className="m-2">
-                    <GripVertical />
-                  </div>
-                  <textarea
-                    value={contents.description}
-                    onChange={(e) => handleContent(e, "description")}
-                    rows={4}
-                    placeholder="Enter your description here"
-                    className="w-full rounded-lg bg-gray-200 px-2 py-2"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ export async function createMcqSlides(
   userId: string,
   question: string,
   options: McqOption[],
-  correctAnswers: string[],
+  correctAnswers: McqOption[],
   allowMultiple: boolean,
 ) {
   const query = `INSERT INTO mcq_slides (user_id, question, options, correct_answers, allow_multiple) VALUES ($1, $2, $3, $4, $5) RETURNING *;`;
@@ -72,7 +72,7 @@ export async function updateMcqSlides(
   userId: string,
   question: string,
   options: Object[],
-  correctAnswers: string[],
+  correctAnswers: Object[],
   allowMultiple: boolean,
 ) {
   const query = `UPDATE mcq_slides SET question = $1, options = $2, correct_answers = $3, allow_multiple = $4 WHERE id = $5 AND user_id = $6 RETURNING *;`;

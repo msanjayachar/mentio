@@ -8,22 +8,26 @@ import { useEffect, useState } from "react";
 import SpeakerNotes from "./speakerNotes";
 import Comments from "./edit/comments";
 import Questionpanel from "./edit/questionpanel";
-import { useRouter } from "next/navigation";
 import SlidesSidebar from "./slidesSidebar";
-import { slides as initialSlides } from "data/slides";
-import { McqQuestion } from "@shared/mcq";
+import { SlidesState } from "@shared/types";
+import { FabricJSCanvas } from "@repo/ui/FabricJSCanvas";
+import CanvasToolbar from "./canvasToolbar";
 
 const Presentations = () => {
   const [speakerNotes, setSpeakerNotes] = useState(false);
   const [editSelected, setEditSelected] = useState<boolean>(false);
   const [commentSelected, setCommentSelected] = useState<boolean>(false);
   const [questionSelected, setQuestionSelected] = useState<boolean>(false);
-  const [slides, setSlides] = useState<McqQuestion[]>([]);
+  const [slides, setSlides] = useState<SlidesState>({
+    mcqSlides: [],
+    canvasSlides: [],
+  });
   const [selected, setSelected] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    if (slides && slides.length > 0 && !selected) {
-      setSelected(slides[0]?.id);
+    if (slides && slides.mcqSlides && slides.canvasSlides && !selected) {
+      // VERIFY: Whether this works as intended
+      setSelected(slides.mcqSlides[0]?.id);
     }
   }, [slides, selected]);
 
@@ -64,6 +68,7 @@ const Presentations = () => {
           {/* <PresentationStarters /> */}
           {/* Canvas Input  */}
           <div className="mb-4 flex min-w-0 flex-1 flex-col justify-between">
+            <CanvasToolbar />
             <Question
               slides={slides}
               setSlides={setSlides}

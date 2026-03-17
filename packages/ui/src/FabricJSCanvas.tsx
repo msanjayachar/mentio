@@ -1,17 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { Canvas, Textbox } from "fabric";
 
-export const FabricJSCanvas = () => {
+export const FabricJSCanvas = ({
+  tool,
+  backgroundColor,
+}: {
+  tool: "text" | "shapes" | "image";
+  backgroundColor: string;
+}) => {
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const [canvasState, setCanvasState] = useState(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const updateCanvasContext = (canvas: Canvas | null) => {};
-
-  useEffect(() => {
-    console.log("*************************");
-    console.log("canvasState: ", canvasState);
-    console.log("*************************");
-  }, [canvasState]);
 
   useEffect(() => {
     if (!canvasEl.current) return;
@@ -51,20 +52,41 @@ export const FabricJSCanvas = () => {
     canvas.on("object:removed", save);
     canvas.on("text:changed", save);
 
+    const resizeCanvas = () => {
+      if (!canvasEl.current) return;
+
+      // const parent = canvasEl.current.parentElement;
+      const parent = containerRef.current;
+      if (!parent) return;
+
+      const { width, height } = parent.getBoundingClientRect();
+
+      canvas.setDimensions({
+        width: Math.floor(width) - 4,
+        height: Math.floor(height) - 4,
+      });
+      canvas.renderAll();
+    };
+
     // make the fabric.Canvas instance available to your app
     updateCanvasContext(canvas);
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
     return () => {
+      window.removeEventListener("resize", resizeCanvas);
       updateCanvasContext(null);
       canvas.dispose();
     };
   }, []);
 
   return (
-    <canvas
-      style={{ border: "1px solid black" }}
-      width="800"
-      height="500"
-      ref={canvasEl}
-    />
+    // AT_HERE: fill the canvas with the height and width of the container/parent div
+    <div
+      ref={containerRef}
+      style={{ width: "100%", height: "100%", border: "2px solid black" }}
+    >
+      <canvas ref={canvasEl} />
+    </div>
   );
 };

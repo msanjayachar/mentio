@@ -30,7 +30,6 @@ mcqSlidesRouter.post("/", async (req, res) => {
       allowMultiple,
     });
   } catch (error) {
-    console.log("error: ", error);
     return res.status(400).json({
       success: false,
       data: null,
@@ -65,7 +64,9 @@ mcqSlidesRouter.post("/", async (req, res) => {
 
   return res.status(200).json({
     success: true,
-    data: finalSlide,
+    data: {
+      slide: finalSlide,
+    },
     error: null,
   });
 });

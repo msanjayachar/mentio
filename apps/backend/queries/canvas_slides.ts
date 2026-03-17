@@ -10,3 +10,11 @@ export async function createCanvasSlides(
 
   return result.rows[0];
 }
+
+export async function getCanvasSlides(userId: string) {
+  const query = `SELECT * FROM canvas_slides WHERE user_id = ($1);`;
+
+  const result = await pool.query(query, [userId]);
+
+  return result.rows;
+}
