@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import type { McqOption, McqQuestion } from "@shared/mcq";
+import type { CanvasSlide, McqOption, McqQuestion } from "@shared/mcq";
 import { SlidesState } from "@shared/types";
 import { FabricJSCanvas } from "@repo/ui/FabricJSCanvas";
 import CanvasToolbar from "./canvasToolbar";
@@ -52,6 +52,21 @@ const Question = ({
     "bg-indigo-900",
     "bg-red-800",
   ];
+
+  const updateCanvasSlide = async (canvasSlide: CanvasSlide) => {
+    const url = `http://localhost:8000/canvas/${canvasSlide.id}`;
+
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ canvasObject: canvasSlide.canvasObject }),
+    });
+
+    return response;
+  };
 
   useEffect(() => {
     const tkn = localStorage.getItem("token");
@@ -168,7 +183,14 @@ const Question = ({
           // TODO: Use this as well
           // <PlainTextSlide />
           <div className="h-[600px] px-4 py-2">
-            <FabricJSCanvas tool={tool} backgroundColor="red" />
+            <FabricJSCanvas
+              tool={tool}
+              backgroundColor="red"
+              slide={slide}
+              slides={slides}
+              setSlides={setSlides}
+              onSave={updateCanvasSlide}
+            />
           </div>
         )}
         {/* TODO: Dynamic width and height */}

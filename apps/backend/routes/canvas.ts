@@ -1,5 +1,11 @@
 import { Router } from "express";
-import { createCanvasSlides, getCanvasSlides } from "../queries/canvas_slides";
+import {
+  createCanvasSlides,
+  getCanvasSlides,
+  getCanvasSlide,
+  updateCanvasSlides,
+} from "../queries/canvas_slides";
+import { CanvasSlidesSchema } from "@shared/mcq";
 
 const canvasSlidesRouter = Router();
 
@@ -19,10 +25,16 @@ canvasSlidesRouter.post("/", async (req, res) => {
     });
   }
 
+  const finalCanvas = {
+    id: canvas.id,
+    type: "canvas_slide",
+    canvasObject: canvas.canvas_object,
+  };
+
   return res.status(200).json({
     success: true,
     data: {
-      slide: canvas,
+      slide: finalCanvas,
     },
     error: null,
   });
@@ -42,11 +54,97 @@ canvasSlidesRouter.get("/", async (req, res) => {
     });
   }
 
+  const finalCanvasSlides = canvasSlides.map((canvasSlide) => {
+    return {
+      id: canvasSlide.id,
+      type: "canvas_slide",
+      canvasObject: canvasSlide.canvas_object,
+    };
+  });
+
   return res.status(200).json({
     success: true,
     data: {
-      slides: canvasSlides,
+      slides: finalCanvasSlides,
     },
+    error: null,
+  });
+});
+
+canvasSlidesRouter.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.user;
+
+  let canvasSlide;
+  try {
+    canvasSlide = await getCanvasSlide(id, userId);
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      error: "FAILED_TO_FETCH_SLIDES",
+    });
+  }
+
+  const finalCanvas = {
+    id: canvasSlide.id,
+    type: "canvas_slide",
+    canvasObject: canvasSlide.canvas_object,
+  };
+
+  return res.status(200).json({
+    success: true,
+    data: {
+      slide: finalCanvas,
+    },
+    error: null,
+  });
+});
+
+// AT_HERE: Update this to patch canvas state
+canvasSlidesRouter.patch("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.user;
+  const body = req.body;
+  const { canvasObject } = body;
+
+  const type = "canvas_slide";
+
+  let parsed;
+  try {
+    parsed = CanvasSlidesSchema.parse({
+      id,
+      type,
+      canvasObject,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      error: "INVALID_REQUEST",
+    });
+  }
+
+  let canvasSlide;
+  try {
+    canvasSlide = await updateCanvasSlides(id, userId, canvasObject);
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      error: "FAILED_TO_UPDATE_SLIDE",
+    });
+  }
+
+  const finalCanvas = {
+    id: canvasSlide.id,
+    type: "canvas_slide",
+    canvasObject: canvasSlide.canvas_object,
+  };
+
+  return res.status(200).json({
+    success: true,
+    data: finalCanvas,
     error: null,
   });
 });

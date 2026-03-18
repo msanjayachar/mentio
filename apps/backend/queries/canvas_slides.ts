@@ -18,3 +18,22 @@ export async function getCanvasSlides(userId: string) {
 
   return result.rows;
 }
+
+export async function getCanvasSlide(canvasSlideId: string, userId: string) {
+  const query = `SELECT * FROM canvas_slides WHERE id = $1 AND user_id = $2;`;
+
+  const result = await pool.query(query, [canvasSlideId, userId]);
+
+  return result.rows[0];
+}
+
+export async function updateCanvasSlides(
+  id: string,
+  userId: string,
+  canvasObject: Object,
+) {
+  const query = `UPDATE canvas_slides SET canvas_object = $3 WHERE user_id = $2 AND id = $1 RETURNING *;`;
+  const result = await pool.query(query, [id, userId, canvasObject]);
+
+  return result.rows[0];
+}

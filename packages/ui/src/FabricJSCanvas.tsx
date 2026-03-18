@@ -1,20 +1,46 @@
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { Canvas, Rect, Textbox } from "fabric";
+import { SlidesState } from "../../shared/src/types";
 import { FabricImage } from "fabric";
+import { CanvasSlide, SlideState } from "../../shared/src/mcq";
+import { FabricObject } from "fabric";
 
 export const FabricJSCanvas = ({
   tool,
   backgroundColor,
+  slide,
+  slides,
+  setSlides,
+  onSave,
 }: {
   tool: "text" | "shapes" | "image";
   backgroundColor: string;
+  slide: CanvasSlide;
+  slides: SlidesState;
+  setSlides?: Dispatch<SetStateAction<SlidesState>>;
+  onSave: (canvasSlide: CanvasSlide) => Promise<Response>;
 }) => {
   const canvasEl = useRef<HTMLCanvasElement>(null);
-  const [canvasState, setCanvasState] = useState(null);
+  const [canvasState, setCanvasState] = useState<FabricObject | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
   const toolRef = useRef(tool);
+  const canvasRef = useRef<Canvas | null>(null);
 
   const updateCanvasContext = (canvas: Canvas | null) => {};
+
+  const handleUpdate = (state: any) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      onSave({
+        ...slide,
+        canvasObject: state,
+      });
+    }, 600);
+  };
 
   useEffect(() => {
     toolRef.current = tool;
@@ -27,6 +53,19 @@ export const FabricJSCanvas = ({
       const state = canvas.toJSON();
 
       setCanvasState(state);
+      handleUpdate(state);
+
+      if (!setSlides) return;
+
+      setSlides((prev) => ({
+        ...prev,
+        canvasSlides: prev.canvasSlides.map((canvasSlide) =>
+          canvasSlide.id === slide.id
+            ? // ? { ...canvasSlide, object: canvasState }
+              { ...canvasSlide, object: state }
+            : canvasSlide,
+        ),
+      }));
     };
 
     const canvas = new Canvas(canvasEl.current, {
@@ -35,6 +74,7 @@ export const FabricJSCanvas = ({
       selectionLineWidth: 2,
     });
 
+    canvasRef.current = canvas;
     canvas.renderAll();
 
     canvas.on("mouse:dblclick", (event) => {
@@ -106,6 +146,21 @@ export const FabricJSCanvas = ({
       updateCanvasContext(null);
       canvas.dispose();
     };
+  }, []);
+
+  useEffect(() => {
+    console.log("hello from useEffect");
+    if (!canvasEl.current) return;
+
+    // const canvas = (canvasEl.current as any).__fabricInstance;
+    const canvas = canvasRef.current;
+    console.log(!canvas);
+    if (!canvas || !slide.canvasObject) return;
+
+    canvas.loadFromJSON(slide.canvasObject).then(() => {
+      console.log("hello from loadFromJSON");
+      canvas.renderAll();
+    });
   }, []);
 
   return (

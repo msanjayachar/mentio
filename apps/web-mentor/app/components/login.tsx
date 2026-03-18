@@ -15,7 +15,7 @@ const Login = () => {
 
   const testUserLogin = async () => {
     try {
-      await login("testor@gmail.com", "password");
+      await login("sanjay@gmail.com", "password");
 
       toast.success("Login successful", {
         position: "top-center",

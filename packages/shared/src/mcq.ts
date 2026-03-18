@@ -18,9 +18,13 @@ export const McqQuestionSchema = z.object({
 export const CanvasSlidesSchema = z.object({
   id: z.string(),
   type: z.literal("canvas_slide"),
-  object: z.object(),
+  // object: z.object(),
+  canvasObject: z.any().nullable().optional(),
 });
 
 export type McqQuestion = z.infer<typeof McqQuestionSchema>;
 export type McqOption = z.infer<typeof OptionSchema>;
 export type CanvasSlide = z.infer<typeof CanvasSlidesSchema>;
+export type SlideState =
+  | z.infer<typeof McqQuestionSchema>
+  | z.infer<typeof CanvasSlidesSchema>;
