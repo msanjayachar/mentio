@@ -3,12 +3,12 @@ import {
   createMcqSlides,
   deleteSlides,
   deleteSlidesById,
+  getMcqSlideById,
   getMcqSlides,
-  getMcqSlidesById,
   updateMcqSlides,
 } from "../queries/mcq_slides";
 import { Request, Response } from "express";
-import { McqQuestionSchema } from "@shared/mcq";
+import { McqQuestionSchema, McqQuestionUpdateSchema } from "@shared/mcq";
 
 const mcqSlidesRouter = Router();
 
@@ -60,6 +60,7 @@ mcqSlidesRouter.post("/", async (req, res) => {
     options: slide.options,
     correrctAnswers: slide.correct_answers,
     allowMultiple: slide.allow_multiple,
+    createdAt: slide.created_at,
   };
 
   return res.status(200).json({
@@ -86,8 +87,14 @@ mcqSlidesRouter.get("/", async (req: Request, res: Response) => {
   }
 
   const slidesWithType = slides.map((slide) => ({
-    ...slide,
+    id: slide.id,
     type: "multiple_choice",
+    userId: slide.user_id,
+    question: slide.question,
+    options: slide.options,
+    correctAnswers: slide.correct_answers,
+    allowMultiple: slide.allow_multiple,
+    createdAt: slide.created_at,
   }));
 
   return res.status(200).json({
@@ -104,7 +111,7 @@ mcqSlidesRouter.get("/:id", async (req, res) => {
 
   let slide;
   try {
-    slide = await getMcqSlidesById(id);
+    slide = await getMcqSlideById(id);
   } catch (error) {
     return res.status(400).json({
       success: false,
@@ -113,9 +120,22 @@ mcqSlidesRouter.get("/:id", async (req, res) => {
     });
   }
 
+  if (!slide) return;
+
+  const finalSlide = {
+    id: slide.id,
+    type: "multiple_choice",
+    userId: slide.user_id,
+    question: slide.question,
+    options: slide.options,
+    correctAnswers: slide.correct_answers,
+    allowMultiple: slide.allow_multiple,
+    createdAt: slide.created_at,
+  };
+
   return res.status(200).json({
     success: true,
-    data: slide,
+    data: finalSlide,
     error: null,
   });
 });
@@ -128,7 +148,7 @@ mcqSlidesRouter.patch("/:id", async (req, res) => {
 
   let parsed;
   try {
-    parsed = McqQuestionSchema.parse({
+    parsed = McqQuestionUpdateSchema.parse({
       question,
       options,
       correctAnswers,
@@ -142,9 +162,9 @@ mcqSlidesRouter.patch("/:id", async (req, res) => {
     });
   }
 
-  let result;
+  let slide;
   try {
-    result = await updateMcqSlides(
+    slide = await updateMcqSlides(
       id,
       userId,
       parsed.question,
@@ -160,9 +180,20 @@ mcqSlidesRouter.patch("/:id", async (req, res) => {
     });
   }
 
+  const finalSlide = {
+    id: slide.id,
+    type: "multiple_choice",
+    userId: slide.user_id,
+    question: slide.question,
+    options: slide.options,
+    correctAnswers: slide.correct_answers,
+    allowMultiple: slide.allow_multiple,
+    createdAt: slide.created_at,
+  };
+
   return res.status(200).json({
     success: true,
-    data: result,
+    data: finalSlide,
     error: null,
   });
 });

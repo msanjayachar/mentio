@@ -45,7 +45,9 @@ const NewSlide = ({
     object: {},
   };
 
-  const createSlide = async (slide: Omit<McqQuestion, "id" | "type">) => {
+  const createSlide = async (
+    slide: Omit<McqQuestion, "id" | "type" | "createdAt">,
+  ) => {
     const url = "http://localhost:8000/slides";
 
     const response = await fetch(url, {

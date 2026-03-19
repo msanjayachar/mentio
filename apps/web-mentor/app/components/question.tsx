@@ -11,7 +11,6 @@ import {
 import type { CanvasSlide, McqOption, McqQuestion } from "@shared/mcq";
 import { SlidesState } from "@shared/types";
 import { FabricJSCanvas } from "@repo/ui/FabricJSCanvas";
-import CanvasToolbar from "./canvasToolbar";
 
 const Question = ({
   tool,
@@ -31,11 +30,6 @@ const Question = ({
   const [token, setToken] = useState<string | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
-  const [contents, setContents] = useState({
-    id: "one",
-    title: "",
-    description: "",
-  });
   // Getting the slide (mcq or canvas) thats selected right now
   const slide =
     (Array.isArray(slides?.mcqSlides)
@@ -44,6 +38,15 @@ const Question = ({
     (Array.isArray(slides.canvasSlides)
       ? slides?.canvasSlides?.find((slide) => slide.id === selectedSlide)
       : undefined);
+
+  // AT_HERE: Slides in initially undefined, hence, slide is also undefined. Hence, the input will not have the value that we fetch from the db.
+  // How are we going to handle this?
+  useEffect(() => {
+    console.log("*************************");
+    console.log("slide: ", slide);
+    console.log("slides: ", slides);
+    console.log("*************************");
+  }, [slide, slides]);
 
   const colors = [
     "bg-blue-500",
@@ -119,33 +122,16 @@ const Question = ({
     }));
   };
 
-  const handleContent = (
-    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
-    type: "title" | "description",
-  ) => {
-    if (type === "title") {
-      setContents((prev) => ({
-        ...prev,
-        title: e.target.value,
-      }));
-    } else if (type === "description") {
-      setContents((prev) => ({
-        ...prev,
-        description: e.target.value,
-      }));
-    }
-  };
-
   if (!slide) return null;
 
   return (
     <div className="m-8 h-[700px] w-auto rounded-md border-2 bg-white hover:border-blue-800">
       <span className="flex justify-end pt-4 pr-4">Mentio</span>
       <div className="flex flex-col gap-6 px-4">
-        {slide.type === "multiple_choice" ? (
+        {slide.type === "multiple_choice" && (
           <div className="flex flex-col items-center gap-4 px-8 pt-6">
             <input
-              value={slide.question}
+              value={slide.question ?? ""}
               className="h-18 w-full rounded-md border-2 px-4 text-2xl hover:border-blue-800 focus:border-transparent focus:outline-2 focus:outline-blue-800"
               onChange={(e) => {
                 handleUpdate(e);
@@ -159,7 +145,7 @@ const Question = ({
               className={`mx-8 flex ${slide.type === "multiple_choice" ? "h-[480px]" : "h-[600px]"} w-full cursor-pointer items-end justify-between gap-x-2 rounded-md border-2 px-12 pb-8 hover:border-blue-800`}
               onClick={() => handleEdit()}
             >
-              {slide.type === "multiple_choice" &&
+              {slide &&
                 slide.options.map((opt: McqOption, idx: number) => (
                   <div
                     key={opt.id}
@@ -179,9 +165,11 @@ const Question = ({
                 ))}
             </div>
           </div>
-        ) : (
-          // TODO: Use this as well
-          // <PlainTextSlide />
+        )}
+      </div>
+
+      <div className="flex flex-col gap-6 px-4">
+        {slide.type === "canvas_slide" && (
           <div className="h-[600px] px-4 py-2">
             <FabricJSCanvas
               tool={tool}
@@ -194,7 +182,6 @@ const Question = ({
             />
           </div>
         )}
-        {/* TODO: Dynamic width and height */}
       </div>
     </div>
   );

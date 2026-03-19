@@ -29,6 +29,7 @@ canvasSlidesRouter.post("/", async (req, res) => {
     id: canvas.id,
     type: "canvas_slide",
     canvasObject: canvas.canvas_object,
+    createdAt: canvas.created_at,
   };
 
   return res.status(200).json({
@@ -59,6 +60,7 @@ canvasSlidesRouter.get("/", async (req, res) => {
       id: canvasSlide.id,
       type: "canvas_slide",
       canvasObject: canvasSlide.canvas_object,
+      createdAt: canvasSlide.created_at,
     };
   });
 
@@ -90,6 +92,7 @@ canvasSlidesRouter.get("/:id", async (req, res) => {
     id: canvasSlide.id,
     type: "canvas_slide",
     canvasObject: canvasSlide.canvas_object,
+    createdAt: canvasSlide.created_at,
   };
 
   return res.status(200).json({
@@ -139,6 +142,7 @@ canvasSlidesRouter.patch("/:id", async (req, res) => {
     id: canvasSlide.id,
     type: "canvas_slide",
     canvasObject: canvasSlide.canvas_object,
+    createdAt: canvasSlide.created_at,
   };
 
   return res.status(200).json({

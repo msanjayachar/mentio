@@ -26,5 +26,6 @@ export const slides: McqQuestion[] = [
     options: options,
     correctAnswers: [],
     allowMultiple: false,
+    createdAt: new Date().toISOString(),
   },
 ];

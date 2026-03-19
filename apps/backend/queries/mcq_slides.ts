@@ -29,8 +29,8 @@ export async function getMcqSlides(userId: string) {
   return result.rows;
 }
 
-export async function getMcqSlidesById(slidesId: string) {
-  const query = `SELECT id, question, options, correct_answers, allow_multiple from mcq_slides WHERE id = ($1);`;
+export async function getMcqSlideById(slidesId: string) {
+  const query = `SELECT * from mcq_slides WHERE id = ($1);`;
 
   const result = await pool.query(query, [slidesId]);
 
@@ -38,15 +38,7 @@ export async function getMcqSlidesById(slidesId: string) {
     return null;
   }
 
-  const finalResult = result.rows.map((row) => ({
-    id: row.id,
-    question: row.question,
-    options: row.options,
-    correct_answers: row.correct_answers,
-    allow_multiple: row.allow_multiple,
-  }));
-
-  return finalResult[0];
+  return result.rows[0];
 }
 
 export async function deleteSlides(userId: string): Promise<number> {
@@ -70,10 +62,10 @@ export async function deleteSlidesById(
 export async function updateMcqSlides(
   id: string,
   userId: string,
-  question: string,
-  options: Object[],
-  correctAnswers: Object[],
-  allowMultiple: boolean,
+  question?: string,
+  options?: Object[],
+  correctAnswers?: Object[],
+  allowMultiple?: boolean,
 ) {
   const query = `UPDATE mcq_slides SET question = $1, options = $2, correct_answers = $3, allow_multiple = $4 WHERE id = $5 AND user_id = $6 RETURNING *;`;
 
