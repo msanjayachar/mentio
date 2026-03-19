@@ -39,15 +39,6 @@ const Question = ({
       ? slides?.canvasSlides?.find((slide) => slide.id === selectedSlide)
       : undefined);
 
-  // AT_HERE: Slides in initially undefined, hence, slide is also undefined. Hence, the input will not have the value that we fetch from the db.
-  // How are we going to handle this?
-  useEffect(() => {
-    console.log("*************************");
-    console.log("slide: ", slide);
-    console.log("slides: ", slides);
-    console.log("*************************");
-  }, [slide, slides]);
-
   const colors = [
     "bg-blue-500",
     "bg-rose-400",

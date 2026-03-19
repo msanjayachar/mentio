@@ -29,8 +29,16 @@ export const FabricJSCanvas = ({
   const toolRef = useRef(tool);
   const canvasRef = useRef<Canvas | null>(null);
   const selectedCanvasSlide = useRef<CanvasSlide | undefined>(undefined);
+  const [counter, setCounter] = useState(0);
 
   const updateCanvasContext = (canvas: Canvas | null) => {};
+
+  // AT_HERE: What's causing the mount back up.
+  // mount, unmount and mount back again.
+  useEffect(() => {
+    console.log("MOUNT");
+    return () => console.log("UNMOUNT");
+  }, []);
 
   useEffect(() => {
     selectedCanvasSlide.current = slides.canvasSlides.find(
@@ -160,18 +168,37 @@ export const FabricJSCanvas = ({
     };
   }, []);
 
+  const lastLoadedRef = useRef<string | null>(null);
+
   useEffect(() => {
-    if (!canvasEl.current) return;
+    if (!canvasRef.current || !slide.canvasObject) return;
 
-    // const canvas = (canvasEl.current as any).__fabricInstance;
-    const canvas = canvasRef.current;
+    const key = JSON.stringify(slide.canvasObject);
 
-    if (!canvas || !slide.canvasObject) return;
+    if (lastLoadedRef.current === key) return;
+    lastLoadedRef.current = key;
 
-    canvas.loadFromJSON(slide.canvasObject).then(() => {
-      canvas.renderAll();
+    console.log("counter: ", counter);
+    canvasRef.current.loadFromJSON(slide.canvasObject).then(() => {
+      setCounter((prev) => prev + 1);
+      canvasRef.current?.requestRenderAll();
     });
   }, [selectedSlide]);
+
+  // useEffect(() => {
+  //   if (!canvasEl.current) return;
+  //
+  //   // const canvas = (canvasEl.current as any).__fabricInstance;
+  //   const canvas = canvasRef.current;
+  //
+  //   if (!canvas || !slide.canvasObject) return;
+  //
+  //   console.log("counter: ", counter);
+  //   canvas.loadFromJSON(slide.canvasObject).then((canvas) => {
+  //     setCounter((prev) => prev + 1);
+  //     canvas.requestRenderAll();
+  //   });
+  // }, [selectedSlide]);
 
   return (
     <div
