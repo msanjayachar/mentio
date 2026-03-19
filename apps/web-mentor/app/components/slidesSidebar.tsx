@@ -101,7 +101,7 @@ const SlidesSidebar = ({
                   {/* <span className="text-[12px]">{item.id}</span> */}
                   <span className="text-sm text-red-800">{slide.id}</span>
 
-                  <span className="text-sm text-red-800">{selected}</span>
+                  {/* <span className="text-sm text-red-800">{selected}</span> */}
                   <div
                     className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected === slide.id ? "ring ring-blue-700" : ""}`}
                   >
@@ -119,7 +119,7 @@ const SlidesSidebar = ({
                   {/* <span className="text-[12px]">{item.id}</span> */}
                   <span className="text-sm text-red-800">{slide.id}</span>
 
-                  <span className="text-sm text-red-800">{selected}</span>
+                  {/* <span className="text-sm text-red-800">{selected}</span> */}
                   <div
                     className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected === slide.id ? "ring ring-blue-700" : ""}`}
                   >

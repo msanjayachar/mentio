@@ -22,15 +22,17 @@ const Presentations = () => {
     mcqSlides: [],
     canvasSlides: [],
   });
-  const [selected, setSelected] = useState<string | undefined>(undefined);
+  const [selectedSlide, setSelectedSlide] = useState<string | undefined>(
+    undefined,
+  );
   const [tool, setTool] = useState<"text" | "image" | "shapes">("text");
 
   useEffect(() => {
-    if (slides && slides.mcqSlides && slides.canvasSlides && !selected) {
+    if (slides && slides.mcqSlides && slides.canvasSlides && !selectedSlide) {
       // VERIFY: Whether this works as intended
-      setSelected(slides.mcqSlides[0]?.id);
+      setSelectedSlide(slides.mcqSlides[0]?.id);
     }
-  }, [slides, selected]);
+  }, [slides, selectedSlide]);
 
   const handleSpeakerNotes = () => {
     setSpeakerNotes((prev) => !prev);
@@ -60,8 +62,8 @@ const Presentations = () => {
       <div className="flex flex-col">
         <div className="flex">
           <SlidesSidebar
-            selected={selected}
-            setSelected={setSelected}
+            selected={selectedSlide}
+            setSelected={setSelectedSlide}
             slides={slides}
             setSlides={setSlides}
           />
@@ -74,7 +76,7 @@ const Presentations = () => {
               tool={tool}
               slides={slides}
               setSlides={setSlides}
-              selected={selected}
+              selectedSlide={selectedSlide}
               handleEdit={handleEdit}
               handleQuestionSelect={handleQuestionSelect}
             />
@@ -92,7 +94,7 @@ const Presentations = () => {
 
           <div className="flex shrink-0">
             <PresentationHelper
-              selected={selected!}
+              selectedSlide={selectedSlide!}
               slides={slides}
               setSlides={setSlides}
               handleEdit={handleEdit}

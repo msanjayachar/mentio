@@ -17,14 +17,14 @@ const Question = ({
   tool,
   slides,
   setSlides,
-  selected,
+  selectedSlide,
   handleQuestionSelect,
   handleEdit,
 }: {
   tool: "text" | "image" | "shapes";
   slides: SlidesState;
   setSlides: Dispatch<SetStateAction<SlidesState>>;
-  selected: string | undefined;
+  selectedSlide: string | undefined;
   handleQuestionSelect: () => void;
   handleEdit: () => void;
 }) => {
@@ -39,10 +39,10 @@ const Question = ({
   // Getting the slide (mcq or canvas) thats selected right now
   const slide =
     (Array.isArray(slides?.mcqSlides)
-      ? slides?.mcqSlides?.find((slide) => slide.id === selected)
+      ? slides?.mcqSlides?.find((slide) => slide.id === selectedSlide)
       : undefined) ||
     (Array.isArray(slides.canvasSlides)
-      ? slides?.canvasSlides?.find((slide) => slide.id === selected)
+      ? slides?.canvasSlides?.find((slide) => slide.id === selectedSlide)
       : undefined);
 
   const colors = [
@@ -109,7 +109,7 @@ const Question = ({
     setSlides((slides) => ({
       ...slides,
       mcqSlides: slides.mcqSlides.map((slide) =>
-        slide.id === selected
+        slide.id === selectedSlide
           ? {
               ...slide,
               question: e.target.value,
@@ -190,6 +190,7 @@ const Question = ({
               slides={slides}
               setSlides={setSlides}
               onSave={updateCanvasSlide}
+              selectedSlide={selectedSlide}
             />
           </div>
         )}

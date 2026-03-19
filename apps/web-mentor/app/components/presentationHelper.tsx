@@ -14,13 +14,13 @@ import {
 import { SlidesState } from "@shared/types";
 
 const PresentationHelper = ({
-  selected,
+  selectedSlide,
   slides,
   setSlides,
   editSelected,
   handleEdit,
 }: {
-  selected: string;
+  selectedSlide: string;
   slides: SlidesState;
   setSlides: Dispatch<SetStateAction<SlidesState>>;
   editSelected: boolean;
@@ -41,10 +41,10 @@ const PresentationHelper = ({
 
   const slide =
     (Array.isArray(slides?.mcqSlides)
-      ? slides?.mcqSlides?.find((slide) => slide.id === selected)
+      ? slides?.mcqSlides?.find((slide) => slide.id === selectedSlide)
       : undefined) ||
     (Array.isArray(slides.canvasSlides)
-      ? slides?.canvasSlides?.find((slide) => slide.id === selected)
+      ? slides?.canvasSlides?.find((slide) => slide.id === selectedSlide)
       : undefined);
 
   const colors = [
@@ -128,7 +128,7 @@ const PresentationHelper = ({
     setSlides((prev) => ({
       ...prev,
       mcqSlides: prev.mcqSlides.map((slide) =>
-        slide.id === selected && slide.type === "multiple_choice"
+        slide.id === selectedSlide && slide.type === "multiple_choice"
           ? {
               ...slide,
               options: [
@@ -151,7 +151,7 @@ const PresentationHelper = ({
     setSlides((slides) => ({
       ...slides,
       mcqSlides: slides.mcqSlides.map((slide) =>
-        slide.id === selected && slide.type === "multiple_choice"
+        slide.id === selectedSlide && slide.type === "multiple_choice"
           ? {
               ...slide,
               options: slide.options.filter((option) => option.id !== optionId),
@@ -273,7 +273,9 @@ const PresentationHelper = ({
                           ? option.option
                           : `Option ${idx + 1}`
                       }
-                      onChange={(e) => handleOptions(e, selected, option.id)}
+                      onChange={(e) =>
+                        handleOptions(e, selectedSlide, option.id)
+                      }
                       placeholder={`Option ${idx + 1}`}
                       className="w-full min-w-0 font-light outline-none"
                     />

@@ -12,6 +12,7 @@ export const FabricJSCanvas = ({
   slides,
   setSlides,
   onSave,
+  selectedSlide,
 }: {
   tool: "text" | "shapes" | "image";
   backgroundColor: string;
@@ -19,6 +20,7 @@ export const FabricJSCanvas = ({
   slides: SlidesState;
   setSlides?: Dispatch<SetStateAction<SlidesState>>;
   onSave: (canvasSlide: CanvasSlide) => Promise<Response>;
+  selectedSlide: string | undefined;
 }) => {
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const [canvasState, setCanvasState] = useState<FabricObject | null>(null);
@@ -26,17 +28,27 @@ export const FabricJSCanvas = ({
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
   const toolRef = useRef(tool);
   const canvasRef = useRef<Canvas | null>(null);
+  const selectedCanvasSlide = useRef<CanvasSlide | undefined>(undefined);
 
   const updateCanvasContext = (canvas: Canvas | null) => {};
+
+  useEffect(() => {
+    selectedCanvasSlide.current = slides.canvasSlides.find(
+      (slide) => slide.id === selectedSlide,
+    );
+  }, [slide]);
 
   const handleUpdate = (state: any) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
 
-    timeoutRef.current = setTimeout(() => {
-      onSave({
-        ...slide,
+    const currentSlide = selectedCanvasSlide.current;
+    if (!currentSlide) return;
+
+    timeoutRef.current = setTimeout(async () => {
+      await onSave({
+        ...currentSlide,
         canvasObject: state,
       });
     }, 600);
@@ -149,22 +161,19 @@ export const FabricJSCanvas = ({
   }, []);
 
   useEffect(() => {
-    console.log("hello from useEffect");
     if (!canvasEl.current) return;
 
     // const canvas = (canvasEl.current as any).__fabricInstance;
     const canvas = canvasRef.current;
-    console.log(!canvas);
+
     if (!canvas || !slide.canvasObject) return;
 
     canvas.loadFromJSON(slide.canvasObject).then(() => {
-      console.log("hello from loadFromJSON");
       canvas.renderAll();
     });
-  }, []);
+  }, [selectedSlide]);
 
   return (
-    // AT_HERE: fill the canvas with the height and width of the container/parent div
     <div
       ref={containerRef}
       style={{ width: "100%", height: "100%", border: "2px solid black" }}

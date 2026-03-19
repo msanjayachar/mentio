@@ -101,7 +101,6 @@ canvasSlidesRouter.get("/:id", async (req, res) => {
   });
 });
 
-// AT_HERE: Update this to patch canvas state
 canvasSlidesRouter.patch("/:id", async (req, res) => {
   const { id } = req.params;
   const { userId } = req.user;
