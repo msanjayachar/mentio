@@ -13,6 +13,29 @@ const Login = () => {
   const router = useRouter();
   const { login } = useCurrentUser();
 
+  const testUserLogin = async () => {
+    try {
+      await login("sanjay@gmail.com", "password");
+
+      toast.success("Login successful", {
+        position: "top-center",
+        style: {
+          background: "green",
+          color: "white",
+        },
+      });
+      router.push("/");
+    } catch {
+      toast.error("Something went wrong", {
+        position: "top-center",
+        style: {
+          background: "red",
+          color: "white",
+        },
+      });
+    }
+  };
+
   const handleLogin = async () => {
     try {
       await login(email, password);
@@ -53,6 +76,13 @@ const Login = () => {
             height={16}
           />
           <span>Login with Google</span>
+        </button>
+
+        <button
+          onClick={() => testUserLogin()}
+          className="cursor-pointer rounded-md border-2 border-black bg-red-400 py-2 text-xl"
+        >
+          Login Test User
         </button>
 
         <p className="text-md text-center font-light text-gray-400">

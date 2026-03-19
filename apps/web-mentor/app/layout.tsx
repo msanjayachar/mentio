@@ -4,7 +4,8 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import Navbar from "./components/navbar";
 import { Toaster } from "sonner";
-import { Providers } from "./providers";
+import { AuthGuard } from "./components/context/authGuard";
+import { Providers } from "./(protected)/providers";
 
 const geist = Geist({ subsets: ["latin"] });
 

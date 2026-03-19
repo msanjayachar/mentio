@@ -4,7 +4,6 @@ import { Request, Response, NextFunction } from "express";
 
 interface AuthPayload {
   userId: string;
-  role: string;
 }
 
 export const middleware = (req: Request, res: Response, next: NextFunction) => {
@@ -44,7 +43,7 @@ export const middleware = (req: Request, res: Response, next: NextFunction) => {
 
     const payload = decoded as AuthPayload;
 
-    req.user = { userId: payload.userId, role: payload.role };
+    req.user = { userId: payload.userId };
 
     next();
   } catch (error) {

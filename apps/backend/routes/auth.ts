@@ -1,10 +1,11 @@
-import { Router } from "express";
 import { createUser, getUser, getUserByUserId } from "../queries/user";
+import { Router } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { middleware } from "../middleware/auth";
 import { Request, Response } from "express";
-import { SignupUser, LoginUser } from "@shared/auth";
+import { SignupSchema, LoginSchema } from "@shared/auth";
+import "dotenv/config";
 
 const authRouter = Router();
 const saltRounds = 10;
@@ -12,6 +13,7 @@ const secret = process.env.SECRET;
 
 authRouter.get("/me", middleware, async (req: Request, res: Response) => {
   const { userId } = req.user;
+
   let user;
 
   try {
@@ -28,7 +30,6 @@ authRouter.get("/me", middleware, async (req: Request, res: Response) => {
     userId: user.id,
     name: user.name,
     email: user.email,
-    role: user.role,
   };
 
   return res.status(200).json({
@@ -40,12 +41,13 @@ authRouter.get("/me", middleware, async (req: Request, res: Response) => {
 
 authRouter.post("/signup", async (req, res) => {
   const body = req.body;
-  const { email, name, password, role } = body;
+  const { name, email, password } = body;
+
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   let parsed;
   try {
-    parsed = SignupUser.parse({ name, email, password, role });
+    parsed = SignupSchema.parse({ name, email, password });
   } catch (error) {
     return res.status(400).json({
       success: false,
@@ -53,10 +55,6 @@ authRouter.post("/signup", async (req, res) => {
       error: "INVALID_REQUEST",
     });
   }
-
-  console.log("*************************");
-  console.log("parsed: ", parsed);
-  console.log("*************************");
 
   if (!parsed) {
     return res.status(400).json({
@@ -68,12 +66,7 @@ authRouter.post("/signup", async (req, res) => {
 
   let user;
   try {
-    user = await createUser(
-      parsed.email,
-      parsed.name,
-      hashedPassword,
-      parsed.role,
-    );
+    user = await createUser(parsed.name, parsed.email, hashedPassword);
   } catch (error) {
     return res.status(400).json({
       success: false,
@@ -86,7 +79,6 @@ authRouter.post("/signup", async (req, res) => {
     userId: user.id,
     name: user.name,
     email: user.email,
-    role: user.role,
   };
 
   return res.status(200).json({
@@ -102,7 +94,7 @@ authRouter.post("/login", async (req, res) => {
 
   let parsed;
   try {
-    parsed = LoginUser.parse({ email, password });
+    parsed = LoginSchema.parse({ email, password });
   } catch (error) {
     return res.status(400).json({
       success: false,
@@ -125,7 +117,7 @@ authRouter.post("/login", async (req, res) => {
   } catch (error) {
     return res.status(401).json({
       success: false,
-      data: {},
+      data: null,
       error: "INVALID_CREDENTIALS",
     });
   }
@@ -135,7 +127,7 @@ authRouter.post("/login", async (req, res) => {
   if (!user) {
     return res.status(401).json({
       success: false,
-      data: {},
+      data: null,
       error: "INVALID_CREDENTIALS",
     });
   }
@@ -153,7 +145,6 @@ authRouter.post("/login", async (req, res) => {
   const JWT_TOKEN = jwt.sign(
     {
       userId: user.id,
-      role: user.role,
     },
     secret,
     { expiresIn: 60 * 60 },
@@ -163,7 +154,6 @@ authRouter.post("/login", async (req, res) => {
     userId: user.id,
     name: user.name,
     email: user.email,
-    role: user.role,
   };
 
   return res.status(200).json({

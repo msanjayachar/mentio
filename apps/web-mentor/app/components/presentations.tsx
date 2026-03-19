@@ -4,21 +4,35 @@ import PresentationNav from "./presentationNav";
 import Question from "./question";
 import PresentationHelper from "./presentationHelper";
 import PropertiesPanel from "./propertiesPanel";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SpeakerNotes from "./speakerNotes";
 import Comments from "./edit/comments";
 import Questionpanel from "./edit/questionpanel";
-import { useRouter } from "next/navigation";
 import SlidesSidebar from "./slidesSidebar";
-import { slides as initialSlides } from "data/slides";
+import { SlidesState } from "@shared/types";
+import { FabricJSCanvas } from "@repo/ui/FabricJSCanvas";
+import CanvasToolbar from "./canvasToolbar";
 
 const Presentations = () => {
   const [speakerNotes, setSpeakerNotes] = useState(false);
-  const [selected, setSelected] = useState<number>(1);
   const [editSelected, setEditSelected] = useState<boolean>(false);
   const [commentSelected, setCommentSelected] = useState<boolean>(false);
   const [questionSelected, setQuestionSelected] = useState<boolean>(false);
-  const [slides, setSlides] = useState(initialSlides);
+  const [slides, setSlides] = useState<SlidesState>({
+    mcqSlides: [],
+    canvasSlides: [],
+  });
+  const [selectedSlide, setSelectedSlide] = useState<string | undefined>(
+    undefined,
+  );
+  const [tool, setTool] = useState<"text" | "image" | "shapes">("text");
+
+  useEffect(() => {
+    if (slides && slides.mcqSlides && slides.canvasSlides && !selectedSlide) {
+      // VERIFY: Whether this works as intended
+      setSelectedSlide(slides.mcqSlides[0]?.id);
+    }
+  }, [slides, selectedSlide]);
 
   const handleSpeakerNotes = () => {
     setSpeakerNotes((prev) => !prev);
@@ -48,8 +62,8 @@ const Presentations = () => {
       <div className="flex flex-col">
         <div className="flex">
           <SlidesSidebar
-            selected={selected}
-            setSelected={setSelected}
+            selected={selectedSlide}
+            setSelected={setSelectedSlide}
             slides={slides}
             setSlides={setSlides}
           />
@@ -57,10 +71,12 @@ const Presentations = () => {
           {/* <PresentationStarters /> */}
           {/* Canvas Input  */}
           <div className="mb-4 flex min-w-0 flex-1 flex-col justify-between">
+            <CanvasToolbar tool={tool} setTool={setTool} />
             <Question
+              tool={tool}
               slides={slides}
               setSlides={setSlides}
-              selected={selected}
+              selectedSlide={selectedSlide}
               handleEdit={handleEdit}
               handleQuestionSelect={handleQuestionSelect}
             />
@@ -78,7 +94,7 @@ const Presentations = () => {
 
           <div className="flex shrink-0">
             <PresentationHelper
-              selected={selected}
+              selectedSlide={selectedSlide!}
               slides={slides}
               setSlides={setSlides}
               handleEdit={handleEdit}

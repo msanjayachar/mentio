@@ -9,7 +9,9 @@
   ],
   "exports": {
     "./styles.css": "./dist/index.css",
-    "./*": "./dist/*.js"
+    "./*": "./dist/*.js",
+    "./FabricJSCanvas": "./src/FabricJSCanvas.tsx",
+    "./Card": "./src/card.tsx"
   },
   "license": "MIT",
   "scripts": {

@@ -3,20 +3,16 @@
 import { ArrowLeft, ChevronDown, Play, Settings, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type { McqQuestion, McqOption } from "@shared/mcq";
+import { SlidesState } from "@shared/types";
 
-const PresentationNav = ({
-  slides,
-}: {
-  slides: (MCQSlide | PlainTextSlide)[];
-}) => {
+const PresentationNav = ({ slides }: { slides: SlidesState }) => {
   const [presentationTitle, setPresentationTitle] = useState<string | null>(
     null,
   );
   const router = useRouter();
   const presentationId = "randomPresentationId";
 
-  // THREAD:
-  // AT_HERE: How to start the presentation we've got the slides and the presentationTitle
   const startPresentation = () => {
     // Send to the database
     // slides and presentationTitle

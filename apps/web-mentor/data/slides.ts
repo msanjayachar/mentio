@@ -1,33 +1,31 @@
-export const options: Option[] = [
+import type { McqQuestion, McqOption } from "@shared/mcq";
+
+export const options: McqOption[] = [
   {
-    id: 1,
-    text: "",
+    id: "one",
+    option: "",
     correctAnswer: false,
   },
   {
-    id: 2,
-    text: "",
+    id: "two",
+    option: "",
     correctAnswer: false,
   },
   {
-    id: 3,
-    text: "",
+    id: "three",
+    option: "",
     correctAnswer: false,
   },
 ];
 
-export const slides: (MCQSlide | PlainTextSlide)[] = [
+export const slides: McqQuestion[] = [
   {
-    id: 1,
+    id: "one",
     type: "multiple_choice",
     question: "",
     options: options,
     correctAnswers: [],
     allowMultiple: false,
-  },
-  {
-    id: 2,
-    type: "plain_text",
-    contents: [""],
+    createdAt: new Date().toISOString(),
   },
 ];

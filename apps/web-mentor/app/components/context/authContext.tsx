@@ -7,13 +7,12 @@ import {
   useEffect,
   useState,
 } from "react";
-import { LoginUser } from "../../../../../packages/shared/src/auth";
+import { LoginSchema } from "../../../../../packages/shared/src/auth";
 
 type LoginUser = {
   userId: string;
   name: string;
   email: string;
-  role: "mentor" | "mentee";
 };
 
 const CurrentUserContext = createContext<{
@@ -27,8 +26,10 @@ export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<LoginUser | null>(null);
   const [loading, setLoading] = useState(true);
   const login = async (email: string, password: string) => {
+    let parsed;
+
     try {
-      LoginUser.parse({ email, password });
+      parsed = LoginSchema.parse({ email, password });
     } catch (error) {
       if (error instanceof Error) throw error;
       throw new Error("Invalid credentials");
@@ -39,7 +40,7 @@ export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
       const response = await fetch("http://localhost:8000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(parsed),
       });
 
       if (!response.ok) {
