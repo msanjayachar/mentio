@@ -6,7 +6,7 @@ import { PresentationType } from "@shared/mcq";
 import { formatTime } from "@/lib/utils";
 import Link from "next/link";
 
-const PresentationsList = () => {
+const PresentationsList = ({ limit }: { limit?: number }) => {
   const { token } = useCurrentUser();
   const [presentations, setPresentations] = useState<PresentationType[] | null>(
     null,
@@ -28,23 +28,53 @@ const PresentationsList = () => {
   };
 
   useEffect(() => {
+    if (!token) return;
+
     getPresentations();
-  }, []);
+  }, [token]);
 
   if (!presentations) return null;
 
-  return (
-    <div className="bg-red-500">
-      <h1>PresentationsList Component</h1>
+  const items = limit ? presentations.slice(0, limit) : presentations;
 
-      {presentations.map((presentation) => (
-        <div key={presentation.id}>
-          <Link href={`/create/${presentation.id}`}>
-            <h1>{presentation.title}</h1>
-          </Link>
-          <h2>{formatTime(presentation.createdAt)}</h2>
-        </div>
-      ))}
+  return (
+    <div className="bg-slate-50 px-6 py-8">
+      <h1 className="mb-6 text-2xl font-semibold text-slate-800">
+        Presentations
+      </h1>
+
+      <div className="space-y-4">
+        {items.map((presentation) => (
+          <div
+            key={presentation.id}
+            className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm transition hover:shadow-md"
+          >
+            <div>
+              <Link href={`/create/${presentation.id}`}>
+                <h2 className="cursor-pointer text-lg font-medium text-slate-800 hover:underline">
+                  {presentation.title || "Untitled presentation"}
+                </h2>
+              </Link>
+              <p className="text-sm text-slate-500">
+                {formatTime(presentation.createdAt)}
+              </p>
+            </div>
+
+            <Link href={`/presentation/${presentation.id}`}>
+              <button className="rounded-lg bg-slate-800 px-4 py-2 text-sm text-white transition hover:bg-slate-700">
+                View
+              </button>
+            </Link>
+          </div>
+        ))}
+      </div>
+
+      <Link
+        href={"/presentations"}
+        className="block h-8 w-full cursor-pointer items-center py-4 text-center"
+      >
+        View all
+      </Link>
     </div>
   );
 };

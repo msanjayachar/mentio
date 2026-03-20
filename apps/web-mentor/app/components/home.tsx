@@ -37,10 +37,7 @@ const Home = () => {
             <Aichat />
           </div>
 
-          <PresentationsList />
-          <Link href={"/presentations"} className="cursor-pointer">
-            View all
-          </Link>
+          <PresentationsList limit={1} />
 
           <div className="min-w-0">
             <Features />
