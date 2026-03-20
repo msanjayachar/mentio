@@ -17,3 +17,29 @@ export const getEpochSeconds = (time: string) => {
 
   return isNaN(ms) ? null : Math.floor(ms / 1000);
 };
+
+export const fetchSlides = async (token: string) => {
+  const url = "http://localhost:8000/slides";
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response;
+};
+
+export const fetchCanvasSlides = async (token: string) => {
+  const url = "http://localhost:8000/canvas";
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response;
+};

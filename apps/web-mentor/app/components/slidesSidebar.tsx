@@ -5,7 +5,12 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import NewSlide from "./newSlide";
 import { SlidesState, SlidesStateTest } from "@shared/types";
 import { CanvasSlide, McqQuestion } from "@shared/mcq";
-import { formatTime, getEpochSeconds } from "@/lib/utils";
+import {
+  fetchCanvasSlides,
+  fetchSlides,
+  formatTime,
+  getEpochSeconds,
+} from "@/lib/utils";
 import { useCurrentUser } from "./context/authContext";
 
 const SlidesSidebar = ({
@@ -22,39 +27,16 @@ const SlidesSidebar = ({
   const [showSlideOption, setShowSlideOption] = useState<boolean>(false);
   const { token } = useCurrentUser();
 
-  const fetchSlides = async () => {
-    const url = "http://localhost:8000/slides";
-
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    return response;
-  };
-
-  const fetchCanvasSlides = async () => {
-    const url = "http://localhost:8000/canvas";
-
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    return response;
-  };
+  // VERIFY:
+  if (!token) return null;
 
   // NOTE: This is where we fetch the slides on page load
   useEffect(() => {
     const loadSlides = async () => {
-      const response = await fetchSlides();
+      const response = await fetchSlides(token);
       const result = await response.json();
 
-      const response_two = await fetchCanvasSlides();
+      const response_two = await fetchCanvasSlides(token);
       const result_two = await response_two.json();
 
       setSlides(
