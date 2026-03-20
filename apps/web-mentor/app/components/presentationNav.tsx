@@ -1,24 +1,94 @@
 "use client";
 
 import { ArrowLeft, ChevronDown, Play, Settings, User } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import type { McqQuestion, McqOption } from "@shared/mcq";
+import { useParams, useRouter } from "next/navigation";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import type { McqQuestion, McqOption, PresentationType } from "@shared/mcq";
 import { SlidesState, SlidesStateTest } from "@shared/types";
+import { useCurrentUser } from "./context/authContext";
 
 const PresentationNav = ({ slides }: { slides: SlidesStateTest }) => {
-  const [presentationTitle, setPresentationTitle] = useState<string | null>(
+  const [presentationTitle, setPresentationTitle] = useState<string>("");
+  const router = useRouter();
+  const [presentation, setPresentation] = useState<PresentationType | null>(
     null,
   );
-  const router = useRouter();
-  const presentationId = "randomPresentationId";
+  const { token } = useCurrentUser();
+  const { presentationId } = useParams<{ presentationId: string }>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
-  const startPresentation = () => {
-    // Send to the database
-    // slides and presentationTitle
+  const loadPresentation = async (id: string) => {
+    const url = `http://localhost:8000/presentations/${id}`;
 
-    router.push(`/presentation/${presentationId}`);
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result = await response.json();
+
+    setPresentation(result.data);
   };
+
+  useEffect(() => {
+    loadPresentation(presentationId);
+  }, []);
+
+  const startPresentation = async (id: string) => {
+    const url = `http://localhost:8000/presentations/start/${id}`;
+
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title: presentationTitle }),
+    });
+
+    const result = await response.json();
+
+    setPresentation(result.data);
+
+    router.push(`/presentation/${result.data.id}`);
+  };
+
+  const updatePresentation = async (title: string) => {
+    const url = `http://localhost:8000/presentations/${presentationId}`;
+
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title }),
+    });
+
+    return response;
+  };
+
+  const handleUpdate = (e: ChangeEvent<HTMLInputElement>) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    const value = e.target.value;
+
+    setPresentationTitle(value);
+
+    timeoutRef.current = setTimeout(() => {
+      updatePresentation(value);
+    }, 300);
+  };
+
+  useEffect(() => {
+    if (presentation?.title) {
+      setPresentationTitle(presentation.title);
+    }
+  }, [presentation]);
 
   return (
     <div>
@@ -30,7 +100,8 @@ const PresentationNav = ({ slides }: { slides: SlidesStateTest }) => {
           <div>
             <div>
               <input
-                onChange={(e) => setPresentationTitle(e.target.value)}
+                onChange={(e) => handleUpdate(e)}
+                value={presentationTitle}
                 placeholder="Untitled presentation"
                 className="font-light text-black"
               />
@@ -63,7 +134,7 @@ const PresentationNav = ({ slides }: { slides: SlidesStateTest }) => {
         </div>
         <div className="w-fit rounded-full bg-[#5768e7] pl-4">
           <button
-            onClick={() => startPresentation()}
+            onClick={() => startPresentation(presentationId)}
             className="flex h-12 cursor-pointer items-center justify-between"
           >
             <span className="px-2 text-white">

@@ -12,6 +12,7 @@ import SlidesSidebar from "./slidesSidebar";
 import { SlidesState, SlidesStateTest } from "@shared/types";
 import { FabricJSCanvas } from "@repo/ui/FabricJSCanvas";
 import CanvasToolbar from "./canvasToolbar";
+import { useCurrentUser } from "./context/authContext";
 
 const Presentations = () => {
   const [speakerNotes, setSpeakerNotes] = useState(false);
@@ -23,6 +24,7 @@ const Presentations = () => {
     undefined,
   );
   const [tool, setTool] = useState<"text" | "image" | "shapes">("text");
+  const { token } = useCurrentUser();
 
   // Q: What are we trying to do here?
   useEffect(() => {

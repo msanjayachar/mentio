@@ -6,6 +6,7 @@ import NewSlide from "./newSlide";
 import { SlidesState, SlidesStateTest } from "@shared/types";
 import { CanvasSlide, McqQuestion } from "@shared/mcq";
 import { formatTime, getEpochSeconds } from "@/lib/utils";
+import { useCurrentUser } from "./context/authContext";
 
 const SlidesSidebar = ({
   selected,
@@ -19,10 +20,10 @@ const SlidesSidebar = ({
   setSlides: Dispatch<SetStateAction<SlidesStateTest>>;
 }) => {
   const [showSlideOption, setShowSlideOption] = useState<boolean>(false);
+  const { token } = useCurrentUser();
 
   const fetchSlides = async () => {
     const url = "http://localhost:8000/slides";
-    const token = localStorage.getItem("token");
 
     const response = await fetch(url, {
       headers: {
@@ -36,7 +37,6 @@ const SlidesSidebar = ({
 
   const fetchCanvasSlides = async () => {
     const url = "http://localhost:8000/canvas";
-    const token = localStorage.getItem("token");
 
     const response = await fetch(url, {
       headers: {
@@ -98,7 +98,6 @@ const SlidesSidebar = ({
       <div className="flex h-[calc(100vh-80px)] w-48 flex-col gap-4 overflow-auto pt-4">
         {slides ? (
           <div className="ml-2 flex flex-col gap-4">
-            {/* AT_HERE: */}
             {Array.isArray(slides) &&
               slides.map((slide) =>
                 slide.type === "canvas_slide" ? (

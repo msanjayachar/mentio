@@ -6,6 +6,8 @@ import Features from "./features";
 import Sidebar from "./sidebar";
 import { useState } from "react";
 import Homenavbar from "./homenavbar";
+import PresentationsList from "./presentationsList";
+import Link from "next/link";
 
 const Home = () => {
   const [sidebarOpen, setSideBarOpen] = useState(false);
@@ -24,6 +26,7 @@ const Home = () => {
             page="home"
           />
         </aside>
+
         <div className="flex w-full flex-col gap-12">
           {/* TODO: Verify whether the Aichat isn't shrinking below lg because of */}
           {/* the other elements/components here */}
@@ -33,6 +36,12 @@ const Home = () => {
           <div className="hidden min-w-0 lg:block">
             <Aichat />
           </div>
+
+          <PresentationsList />
+          <Link href={"/presentations"} className="cursor-pointer">
+            View all
+          </Link>
+
           <div className="min-w-0">
             <Features />
           </div>
