@@ -15,7 +15,15 @@ const mcqSlidesRouter = Router();
 mcqSlidesRouter.post("/", async (req, res) => {
   const body = req.body;
   const { userId } = req.user;
-  const { id, type, question, options, correctAnswers, allowMultiple } = body;
+  const {
+    id,
+    type,
+    question,
+    options,
+    correctAnswers,
+    allowMultiple,
+    presentationId,
+  } = body;
 
   let slide;
   let parsed;
@@ -44,6 +52,7 @@ mcqSlidesRouter.post("/", async (req, res) => {
       parsed.options,
       parsed.correctAnswers,
       parsed.allowMultiple,
+      presentationId,
     );
   } catch (error) {
     return res.status(400).json({

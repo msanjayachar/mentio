@@ -18,7 +18,6 @@ presentationsRouter.post("/", async (req, res) => {
   try {
     result = await createPresentation(userId, title);
   } catch (error) {
-    console.log("error: ", error);
     return res.status(400).json({
       success: false,
       data: null,
@@ -83,7 +82,6 @@ presentationsRouter.get("/:id", async (req, res) => {
   try {
     result = await getPresentationById(id, userId);
   } catch (error) {
-    console.log("error: ", error);
     return res.status(400).json({
       success: false,
       data: null,

@@ -12,11 +12,11 @@ const canvasSlidesRouter = Router();
 canvasSlidesRouter.post("/", async (req, res) => {
   const { userId } = req.user;
   const body = req.body;
-  const { object } = body;
+  const { presentationId, object } = body;
 
   let canvas;
   try {
-    canvas = await createCanvasSlides(userId, object);
+    canvas = await createCanvasSlides(userId, presentationId, object);
   } catch (error) {
     return res.status(400).json({
       success: false,

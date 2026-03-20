@@ -12,6 +12,8 @@ import {
   useRef,
 } from "react";
 import { SlidesState, SlidesStateTest } from "@shared/types";
+import { useParams } from "next/navigation";
+import { useCurrentUser } from "./context/authContext";
 
 const PresentationHelper = ({
   selectedSlide,
@@ -31,13 +33,9 @@ const PresentationHelper = ({
   const [visualizationType, setVisualizationType] = useState<
     "bar" | "pie" | "split" | "dots" | null
   >(null);
-  const [token, setToken] = useState<string | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
-
-  useEffect(() => {
-    const tkn = localStorage.getItem("token");
-    setToken(tkn);
-  }, []);
+  const { presentationId } = useParams<{ presentationId: string }>();
+  const { token } = useCurrentUser();
 
   // VERIFY: is this right to do here?
   if (!selectedSlide) return;

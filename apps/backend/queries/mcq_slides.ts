@@ -7,8 +7,9 @@ export async function createMcqSlides(
   options: McqOption[],
   correctAnswers: McqOption[],
   allowMultiple: boolean,
+  presentationId: string,
 ) {
-  const query = `INSERT INTO mcq_slides (user_id, question, options, correct_answers, allow_multiple) VALUES ($1, $2, $3, $4, $5) RETURNING *;`;
+  const query = `INSERT INTO mcq_slides (user_id, question, options, correct_answers, allow_multiple, presentations_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`;
 
   const result = await pool.query(query, [
     userId,
@@ -16,6 +17,7 @@ export async function createMcqSlides(
     JSON.stringify(options),
     JSON.stringify(correctAnswers),
     allowMultiple,
+    presentationId,
   ]);
 
   return result.rows[0];

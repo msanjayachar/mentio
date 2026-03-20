@@ -4,6 +4,8 @@ import Image from "next/image";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import type { McqQuestion, McqOption } from "@shared/mcq";
 import { SlidesState, SlidesStateTest } from "@shared/types";
+import { useCurrentUser } from "./context/authContext";
+import { useParams } from "next/navigation";
 
 const NewSlide = ({
   setSlides,
@@ -13,12 +15,8 @@ const NewSlide = ({
   setSlides: Dispatch<SetStateAction<SlidesStateTest>>;
   setShowSlideOption: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    const tkn = localStorage.getItem("token");
-    setToken(tkn);
-  }, []);
+  const { token } = useCurrentUser();
+  const { presentationId } = useParams<{ presentationId: string }>();
 
   const emptyMcqSlide = {
     id: "one",
@@ -56,7 +54,7 @@ const NewSlide = ({
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(slide),
+      body: JSON.stringify({ ...slide, presentationId }),
     });
 
     const result = await response.json();
@@ -74,7 +72,7 @@ const NewSlide = ({
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(canvas),
+      body: JSON.stringify({ ...canvas, presentationId }),
     });
 
     const result = await response.json();
