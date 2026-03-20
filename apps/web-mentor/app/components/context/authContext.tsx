@@ -17,6 +17,7 @@ type LoginUser = {
 
 const CurrentUserContext = createContext<{
   currentUser: LoginUser | null;
+  token: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
@@ -24,6 +25,7 @@ const CurrentUserContext = createContext<{
 
 export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<LoginUser | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const login = async (email: string, password: string) => {
     let parsed;
@@ -52,6 +54,7 @@ export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(result.error);
       }
 
+      setToken(result.data.token);
       setCurrentUser(result.data.user);
 
       localStorage.setItem("token", result.data.token);
@@ -66,24 +69,26 @@ export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     localStorage.removeItem("token");
     setCurrentUser(null);
+    setToken(null);
   };
 
   const restoreSession = async () => {
-    const token = localStorage.getItem("token");
+    const tkn = localStorage.getItem("token");
 
-    if (!token) {
+    if (!tkn) {
       setCurrentUser(null);
       setLoading(false);
       return;
     }
 
+    setToken(tkn);
     setLoading(true);
 
     try {
       const response = await fetch("http://localhost:8000/api/auth/me", {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${tkn}`,
         },
       });
 
@@ -114,7 +119,7 @@ export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <CurrentUserContext.Provider
-      value={{ currentUser, login, logout, loading }}
+      value={{ currentUser, token, login, logout, loading }}
     >
       {children}
     </CurrentUserContext.Provider>
