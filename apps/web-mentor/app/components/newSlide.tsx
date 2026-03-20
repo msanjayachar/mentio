@@ -3,14 +3,14 @@
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import type { McqQuestion, McqOption } from "@shared/mcq";
-import { SlidesState } from "@shared/types";
+import { SlidesState, SlidesStateTest } from "@shared/types";
 
 const NewSlide = ({
   setSlides,
   setShowSlideOption,
 }: {
-  slides: SlidesState;
-  setSlides: Dispatch<SetStateAction<SlidesState>>;
+  slides: SlidesStateTest;
+  setSlides: Dispatch<SetStateAction<SlidesStateTest>>;
   setShowSlideOption: Dispatch<SetStateAction<boolean>>;
 }) => {
   const [token, setToken] = useState<string | null>(null);
@@ -62,10 +62,7 @@ const NewSlide = ({
     const result = await response.json();
 
     setShowSlideOption(false);
-    setSlides((prev) => ({
-      ...prev,
-      mcqSlides: [...prev.mcqSlides, result.data.slide],
-    }));
+    setSlides((prev) => [...prev, result.data.slide]);
   };
 
   const createCanvasSlide = async (canvas: Record<string, unknown>) => {
@@ -84,10 +81,7 @@ const NewSlide = ({
 
     setShowSlideOption(false);
 
-    setSlides((prev) => ({
-      ...prev,
-      canvasSlides: [...prev.canvasSlides, result.data.slide],
-    }));
+    setSlides((prev) => [...prev, result.data.slide]);
   };
 
   return (

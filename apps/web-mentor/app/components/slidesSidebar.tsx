@@ -3,8 +3,9 @@
 import { Plus } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import NewSlide from "./newSlide";
-import { SlidesState } from "@shared/types";
+import { SlidesState, SlidesStateTest } from "@shared/types";
 import { CanvasSlide, McqQuestion } from "@shared/mcq";
+import { formatTime, getEpochSeconds } from "@/lib/utils";
 
 const SlidesSidebar = ({
   selected,
@@ -14,8 +15,8 @@ const SlidesSidebar = ({
 }: {
   selected: string | undefined;
   setSelected: Dispatch<SetStateAction<string | undefined>>;
-  slides: SlidesState;
-  setSlides: Dispatch<SetStateAction<SlidesState>>;
+  slides: SlidesStateTest;
+  setSlides: Dispatch<SetStateAction<SlidesStateTest>>;
 }) => {
   const [showSlideOption, setShowSlideOption] = useState<boolean>(false);
 
@@ -56,10 +57,17 @@ const SlidesSidebar = ({
       const response_two = await fetchCanvasSlides();
       const result_two = await response_two.json();
 
-      setSlides({
-        mcqSlides: result.data.slides,
-        canvasSlides: result_two.data.slides,
-      });
+      setSlides(
+        [...result.data.slides, ...result_two.data.slides].sort((a, b) => {
+          const timeA = getEpochSeconds(a.createdAt);
+          const timeB = getEpochSeconds(b.createdAt);
+
+          if (timeA === null) return 1;
+          if (timeB === null) return -1;
+
+          return timeA - timeB;
+        }),
+      );
     };
 
     loadSlides();
@@ -90,43 +98,58 @@ const SlidesSidebar = ({
       <div className="flex h-[calc(100vh-80px)] w-48 flex-col gap-4 overflow-auto pt-4">
         {slides ? (
           <div className="ml-2 flex flex-col gap-4">
-            {/* FIX: both of these needs to show up in the order that they were created */}
-            {Array.isArray(slides.mcqSlides) &&
-              slides.mcqSlides.map((slide: McqQuestion) => (
-                <div
-                  onClick={() => setSelected(slide.id)}
-                  key={slide.id}
-                  className="flex cursor-pointer"
-                >
-                  {/* <span className="text-[12px]">{item.id}</span> */}
-                  <span className="text-sm text-red-800">{slide.id}</span>
-
-                  {/* <span className="text-sm text-red-800">{selected}</span> */}
+            {/* AT_HERE: */}
+            {Array.isArray(slides) &&
+              slides.map((slide) =>
+                slide.type === "canvas_slide" ? (
                   <div
-                    className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected === slide.id ? "ring ring-blue-700" : ""}`}
+                    onClick={() => setSelected(slide.id)}
+                    key={slide.id}
+                    className="flex cursor-pointer"
                   >
-                    <span>{slide.type}</span>
-                  </div>
-                </div>
-              ))}
-            {Array.isArray(slides.canvasSlides) &&
-              slides.canvasSlides.map((slide: CanvasSlide) => (
-                <div
-                  onClick={() => setSelected(slide.id)}
-                  key={slide.id}
-                  className="flex cursor-pointer"
-                >
-                  {/* <span className="text-[12px]">{item.id}</span> */}
-                  <span className="text-sm text-red-800">{slide.id}</span>
+                    {/* <span className="text-[12px]">{item.id}</span> */}
+                    <div className="flex flex-col gap-2 p-2">
+                      <span className="text-sm text-red-800">
+                        {slide.id.slice(0, 4)}...{slide.id.slice(-3)}
+                      </span>
+                      <span className="text-sm text-red-800">
+                        {formatTime(slide.createdAt)}
+                      </span>
+                    </div>
 
-                  {/* <span className="text-sm text-red-800">{selected}</span> */}
-                  <div
-                    className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected === slide.id ? "ring ring-blue-700" : ""}`}
-                  >
-                    <span>{slide.type}</span>
+                    {/* <span className="text-sm text-red-800">{selected}</span> */}
+                    <div
+                      className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected === slide.id ? "ring ring-blue-700" : ""}`}
+                    >
+                      <span>{slide.type}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ) : (
+                  <div
+                    onClick={() => setSelected(slide.id)}
+                    // key={slide.id}
+                    key={crypto.randomUUID()}
+                    className="flex cursor-pointer"
+                  >
+                    {/* <span className="text-[12px]">{item.id}</span> */}
+                    <div className="flex flex-col gap-2 p-2">
+                      <span className="text-sm text-red-800">
+                        {slide.id.slice(0, 4)}...{slide.id.slice(-3)}
+                      </span>
+                      <span className="text-sm text-red-800">
+                        {formatTime(slide.createdAt)}
+                      </span>
+                    </div>
+
+                    {/* <span className="text-sm text-red-800">{selected}</span> */}
+                    <div
+                      className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected === slide.id ? "ring ring-blue-700" : ""}`}
+                    >
+                      <span>{slide.type}</span>
+                    </div>
+                  </div>
+                ),
+              )}
           </div>
         ) : (
           <div>No slides</div>

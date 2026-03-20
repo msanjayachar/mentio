@@ -11,7 +11,7 @@ import {
   useState,
   useRef,
 } from "react";
-import { SlidesState } from "@shared/types";
+import { SlidesState, SlidesStateTest } from "@shared/types";
 
 const PresentationHelper = ({
   selectedSlide,
@@ -20,9 +20,9 @@ const PresentationHelper = ({
   editSelected,
   handleEdit,
 }: {
-  selectedSlide: string;
-  slides: SlidesState;
-  setSlides: Dispatch<SetStateAction<SlidesState>>;
+  selectedSlide: string | undefined;
+  slides: SlidesStateTest;
+  setSlides: Dispatch<SetStateAction<SlidesStateTest>>;
   editSelected: boolean;
   handleEdit: () => void;
 }) => {
@@ -39,13 +39,12 @@ const PresentationHelper = ({
     setToken(tkn);
   }, []);
 
-  const slide =
-    (Array.isArray(slides?.mcqSlides)
-      ? slides?.mcqSlides?.find((slide) => slide.id === selectedSlide)
-      : undefined) ||
-    (Array.isArray(slides.canvasSlides)
-      ? slides?.canvasSlides?.find((slide) => slide.id === selectedSlide)
-      : undefined);
+  // VERIFY: is this right to do here?
+  if (!selectedSlide) return;
+
+  const slide = Array.isArray(slides)
+    ? slides?.find((slide) => slide.id === selectedSlide)
+    : undefined;
 
   const colors = [
     "bg-blue-500",
@@ -71,7 +70,7 @@ const PresentationHelper = ({
 
     const updatedSlide: McqQuestion = {
       ...slide,
-      options: slide.options.map((option) =>
+      options: slide.options.map((option: McqOption) =>
         option.id === optionId ? { ...option, option: e.target.value } : option,
       ),
     };
@@ -83,9 +82,8 @@ const PresentationHelper = ({
     const last = slide.type === "multiple_choice" ? slide.options.at(-1) : null;
     if (!last) return;
 
-    setSlides((slides) => ({
-      ...slides,
-      mcqSlides: slides.mcqSlides.map((slide) =>
+    setSlides((slides) =>
+      slides.map((slide) =>
         slide.id === selected && slide.type === "multiple_choice"
           ? {
               ...slide,
@@ -100,7 +98,7 @@ const PresentationHelper = ({
             }
           : slide,
       ),
-    }));
+    );
   };
 
   const updateSlide = async (slide: McqQuestion) => {
@@ -125,9 +123,8 @@ const PresentationHelper = ({
     if (!last) return null;
 
     // Increase the number of options
-    setSlides((prev) => ({
-      ...prev,
-      mcqSlides: prev.mcqSlides.map((slide) =>
+    setSlides((prev) =>
+      prev.map((slide) =>
         slide.id === selectedSlide && slide.type === "multiple_choice"
           ? {
               ...slide,
@@ -142,15 +139,14 @@ const PresentationHelper = ({
             }
           : slide,
       ),
-    }));
+    );
   };
 
   const handleCancel = (optionId: string, option: McqOption) => {
     if (slide.type === "multiple_choice" && slide.options!.length == 2) return;
 
-    setSlides((slides) => ({
-      ...slides,
-      mcqSlides: slides.mcqSlides.map((slide) =>
+    setSlides((slides) =>
+      slides.map((slide) =>
         slide.id === selectedSlide && slide.type === "multiple_choice"
           ? {
               ...slide,
@@ -158,7 +154,7 @@ const PresentationHelper = ({
             }
           : slide,
       ),
-    }));
+    );
   };
 
   return (

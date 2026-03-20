@@ -9,7 +9,7 @@ import SpeakerNotes from "./speakerNotes";
 import Comments from "./edit/comments";
 import Questionpanel from "./edit/questionpanel";
 import SlidesSidebar from "./slidesSidebar";
-import { SlidesState } from "@shared/types";
+import { SlidesState, SlidesStateTest } from "@shared/types";
 import { FabricJSCanvas } from "@repo/ui/FabricJSCanvas";
 import CanvasToolbar from "./canvasToolbar";
 
@@ -18,19 +18,16 @@ const Presentations = () => {
   const [editSelected, setEditSelected] = useState<boolean>(false);
   const [commentSelected, setCommentSelected] = useState<boolean>(false);
   const [questionSelected, setQuestionSelected] = useState<boolean>(false);
-  const [slides, setSlides] = useState<SlidesState>({
-    mcqSlides: [],
-    canvasSlides: [],
-  });
+  const [slides, setSlides] = useState<SlidesStateTest>([]);
   const [selectedSlide, setSelectedSlide] = useState<string | undefined>(
     undefined,
   );
   const [tool, setTool] = useState<"text" | "image" | "shapes">("text");
 
+  // Q: What are we trying to do here?
   useEffect(() => {
-    if (slides && slides.mcqSlides && slides.canvasSlides && !selectedSlide) {
-      // VERIFY: Whether this works as intended
-      setSelectedSlide(slides.mcqSlides[0]?.id);
+    if (slides && !selectedSlide) {
+      setSelectedSlide(slides[0]?.id);
     }
   }, [slides, selectedSlide]);
 
@@ -55,6 +52,8 @@ const Presentations = () => {
     setEditSelected(false);
     setCommentSelected(false);
   };
+
+  if (!slides) return;
 
   return (
     <div className="relative h-screen overflow-hidden bg-[#F2F1F0]">

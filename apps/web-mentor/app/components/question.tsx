@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import type { CanvasSlide, McqOption, McqQuestion } from "@shared/mcq";
-import { SlidesState } from "@shared/types";
+import { SlidesState, SlidesStateTest } from "@shared/types";
 import { FabricJSCanvas } from "@repo/ui/FabricJSCanvas";
 
 const Question = ({
@@ -21,8 +21,8 @@ const Question = ({
   handleEdit,
 }: {
   tool: "text" | "image" | "shapes";
-  slides: SlidesState;
-  setSlides: Dispatch<SetStateAction<SlidesState>>;
+  slides: SlidesStateTest;
+  setSlides: Dispatch<SetStateAction<SlidesStateTest>>;
   selectedSlide: string | undefined;
   handleQuestionSelect: () => void;
   handleEdit: () => void;
@@ -31,13 +31,9 @@ const Question = ({
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   // Getting the slide (mcq or canvas) thats selected right now
-  const slide =
-    (Array.isArray(slides?.mcqSlides)
-      ? slides?.mcqSlides?.find((slide) => slide.id === selectedSlide)
-      : undefined) ||
-    (Array.isArray(slides.canvasSlides)
-      ? slides?.canvasSlides?.find((slide) => slide.id === selectedSlide)
-      : undefined);
+  const slide = Array.isArray(slides)
+    ? slides?.find((slide) => slide.id === selectedSlide)
+    : undefined;
 
   const colors = [
     "bg-blue-500",
@@ -100,9 +96,8 @@ const Question = ({
     }, 600);
 
     // VERIFY: whether this works as intended
-    setSlides((slides) => ({
-      ...slides,
-      mcqSlides: slides.mcqSlides.map((slide) =>
+    setSlides((slides) =>
+      slides.map((slide) =>
         slide.id === selectedSlide
           ? {
               ...slide,
@@ -110,7 +105,7 @@ const Question = ({
             }
           : slide,
       ),
-    }));
+    );
   };
 
   if (!slide) return null;

@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { Canvas, Rect, Textbox } from "fabric";
-import { SlidesState } from "../../shared/src/types";
+import { SlidesState, SlidesStateTest } from "../../shared/src/types";
 import { FabricImage } from "fabric";
 import { CanvasSlide, SlideState } from "../../shared/src/mcq";
 import { FabricObject } from "fabric";
@@ -17,8 +17,8 @@ export const FabricJSCanvas = ({
   tool: "text" | "shapes" | "image";
   backgroundColor: string;
   slide: CanvasSlide;
-  slides: SlidesState;
-  setSlides?: Dispatch<SetStateAction<SlidesState>>;
+  slides: SlidesStateTest;
+  setSlides?: Dispatch<SetStateAction<SlidesStateTest>>;
   onSave: (canvasSlide: CanvasSlide) => Promise<Response>;
   selectedSlide: string | undefined;
 }) => {
@@ -33,18 +33,12 @@ export const FabricJSCanvas = ({
 
   const updateCanvasContext = (canvas: Canvas | null) => {};
 
-  // AT_HERE: What's causing the mount back up.
-  // mount, unmount and mount back again.
   useEffect(() => {
-    console.log("MOUNT");
-    return () => console.log("UNMOUNT");
-  }, []);
-
-  useEffect(() => {
-    selectedCanvasSlide.current = slides.canvasSlides.find(
-      (slide) => slide.id === selectedSlide,
+    selectedCanvasSlide.current = slides.find(
+      (slide): slide is CanvasSlide =>
+        slide.type == "canvas_slide" && slide.id === selectedSlide,
     );
-  }, [slide]);
+  }, [slides, selectedSlide]);
 
   const handleUpdate = (state: any) => {
     if (timeoutRef.current) {
@@ -77,15 +71,14 @@ export const FabricJSCanvas = ({
 
       if (!setSlides) return;
 
-      setSlides((prev) => ({
-        ...prev,
-        canvasSlides: prev.canvasSlides.map((canvasSlide) =>
+      setSlides((prev) =>
+        prev.map((canvasSlide) =>
           canvasSlide.id === slide.id
             ? // ? { ...canvasSlide, object: canvasState }
               { ...canvasSlide, object: state }
             : canvasSlide,
         ),
-      }));
+      );
     };
 
     const canvas = new Canvas(canvasEl.current, {
@@ -178,27 +171,11 @@ export const FabricJSCanvas = ({
     if (lastLoadedRef.current === key) return;
     lastLoadedRef.current = key;
 
-    console.log("counter: ", counter);
     canvasRef.current.loadFromJSON(slide.canvasObject).then(() => {
       setCounter((prev) => prev + 1);
       canvasRef.current?.requestRenderAll();
     });
   }, [selectedSlide]);
-
-  // useEffect(() => {
-  //   if (!canvasEl.current) return;
-  //
-  //   // const canvas = (canvasEl.current as any).__fabricInstance;
-  //   const canvas = canvasRef.current;
-  //
-  //   if (!canvas || !slide.canvasObject) return;
-  //
-  //   console.log("counter: ", counter);
-  //   canvas.loadFromJSON(slide.canvasObject).then((canvas) => {
-  //     setCounter((prev) => prev + 1);
-  //     canvas.requestRenderAll();
-  //   });
-  // }, [selectedSlide]);
 
   return (
     <div
