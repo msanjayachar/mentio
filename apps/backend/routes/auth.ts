@@ -5,32 +5,45 @@ import jwt from "jsonwebtoken";
 import { middleware } from "../middleware/auth";
 import { Request, Response } from "express";
 import { SignupSchema, LoginSchema } from "@shared/auth";
+import { DBQueryUserSchema } from "@shared/user";
+import { ZodError } from "zod";
 import "dotenv/config";
 
 const authRouter = Router();
 const saltRounds = 10;
 const secret = process.env.SECRET;
 
+if (!secret) throw new Error("SECRET key is missing");
+
 authRouter.get("/me", middleware, async (req: Request, res: Response) => {
   const { userId } = req.user;
 
-  let user;
-
+  let finalUser;
   try {
-    user = await getUserByUserId(userId);
+    const user = await getUserByUserId(userId);
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        data: null,
+        error: "UNAUTHORIZED",
+      });
+    }
+
+    const parsedUser = DBQueryUserSchema.parse(user);
+
+    finalUser = {
+      userId: parsedUser.id,
+      name: parsedUser.name,
+      email: parsedUser.email,
+    };
   } catch (error) {
-    return res.status(401).json({
+    return res.status(500).json({
       success: false,
       data: null,
-      error: "UNAUTHORIZED",
+      error: "INTERNAL_ERROR",
     });
   }
-
-  const finalUser = {
-    userId: user.id,
-    name: user.name,
-    email: user.email,
-  };
 
   return res.status(200).json({
     success: true,
@@ -43,43 +56,35 @@ authRouter.post("/signup", async (req, res) => {
   const body = req.body;
   const { name, email, password } = body;
 
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-  let parsed;
+  let finalUser;
   try {
-    parsed = SignupSchema.parse({ name, email, password });
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      data: null,
-      error: "INVALID_REQUEST",
-    });
-  }
+    const parsed = SignupSchema.parse({ name, email, password });
 
-  if (!parsed) {
-    return res.status(400).json({
+    const hashedPassword = await bcrypt.hash(parsed.password, saltRounds);
+    const user = await createUser(parsed.name, parsed.email, hashedPassword);
+
+    const parsedQueryResponse = DBQueryUserSchema.parse(user);
+
+    finalUser = {
+      userId: parsedQueryResponse.id,
+      name: parsedQueryResponse.name,
+      email: parsedQueryResponse.email,
+    };
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: "INVALID_REQUEST",
+      });
+    }
+
+    return res.status(500).json({
       success: false,
       data: null,
       error: "UNABLE_TO_CREATE_USER",
     });
   }
-
-  let user;
-  try {
-    user = await createUser(parsed.name, parsed.email, hashedPassword);
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      data: null,
-      error: "UNABLE_TO_CREATE_USER",
-    });
-  }
-
-  const finalUser = {
-    userId: user.id,
-    name: user.name,
-    email: user.email,
-  };
 
   return res.status(200).json({
     success: true,
@@ -92,69 +97,60 @@ authRouter.post("/login", async (req, res) => {
   const body = req.body;
   const { email, password } = body;
 
-  let parsed;
+  let JWT_TOKEN;
+  let finalUser;
   try {
-    parsed = LoginSchema.parse({ email, password });
+    const parsed = LoginSchema.parse({ email, password });
+    const user = await getUser(parsed.email);
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        data: null,
+        error: "INVALID_CREDENTIALS",
+      });
+    }
+
+    const parsedUser = DBQueryUserSchema.parse(user);
+
+    const match = await bcrypt.compare(password, parsedUser.password);
+
+    if (!match) {
+      return res.status(401).json({
+        success: false,
+        data: null,
+        error: "INVALID_CREDENTIALS",
+      });
+    }
+
+    JWT_TOKEN = jwt.sign(
+      {
+        userId: parsedUser.id,
+      },
+      secret,
+      { expiresIn: 60 * 60 },
+    );
+
+    finalUser = {
+      userId: parsedUser.id,
+      name: parsedUser.name,
+      email: parsedUser.email,
+    };
   } catch (error) {
-    return res.status(400).json({
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: "INVALID_REQUEST",
+      });
+    }
+
+    return res.status(500).json({
       success: false,
       data: null,
-      error: "INVALID_REQUEST",
+      error: "UNABLE_TO_LOGIN",
     });
   }
-
-  if (!parsed) {
-    return res.status(400).json({
-      success: false,
-      data: null,
-      error: "INVALID_REQUEST",
-    });
-  }
-
-  let user;
-  try {
-    user = await getUser(parsed.email);
-  } catch (error) {
-    return res.status(401).json({
-      success: false,
-      data: null,
-      error: "INVALID_CREDENTIALS",
-    });
-  }
-
-  if (!secret) throw new Error("SECRET key is missing");
-
-  if (!user) {
-    return res.status(401).json({
-      success: false,
-      data: null,
-      error: "INVALID_CREDENTIALS",
-    });
-  }
-
-  const match = await bcrypt.compare(password, user.password);
-
-  if (!match) {
-    return res.status(401).json({
-      success: false,
-      data: {},
-      error: "INVALID_CREDENTIALS",
-    });
-  }
-
-  const JWT_TOKEN = jwt.sign(
-    {
-      userId: user.id,
-    },
-    secret,
-    { expiresIn: 60 * 60 },
-  );
-
-  const finalUser = {
-    userId: user.id,
-    name: user.name,
-    email: user.email,
-  };
 
   return res.status(200).json({
     success: true,

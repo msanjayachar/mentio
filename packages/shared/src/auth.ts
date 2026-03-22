@@ -10,6 +10,3 @@ export const LoginSchema = z.object({
   email: z.email(),
   password: z.string(),
 });
-
-export type SignupUser = z.infer<typeof SignupSchema>;
-export type LoginUser = z.infer<typeof LoginSchema>;
