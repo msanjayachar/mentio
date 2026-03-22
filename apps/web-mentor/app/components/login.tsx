@@ -6,6 +6,9 @@ import { useState } from "react";
 import { toast } from "sonner";
 import Logo from "./logo";
 import { useCurrentUser } from "./context/authContext";
+import { LoginSchema } from "@shared/auth";
+import { ZodError } from "zod";
+import { ERROR_MESSAGES, ErrorCode } from "@shared/types";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -25,8 +28,22 @@ const Login = () => {
         },
       });
       router.push("/");
-    } catch {
-      toast.error("Something went wrong", {
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const message = error.issues[0]?.message;
+
+        toast.error(message, {
+          position: "top-center",
+          style: {
+            background: "red",
+            color: "white",
+          },
+        });
+
+        return;
+      }
+
+      toast.error(ERROR_MESSAGES[error as ErrorCode] ?? "Unexpected error", {
         position: "top-center",
         style: {
           background: "red",
@@ -38,7 +55,9 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      await login(email, password);
+      const parsed = LoginSchema.parse({ email, password });
+
+      await login(parsed.email, parsed.password);
 
       toast.success("Login successful", {
         position: "top-center",
@@ -48,14 +67,44 @@ const Login = () => {
         },
       });
       router.push("/");
-    } catch {
-      toast.error("Something went wrong", {
-        position: "top-center",
-        style: {
-          background: "red",
-          color: "white",
-        },
-      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const message = error.issues[0]?.message;
+
+        toast.error(message, {
+          position: "top-center",
+          style: {
+            background: "red",
+            color: "white",
+          },
+        });
+        return;
+      }
+
+      if (typeof error === "string") {
+        if (error in ERROR_MESSAGES) {
+          const key = error as keyof typeof ERROR_MESSAGES;
+          toast.error(ERROR_MESSAGES[key] ?? "Unexpected error", {
+            position: "top-center",
+            style: {
+              background: "red",
+              color: "white",
+            },
+          });
+
+          return;
+        } else {
+          toast.error(error, {
+            position: "top-center",
+            style: {
+              background: "red",
+              color: "white",
+            },
+          });
+
+          return;
+        }
+      }
     }
   };
 

@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import Logo from "./logo";
-import { SignupSchema } from "../../../../packages/shared/src/auth";
+import { SignupSchema } from "@shared/auth";
+import { UserApiResponseSchema } from "@shared/api/auth";
+import { ZodError } from "zod";
+import { ERROR_MESSAGES, ErrorCode } from "@shared/types";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -17,14 +20,18 @@ const Signup = () => {
     let parsed;
     try {
       parsed = SignupSchema.parse({ name, email, password });
-    } catch {
-      toast.error("Signup failed", {
-        position: "top-center",
-        style: {
-          background: "red",
-          color: "white",
-        },
-      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const message = error.issues[0]?.message;
+
+        toast.error(message, {
+          position: "top-center",
+          style: {
+            background: "red",
+            color: "white",
+          },
+        });
+      }
     }
 
     if (!parsed) {
@@ -37,8 +44,27 @@ const Signup = () => {
       body: JSON.stringify(parsed),
     });
 
-    if (response.ok) {
-      toast.success("Signup successful", {
+    const json = await response.json();
+
+    const result = UserApiResponseSchema.safeParse(json);
+
+    if (!result.success) {
+      toast.error("Unexpected server response", {
+        position: "top-center",
+        style: {
+          background: "red",
+          color: "white",
+        },
+      });
+
+      return;
+    }
+
+    const res = result.data;
+
+    // AT_HERE: Verify this works fine.
+    if (res.success) {
+      toast.success("Signup Successful", {
         position: "top-center",
         style: {
           background: "green",
@@ -48,7 +74,7 @@ const Signup = () => {
 
       router.push("/login");
     } else {
-      toast.error("Signup failed", {
+      toast.error(ERROR_MESSAGES[res.error] ?? "Unexpected error", {
         position: "top-center",
         style: {
           background: "red",

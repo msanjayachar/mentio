@@ -7,7 +7,8 @@ import {
   useEffect,
   useState,
 } from "react";
-import { LoginSchema } from "../../../../../packages/shared/src/auth";
+import { LoginUserApiResponseSchema, MeApiSchema } from "@shared/api/auth";
+import { ErrorCodes } from "@shared/types";
 
 type LoginUser = {
   userId: string;
@@ -15,52 +16,51 @@ type LoginUser = {
   email: string;
 };
 
-const CurrentUserContext = createContext<{
+type CurrentUserContextType = {
   currentUser: LoginUser | null;
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
-} | null>(null);
+};
+
+const CurrentUserContext = createContext<CurrentUserContextType | null>(null);
 
 export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<LoginUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
   const login = async (email: string, password: string) => {
-    let parsed;
-
-    try {
-      parsed = LoginSchema.parse({ email, password });
-    } catch (error) {
-      if (error instanceof Error) throw error;
-      throw new Error("Invalid credentials");
-    }
-
     try {
       setLoading(true);
       const response = await fetch("http://localhost:8000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parsed),
+        body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
-        throw new Error("Invalid credentials");
+      const json = await response.json();
+
+      const parsed = LoginUserApiResponseSchema.safeParse(json);
+
+      if (!parsed.success) {
+        throw ErrorCodes.INTERNAL_SERVER_ERROR;
       }
 
-      const result = await response.json();
-      if (!result.success) {
-        throw new Error(result.error);
+      const res = parsed.data;
+
+      if (res.success === false) {
+        throw res.error;
       }
 
-      setToken(result.data.token);
-      setCurrentUser(result.data.user);
+      setToken(res.data.token);
+      setCurrentUser(res.data.user);
 
-      localStorage.setItem("token", result.data.token);
+      localStorage.setItem("token", res.data.token);
     } catch (error) {
-      if (error instanceof Error) throw error;
-      throw new Error("Failed to login");
+      if (typeof error === "string") throw error;
+      throw ErrorCodes.INTERNAL_SERVER_ERROR;
     } finally {
       setLoading(false);
     }
@@ -92,20 +92,22 @@ export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
         },
       });
 
-      if (!response.ok) {
-        setCurrentUser(null);
-        setLoading(false);
-        return;
+      const json = await response.json();
+
+      const parsed = MeApiSchema.safeParse(json);
+
+      if (!parsed.success) {
+        throw ErrorCodes.INTERNAL_SERVER_ERROR;
       }
 
-      const result = await response.json();
-      if (!result.success) {
-        throw new Error(result.error);
+      const res = parsed.data;
+
+      if (res.success === false) {
+        throw res.error;
       }
 
-      setCurrentUser(result.data);
-      setLoading(false);
-    } catch {
+      setCurrentUser(res.data);
+    } catch (error) {
       localStorage.removeItem("token");
       setCurrentUser(null);
     } finally {

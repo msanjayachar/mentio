@@ -8,6 +8,7 @@ import { SignupSchema, LoginSchema } from "@shared/auth";
 import { DBQueryUserSchema } from "@shared/user";
 import { ZodError } from "zod";
 import "dotenv/config";
+import { ErrorCodes } from "@shared/types";
 
 const authRouter = Router();
 const saltRounds = 10;
@@ -60,6 +61,16 @@ authRouter.post("/signup", async (req, res) => {
   try {
     const parsed = SignupSchema.parse({ name, email, password });
 
+    const exists = await getUser(email);
+
+    if (exists) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: ErrorCodes.EMAIL_ALREADY_EXISTS,
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(parsed.password, saltRounds);
     const user = await createUser(parsed.name, parsed.email, hashedPassword);
 
@@ -75,14 +86,14 @@ authRouter.post("/signup", async (req, res) => {
       return res.status(400).json({
         success: false,
         data: null,
-        error: "INVALID_REQUEST",
+        error: ErrorCodes.INVALID_REQUEST,
       });
     }
 
     return res.status(500).json({
       success: false,
       data: null,
-      error: "UNABLE_TO_CREATE_USER",
+      error: ErrorCodes.UNABLE_TO_CREATE_USER,
     });
   }
 
@@ -107,7 +118,7 @@ authRouter.post("/login", async (req, res) => {
       return res.status(401).json({
         success: false,
         data: null,
-        error: "INVALID_CREDENTIALS",
+        error: ErrorCodes.INVALID_CREDENTIALS,
       });
     }
 
@@ -119,7 +130,7 @@ authRouter.post("/login", async (req, res) => {
       return res.status(401).json({
         success: false,
         data: null,
-        error: "INVALID_CREDENTIALS",
+        error: ErrorCodes.INVALID_CREDENTIALS,
       });
     }
 
@@ -141,14 +152,14 @@ authRouter.post("/login", async (req, res) => {
       return res.status(400).json({
         success: false,
         data: null,
-        error: "INVALID_REQUEST",
+        error: ErrorCodes.INVALID_REQUEST,
       });
     }
 
     return res.status(500).json({
       success: false,
       data: null,
-      error: "UNABLE_TO_LOGIN",
+      error: ErrorCodes.INTERNAL_SERVER_ERROR,
     });
   }
 

@@ -7,10 +7,16 @@ export const UserSchema = z.object({
   createdAt: z.string().datetime(),
 });
 
+export const LoginUserSchema = z.object({
+  userId: z.string(),
+  name: z.string(),
+  email: z.email(),
+});
+
 export const DBQueryUserSchema = z.object({
   id: z.string(),
   name: z.string(),
   email: z.email(),
-  password: z.string().datetime(),
-  created_at: z.string().datetime(),
+  password: z.string(),
+  created_at: z.date(),
 });
