@@ -1,5 +1,5 @@
 import { request } from "../setup";
-import { SignupUser, LoginUser } from "@shared/auth";
+import { SignupUser, LoginUser } from "@shared/types";
 import { McqQuestion } from "@shared/mcq";
 
 export const signUpUserFn = async (user: SignupUser) => {

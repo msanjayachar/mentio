@@ -17,11 +17,12 @@ export const mcqQuestion: McqQuestion = {
   type: "multiple_choice",
   question: "What is the capital of karnataka",
   options: [
-    { id: "one", option: "Bengaluru", correctAnswer: true },
-    { id: "two", option: "Tumakuru", correctAnswer: false },
-    { id: "three", option: "Belagavi", correctAnswer: false },
-    { id: "four", option: "Mysuru", correctAnswer: false },
+    { id: "one", text: "Bengaluru", isCorrect: true },
+    { id: "two", text: "Tumakuru", isCorrect: false },
+    { id: "three", text: "Belagavi", isCorrect: false },
+    { id: "four", text: "Mysuru", isCorrect: false },
   ],
-  correctAnswers: ["Bengaluru"],
+  correctAnswers: [{ id: "one", text: "Bengaluru", isCorrect: true }],
+  presentationId: "string",
   allowMultiple: false,
 };
