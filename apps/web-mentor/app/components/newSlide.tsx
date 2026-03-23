@@ -1,37 +1,39 @@
 "use client";
 
 import Image from "next/image";
-import { Dispatch, SetStateAction, useState, useEffect } from "react";
-import type { McqQuestion, McqOption } from "@shared/mcq";
-import { SlidesState, SlidesStateTest } from "@shared/types";
+import { Dispatch, SetStateAction } from "react";
+import type { McqQuestion } from "@shared/mcq";
+import { ERROR_MESSAGES, SlidesState } from "@shared/types";
 import { useCurrentUser } from "./context/authContext";
 import { useParams } from "next/navigation";
+import { McqApiResponseSchema } from "@shared/api/mcq";
+import { CanvasApiResponseSchema } from "@shared/api/canvas";
+import { toast } from "sonner";
 
 const NewSlide = ({
   setSlides,
   setShowSlideOption,
 }: {
-  slides: SlidesStateTest;
-  setSlides: Dispatch<SetStateAction<SlidesStateTest>>;
+  slides: SlidesState;
+  setSlides: Dispatch<SetStateAction<SlidesState>>;
   setShowSlideOption: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { token } = useCurrentUser();
   const { presentationId } = useParams<{ presentationId: string }>();
 
   const emptyMcqSlide = {
-    id: "one",
     type: "multiple_choice",
     question: "",
     options: [
       {
         id: "1",
-        option: "",
-        correctAnswer: false,
+        text: "",
+        isCorrect: false,
       },
       {
         id: "2",
-        option: "",
-        correctAnswer: false,
+        text: "",
+        isCorrect: false,
       },
     ],
     correctAnswers: [],
@@ -44,7 +46,7 @@ const NewSlide = ({
   };
 
   const createSlide = async (
-    slide: Omit<McqQuestion, "id" | "type" | "createdAt">,
+    slide: Omit<McqQuestion, "id" | "type" | "createdAt" | "presentationId">,
   ) => {
     const url = "http://localhost:8000/slides";
 
@@ -58,9 +60,42 @@ const NewSlide = ({
     });
 
     const result = await response.json();
+    const parsed = McqApiResponseSchema.safeParse(result);
+
+    if (!parsed.success) {
+      toast.error("Unexpected server response", {
+        position: "top-center",
+        style: {
+          background: "red",
+          color: "white",
+        },
+      });
+
+      return;
+    }
+
+    const res = parsed.data;
+
+    if (res.success) {
+      setSlides((prev) => [...prev, res.data]);
+      toast.success("Created Mcq Slide", {
+        position: "top-center",
+        style: {
+          background: "green",
+          color: "white",
+        },
+      });
+    } else {
+      toast.error(ERROR_MESSAGES[res.error] ?? "Unexpected error", {
+        position: "top-center",
+        style: {
+          background: "red",
+          color: "white",
+        },
+      });
+    }
 
     setShowSlideOption(false);
-    setSlides((prev) => [...prev, result.data.slide]);
   };
 
   const createCanvasSlide = async (canvas: Record<string, unknown>) => {
@@ -76,10 +111,42 @@ const NewSlide = ({
     });
 
     const result = await response.json();
+    const parsed = CanvasApiResponseSchema.safeParse(result);
+
+    if (!parsed.success) {
+      toast.error("Unexpected server response", {
+        position: "top-center",
+        style: {
+          background: "red",
+          color: "white",
+        },
+      });
+
+      return;
+    }
+
+    const res = parsed.data;
+
+    if (res.success) {
+      setSlides((prev) => [...prev, res.data]);
+      toast.success("Created Canvas Slide", {
+        position: "top-center",
+        style: {
+          background: "green",
+          color: "white",
+        },
+      });
+    } else {
+      toast.error(ERROR_MESSAGES[res.error] ?? "Unexpected error", {
+        position: "top-center",
+        style: {
+          background: "red",
+          color: "white",
+        },
+      });
+    }
 
     setShowSlideOption(false);
-
-    setSlides((prev) => [...prev, result.data.slide]);
   };
 
   return (

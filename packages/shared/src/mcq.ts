@@ -2,8 +2,8 @@ import z from "zod";
 
 const OptionSchema = z.object({
   id: z.string(),
-  option: z.string(),
-  correctAnswer: z.boolean(),
+  text: z.string(),
+  isCorrect: z.boolean(),
 });
 
 export const McqQuestionSchema = z.object({
@@ -13,44 +13,25 @@ export const McqQuestionSchema = z.object({
   options: z.array(OptionSchema).default([]),
   correctAnswers: z.array(OptionSchema).default([]),
   allowMultiple: z.boolean().default(false),
-});
-
-export const CanvasSlidesSchema = z.object({
-  id: z.string(),
-  type: z.literal("canvas_slide"),
-  // object: z.object(),
-  canvasObject: z.any().nullable().optional(),
-});
-
-export const McqQuestionResponseSchema = McqQuestionSchema.extend({
+  presentationId: z.string(),
   createdAt: z.string().datetime(),
 });
 
-export const CanvasSlideResponseSchema = CanvasSlidesSchema.extend({
-  createdAt: z.string().datetime(),
-});
-
-export type McqQuestion = z.infer<typeof McqQuestionResponseSchema>;
+export type McqQuestion = z.infer<typeof McqQuestionSchema>;
 export type McqOption = z.infer<typeof OptionSchema>;
-export type CanvasSlide = z.infer<typeof CanvasSlideResponseSchema>;
-export type SlideState =
-  | z.infer<typeof McqQuestionSchema>
-  | z.infer<typeof CanvasSlidesSchema>;
 
-export const McqQuestionUpdateSchema = z.object({
-  question: z.string().default("").optional(),
-  options: z.array(OptionSchema).default([]).optional(),
-  correctAnswers: z.array(OptionSchema).default([]).optional(),
-  allowMultiple: z.boolean().default(false).optional(),
+export const CreateMcqQuestionSchema = McqQuestionSchema.omit({
+  id: true,
+  createdAt: true,
 });
 
-export const PresentationSchema = z.object({
-  id: z.string(),
-  userId: z.string(),
-  title: z.string(),
-  createdAt: z.string().datetime(),
-  startedAt: z.string().datetime().nullable(),
-  endedAt: z.string().datetime().nullable(),
-});
-
-export type PresentationType = z.infer<typeof PresentationSchema>;
+export const UpdateMcqQuestionSchema = z
+  .object({
+    question: z.string().optional(),
+    options: z.array(OptionSchema).optional(),
+    correctAnswers: z.array(OptionSchema).min(1).optional(),
+    allowMultiple: z.boolean().optional(),
+  })
+  .refine((data) => Object.values(data).some((value) => value !== undefined), {
+    message: "At least one field must be provided.",
+  });

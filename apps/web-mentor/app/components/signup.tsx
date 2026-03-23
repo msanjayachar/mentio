@@ -45,7 +45,6 @@ const Signup = () => {
     });
 
     const json = await response.json();
-
     const result = UserApiResponseSchema.safeParse(json);
 
     if (!result.success) {
@@ -62,7 +61,6 @@ const Signup = () => {
 
     const res = result.data;
 
-    // AT_HERE: Verify this works fine.
     if (res.success) {
       toast.success("Signup Successful", {
         position: "top-center",

@@ -12,6 +12,11 @@ export type SlideState =
 
 export type SlidesState = (McqQuestion | CanvasSlide)[];
 
+// TODO: Use this
+// type ApiResponse<T> =
+//   | { success: true; data: T; error: null }
+//   | { success: false; data: null; error: ErrorCode };
+
 export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   INVALID_REQUEST: "Invalid input. Check your data.",
   UNABLE_TO_CREATE_USER: "Something went wrong. Please try again.",

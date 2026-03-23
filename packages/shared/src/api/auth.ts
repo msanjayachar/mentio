@@ -1,6 +1,6 @@
 import z from "zod";
 import { LoginUserSchema, UserSchema } from "../user";
-import { ErrorCodes } from "@shared/types";
+import { ErrorCodes } from "../types";
 
 const UserApiSuccessSchema = z.object({
   success: z.literal(true),
