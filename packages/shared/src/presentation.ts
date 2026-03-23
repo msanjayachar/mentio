@@ -9,4 +9,9 @@ export const PresentationSchema = z.object({
   endedAt: z.string().datetime().nullable(),
 });
 
+export const CreatePresentationSchema = z.object({
+  userId: z.string(),
+  title: z.string(),
+});
+
 export type PresentationType = z.infer<typeof PresentationSchema>;

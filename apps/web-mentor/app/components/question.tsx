@@ -8,8 +8,9 @@ import {
   useRef,
   useState,
 } from "react";
-import type { CanvasSlide, McqOption, McqQuestion } from "@shared/mcq";
-import { SlidesState, SlidesStateTest } from "@shared/types";
+import type { McqOption, McqQuestion } from "@shared/mcq";
+import type { CanvasSlide } from "@shared/canvas";
+import { SlidesState } from "@shared/types";
 import { FabricJSCanvas } from "@repo/ui/FabricJSCanvas";
 
 const Question = ({
@@ -21,8 +22,8 @@ const Question = ({
   handleEdit,
 }: {
   tool: "text" | "image" | "shapes";
-  slides: SlidesStateTest;
-  setSlides: Dispatch<SetStateAction<SlidesStateTest>>;
+  slides: SlidesState;
+  setSlides: Dispatch<SetStateAction<SlidesState>>;
   selectedSlide: string | undefined;
   handleQuestionSelect: () => void;
   handleEdit: () => void;
@@ -145,7 +146,7 @@ const Question = ({
                     />
                     <span className="flex w-full justify-start text-2xl font-light">
                       {/* Option {opt.id} */}
-                      {opt.option !== undefined ? opt.option : `Option ${idx}`}
+                      {opt.text !== undefined ? opt.text : `Option ${idx}`}
                     </span>
                   </div>
                 ))}

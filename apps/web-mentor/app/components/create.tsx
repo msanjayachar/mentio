@@ -4,6 +4,9 @@ import { ChevronDown, Upload } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "./context/authContext";
+import { PresentationApiResponseSchema } from "@shared/api/presentation";
+import { toast } from "sonner";
+import { ERROR_MESSAGES } from "@shared/types";
 
 const Create = () => {
   const router = useRouter();
@@ -21,9 +24,42 @@ const Create = () => {
       body: JSON.stringify({ title }),
     });
 
-    const result = await response.json();
+    const json = await response.json();
+    const result = PresentationApiResponseSchema.safeParse(json);
 
-    router.push(`/create/${result.data.id}`);
+    if (!result.success) {
+      toast.error("Unexpected server response", {
+        position: "top-center",
+        style: {
+          background: "red",
+          color: "white",
+        },
+      });
+
+      return;
+    }
+
+    const res = result.data;
+
+    if (res.success) {
+      router.push(`/create/${res.data.id}`);
+
+      toast.success("Created New Mentio", {
+        position: "top-center",
+        style: {
+          background: "green",
+          color: "white",
+        },
+      });
+    } else {
+      toast.error(ERROR_MESSAGES[res.error] ?? "Unexpected error", {
+        position: "top-center",
+        style: {
+          background: "red",
+          color: "white",
+        },
+      });
+    }
   };
 
   return (

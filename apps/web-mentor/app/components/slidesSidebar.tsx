@@ -3,8 +3,7 @@
 import { Plus } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import NewSlide from "./newSlide";
-import { SlidesState, SlidesStateTest } from "@shared/types";
-import { CanvasSlide, McqQuestion } from "@shared/mcq";
+import { SlidesState } from "@shared/types";
 import {
   fetchCanvasSlides,
   fetchSlides,
@@ -21,8 +20,8 @@ const SlidesSidebar = ({
 }: {
   selected: string | undefined;
   setSelected: Dispatch<SetStateAction<string | undefined>>;
-  slides: SlidesStateTest;
-  setSlides: Dispatch<SetStateAction<SlidesStateTest>>;
+  slides: SlidesState;
+  setSlides: Dispatch<SetStateAction<SlidesState>>;
 }) => {
   const [showSlideOption, setShowSlideOption] = useState<boolean>(false);
   const { token } = useCurrentUser();

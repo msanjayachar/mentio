@@ -1,9 +1,10 @@
 "use client";
 
 import { useCurrentUser } from "@/app/components/context/authContext";
+import Present from "@/app/components/present";
 import { fetchCanvasSlides, fetchSlides, getEpochSeconds } from "@/lib/utils";
-import { PresentationType } from "@shared/mcq";
-import { SlidesState, SlidesStateTest } from "@shared/types";
+import { PresentationType } from "@shared/presentation";
+import { SlidesState, SlideState } from "@shared/types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -13,8 +14,8 @@ export default function Page() {
     null,
   );
   const { presentationId } = useParams<{ presentationId: string }>();
-  const [slides, setSlides] = useState<SlidesState[] | null>(null);
-  const [slide, setSlide] = useState<SlidesState | null>(null);
+  const [slides, setSlides] = useState<SlidesState | null>(null);
+  const [slide, setSlide] = useState<SlideState | null>(null);
   const [index, setIndex] = useState(0);
   const { token } = useCurrentUser();
 
@@ -66,12 +67,10 @@ export default function Page() {
   };
 
   useEffect(() => {
-    loadPresentation(presentationId);
-  }, []);
-
-  useEffect(() => {
-    console.log("index: ", index);
-  }, [index]);
+    if (presentationId) {
+      loadPresentation(presentationId);
+    }
+  }, [presentationId]);
 
   // VERIFY: if this is the right way to handle this
   if (!presentation) return null;
@@ -87,19 +86,11 @@ export default function Page() {
   };
 
   if (!slide) return <div>No slide</div>;
+  if (!slides) return <div>No slide</div>;
 
   return (
     <div className="flex h-screen flex-col bg-slate-100 p-4">
-      <div>
-        <h1>PresentationTitle: {presentation.title}</h1>
-        <h2>presentationId: {presentation.id}</h2>
-      </div>
-
-      {/* AT_HERE: Design the presentation slides view */}
-      <div>
-        <h1>Slide Type: {slide.type}</h1>
-        <p>SlideID: {slide.id}</p>
-      </div>
+      <Present slide={slide} />
 
       <div className="mt-auto ml-12 flex w-fit gap-2 text-sm font-light">
         <button

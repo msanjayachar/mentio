@@ -1,17 +1,10 @@
 "use client";
 
-import type { McqQuestion, McqOption } from "@shared/mcq";
+import type { McqOption, McqQuestion } from "@shared/mcq";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import Image from "next/image";
-import {
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-  useRef,
-} from "react";
-import { SlidesState, SlidesStateTest } from "@shared/types";
+import { ChangeEvent, Dispatch, SetStateAction, useState, useRef } from "react";
+import { SlidesState, SlideState } from "@shared/types";
 import { useParams } from "next/navigation";
 import { useCurrentUser } from "./context/authContext";
 
@@ -23,8 +16,8 @@ const PresentationHelper = ({
   handleEdit,
 }: {
   selectedSlide: string | undefined;
-  slides: SlidesStateTest;
-  setSlides: Dispatch<SetStateAction<SlidesStateTest>>;
+  slides: SlidesState;
+  setSlides: Dispatch<SetStateAction<SlidesState>>;
   editSelected: boolean;
   handleEdit: () => void;
 }) => {
@@ -40,7 +33,7 @@ const PresentationHelper = ({
   // VERIFY: is this right to do here?
   if (!selectedSlide) return;
 
-  const slide = Array.isArray(slides)
+  const slide: SlideState | undefined = Array.isArray(slides)
     ? slides?.find((slide) => slide.id === selectedSlide)
     : undefined;
 
@@ -130,8 +123,8 @@ const PresentationHelper = ({
                 ...slide.options,
                 {
                   id: last.id + 1,
-                  option: "",
-                  correctAnswer: false,
+                  text: "",
+                  isCorrect: false,
                 },
               ],
             }
@@ -263,8 +256,8 @@ const PresentationHelper = ({
                     />
                     <input
                       value={
-                        option.option !== undefined
-                          ? option.option
+                        option.text !== undefined
+                          ? option.text
                           : `Option ${idx + 1}`
                       }
                       onChange={(e) =>

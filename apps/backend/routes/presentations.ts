@@ -6,6 +6,9 @@ import {
   startPresentation,
   updatePresentationTitle,
 } from "../queries/presentations";
+import { CreatePresentationSchema } from "@shared/presentation";
+import { ErrorCodes } from "@shared/types";
+import { ZodError } from "zod";
 
 const presentationsRouter = Router();
 
@@ -16,8 +19,24 @@ presentationsRouter.post("/", async (req, res) => {
 
   let result;
   try {
-    result = await createPresentation(userId, title);
+    const parsed = CreatePresentationSchema.parse({ userId, title });
+
+    result = await createPresentation(parsed.userId, parsed.title);
   } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: ErrorCodes.INVALID_REQUEST,
+      });
+    }
+
+    console.error("Create Presentation failed", {
+      userId,
+      title,
+      error,
+    });
+
     return res.status(400).json({
       success: false,
       data: null,
@@ -34,6 +53,10 @@ presentationsRouter.post("/", async (req, res) => {
     startedAt: result.started_at,
     endedAt: result.ended_at,
   };
+
+  console.log("*************************");
+  console.log("presentation: ", presentation);
+  console.log("*************************");
 
   return res.status(200).json({
     success: true,

@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { Canvas, Rect, Textbox } from "fabric";
-import { SlidesState, SlidesStateTest } from "../../shared/src/types";
+import { SlidesState } from "../../shared/src/types";
 import { FabricImage } from "fabric";
-import { CanvasSlide, SlideState } from "../../shared/src/mcq";
+import { CanvasSlide } from "../../shared/src/canvas";
 import { FabricObject } from "fabric";
 
 export const FabricJSCanvas = ({
@@ -17,8 +17,8 @@ export const FabricJSCanvas = ({
   tool: "text" | "shapes" | "image";
   backgroundColor: string;
   slide: CanvasSlide;
-  slides: SlidesStateTest;
-  setSlides?: Dispatch<SetStateAction<SlidesStateTest>>;
+  slides: SlidesState;
+  setSlides?: Dispatch<SetStateAction<SlidesState>>;
   onSave: (canvasSlide: CanvasSlide) => Promise<Response>;
   selectedSlide: string | undefined;
 }) => {

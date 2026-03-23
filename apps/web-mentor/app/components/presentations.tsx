@@ -9,7 +9,7 @@ import SpeakerNotes from "./speakerNotes";
 import Comments from "./edit/comments";
 import Questionpanel from "./edit/questionpanel";
 import SlidesSidebar from "./slidesSidebar";
-import { SlidesState, SlidesStateTest } from "@shared/types";
+import { SlidesState } from "@shared/types";
 import { FabricJSCanvas } from "@repo/ui/FabricJSCanvas";
 import CanvasToolbar from "./canvasToolbar";
 import { useCurrentUser } from "./context/authContext";
@@ -19,7 +19,7 @@ const Presentations = () => {
   const [editSelected, setEditSelected] = useState<boolean>(false);
   const [commentSelected, setCommentSelected] = useState<boolean>(false);
   const [questionSelected, setQuestionSelected] = useState<boolean>(false);
-  const [slides, setSlides] = useState<SlidesStateTest>([]);
+  const [slides, setSlides] = useState<SlidesState>([]);
   const [selectedSlide, setSelectedSlide] = useState<string | undefined>(
     undefined,
   );

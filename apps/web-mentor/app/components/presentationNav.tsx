@@ -3,11 +3,12 @@
 import { ArrowLeft, ChevronDown, Play, Settings, User } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import type { McqQuestion, McqOption, PresentationType } from "@shared/mcq";
-import { SlidesState, SlidesStateTest } from "@shared/types";
+import type { McqQuestion, McqOption } from "@shared/mcq";
+import type { PresentationType } from "@shared/presentation";
+import { SlidesState } from "@shared/types";
 import { useCurrentUser } from "./context/authContext";
 
-const PresentationNav = ({ slides }: { slides: SlidesStateTest }) => {
+const PresentationNav = ({ slides }: { slides: SlidesState }) => {
   const [presentationTitle, setPresentationTitle] = useState<string>("");
   const router = useRouter();
   const [presentation, setPresentation] = useState<PresentationType | null>(
@@ -33,8 +34,10 @@ const PresentationNav = ({ slides }: { slides: SlidesStateTest }) => {
   };
 
   useEffect(() => {
-    loadPresentation(presentationId);
-  }, []);
+    if (presentationId) {
+      loadPresentation(presentationId);
+    }
+  }, [presentationId]);
 
   const startPresentation = async (id: string) => {
     const url = `http://localhost:8000/presentations/start/${id}`;

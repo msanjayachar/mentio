@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useCurrentUser } from "./context/authContext";
-import { PresentationType } from "@shared/mcq";
+import { PresentationType } from "@shared/presentation";
 import { formatTime } from "@/lib/utils";
 import Link from "next/link";
 
