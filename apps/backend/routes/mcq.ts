@@ -8,7 +8,9 @@ import {
   updateMcqSlides,
 } from "../queries/mcq_slides";
 import { Request, Response } from "express";
-import { McqQuestionSchema, McqQuestionUpdateSchema } from "@shared/mcq";
+import { CreateMcqQuestionSchema, UpdateMcqQuestionSchema } from "@shared/mcq";
+import { ZodError } from "zod";
+import { ErrorCodes } from "@shared/types";
 
 const mcqSlidesRouter = Router();
 
@@ -26,39 +28,44 @@ mcqSlidesRouter.post("/", async (req, res) => {
   } = body;
 
   let slide;
-  let parsed;
-
   try {
-    parsed = McqQuestionSchema.parse({
-      id,
+    const parsed = CreateMcqQuestionSchema.parse({
       type,
       question,
       options,
       correctAnswers,
       allowMultiple,
+      presentationId,
     });
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      data: null,
-      error: "INVALID_REQUEST",
-    });
-  }
 
-  try {
     slide = await createMcqSlides(
       userId,
       parsed.question,
       parsed.options,
       parsed.correctAnswers,
       parsed.allowMultiple,
-      presentationId,
+      parsed.presentationId,
     );
   } catch (error) {
-    return res.status(400).json({
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: ErrorCodes.INVALID_REQUEST,
+      });
+    }
+
+    console.error("Create MCQ failed", {
+      userId,
+      presentationId,
+      type,
+      error,
+    });
+
+    return res.status(500).json({
       success: false,
       data: null,
-      error: "FAILED_TO_CREATE_SLIDE",
+      error: ErrorCodes.INTERNAL_SERVER_ERROR,
     });
   }
 
@@ -69,14 +76,13 @@ mcqSlidesRouter.post("/", async (req, res) => {
     options: slide.options,
     correrctAnswers: slide.correct_answers,
     allowMultiple: slide.allow_multiple,
+    presentationId: slide.presentation_id,
     createdAt: slide.created_at,
   };
 
   return res.status(200).json({
     success: true,
-    data: {
-      slide: finalSlide,
-    },
+    data: finalSlide,
     error: null,
   });
 });
@@ -157,13 +163,14 @@ mcqSlidesRouter.patch("/:id", async (req, res) => {
 
   let parsed;
   try {
-    parsed = McqQuestionUpdateSchema.parse({
+    parsed = UpdateMcqQuestionSchema.parse({
       question,
       options,
       correctAnswers,
       allowMultiple,
     });
   } catch (error) {
+    console.log("error: ", error);
     return res.status(400).json({
       success: false,
       data: null,
@@ -182,6 +189,7 @@ mcqSlidesRouter.patch("/:id", async (req, res) => {
       parsed.allowMultiple,
     );
   } catch (error) {
+    console.log("error: ", error);
     return res.status(400).json({
       success: false,
       data: null,

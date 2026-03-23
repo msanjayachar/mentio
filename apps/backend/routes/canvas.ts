@@ -5,7 +5,9 @@ import {
   getCanvasSlide,
   updateCanvasSlides,
 } from "../queries/canvas_slides";
-import { CanvasSlidesSchema } from "@shared/mcq";
+import { CanvasSlidesSchema } from "@shared/canvas";
+import { ErrorCodes } from "@shared/types";
+import { ZodError } from "zod";
 
 const canvasSlidesRouter = Router();
 
@@ -18,6 +20,19 @@ canvasSlidesRouter.post("/", async (req, res) => {
   try {
     canvas = await createCanvasSlides(userId, presentationId, object);
   } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: ErrorCodes.INVALID_REQUEST,
+      });
+    }
+    console.error("Create MCQ failed", {
+      userId,
+      presentationId,
+      error,
+    });
+
     return res.status(400).json({
       success: false,
       data: null,
@@ -34,9 +49,7 @@ canvasSlidesRouter.post("/", async (req, res) => {
 
   return res.status(200).json({
     success: true,
-    data: {
-      slide: finalCanvas,
-    },
+    data: finalCanvas,
     error: null,
   });
 });

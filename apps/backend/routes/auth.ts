@@ -77,9 +77,10 @@ authRouter.post("/signup", async (req, res) => {
     const parsedQueryResponse = DBQueryUserSchema.parse(user);
 
     finalUser = {
-      userId: parsedQueryResponse.id,
+      id: parsedQueryResponse.id,
       name: parsedQueryResponse.name,
       email: parsedQueryResponse.email,
+      createdAt: parsedQueryResponse.created_at,
     };
   } catch (error) {
     if (error instanceof ZodError) {
