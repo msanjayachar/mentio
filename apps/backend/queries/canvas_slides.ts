@@ -5,7 +5,7 @@ export async function createCanvasSlides(
   presentationId: string,
   object: Record<string, unknown>,
 ) {
-  const query = `INSERT INTO canvas_slides (user_id, presentations_id, canvas_object) VALUES ($1, $2, $3) RETURNING *`;
+  const query = `INSERT INTO canvas_slides (user_id, presentation_id, canvas_object) VALUES ($1, $2, $3) RETURNING *`;
 
   const result = await pool.query(query, [userId, presentationId, object]);
 

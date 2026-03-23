@@ -9,7 +9,7 @@ export async function createMcqSlides(
   allowMultiple: boolean,
   presentationId: string,
 ) {
-  const query = `INSERT INTO mcq_slides (user_id, question, options, correct_answers, allow_multiple, presentations_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`;
+  const query = `INSERT INTO mcq_slides (user_id, question, options, correct_answers, allow_multiple, presentation_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`;
 
   const result = await pool.query(query, [
     userId,
