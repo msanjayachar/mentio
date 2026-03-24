@@ -25,8 +25,12 @@ export default function Page() {
   if (!token) return null;
 
   useEffect(() => {
-    if (slides && slides[index]) {
-      setSlide(slides[index]);
+    const presentationSlides = slides?.filter(
+      (slide) => slide.presentationId === presentationId,
+    );
+
+    if (presentationSlides && presentationSlides[index]) {
+      setSlide(presentationSlides[index]);
     }
   }, [slides, index]);
 
@@ -134,6 +138,7 @@ export default function Page() {
     <div className="flex h-screen flex-col bg-slate-100 p-4">
       <Present slide={slide} />
 
+      {/* FOOTER */}
       <div className="mt-auto ml-12 flex w-fit gap-2 text-sm font-light">
         <button
           className="flex cursor-pointer rounded-full bg-gray-300/30 p-2"

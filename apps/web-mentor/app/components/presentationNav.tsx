@@ -18,6 +18,10 @@ const PresentationNav = ({ slides }: { slides: SlidesState }) => {
   const { presentationId } = useParams<{ presentationId: string }>();
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
+  const presentationSlides = slides.filter(
+    (slide) => slide.presentationId === presentationId,
+  );
+
   const loadPresentation = async (id: string) => {
     const url = `http://localhost:8000/presentations/${id}`;
 
@@ -138,7 +142,8 @@ const PresentationNav = ({ slides }: { slides: SlidesState }) => {
         <div className="w-fit rounded-full bg-[#5768e7] pl-4">
           <button
             onClick={() => startPresentation(presentationId)}
-            className="flex h-12 cursor-pointer items-center justify-between"
+            className={`flex h-12 items-center justify-between ${presentationSlides.length === 0 ? "pointer-events-none cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+            disabled={presentationSlides.length === 0 ? true : false}
           >
             <span className="px-2 text-white">
               <div className="sm:hidden">
