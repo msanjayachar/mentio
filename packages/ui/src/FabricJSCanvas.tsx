@@ -19,8 +19,8 @@ export const FabricJSCanvas = ({
   slide: CanvasSlide;
   slides: SlidesState;
   setSlides?: Dispatch<SetStateAction<SlidesState>>;
-  onSave: (canvasSlide: CanvasSlide) => Promise<Response>;
-  selectedSlide: string | undefined;
+  onSave: (canvasSlide: CanvasSlide, canvasId: string) => Promise<Response>;
+  selectedSlide: string;
 }) => {
   const canvasEl = useRef<HTMLCanvasElement>(null);
   const [canvasState, setCanvasState] = useState<FabricObject | null>(null);
@@ -29,7 +29,6 @@ export const FabricJSCanvas = ({
   const toolRef = useRef(tool);
   const canvasRef = useRef<Canvas | null>(null);
   const selectedCanvasSlide = useRef<CanvasSlide | undefined>(undefined);
-  const [counter, setCounter] = useState(0);
 
   const updateCanvasContext = (canvas: Canvas | null) => {};
 
@@ -46,13 +45,17 @@ export const FabricJSCanvas = ({
     }
 
     const currentSlide = selectedCanvasSlide.current;
+
     if (!currentSlide) return;
 
     timeoutRef.current = setTimeout(async () => {
-      await onSave({
-        ...currentSlide,
-        canvasObject: state,
-      });
+      await onSave(
+        {
+          ...currentSlide,
+          canvasObject: state,
+        },
+        selectedSlide,
+      );
     }, 600);
   };
 
@@ -74,8 +77,7 @@ export const FabricJSCanvas = ({
       setSlides((prev) =>
         prev.map((canvasSlide) =>
           canvasSlide.id === slide.id
-            ? // ? { ...canvasSlide, object: canvasState }
-              { ...canvasSlide, object: state }
+            ? { ...canvasSlide, canvasObject: state }
             : canvasSlide,
         ),
       );
@@ -159,7 +161,7 @@ export const FabricJSCanvas = ({
       updateCanvasContext(null);
       canvas.dispose();
     };
-  }, []);
+  }, [selectedSlide]);
 
   const lastLoadedRef = useRef<string | null>(null);
 
@@ -172,7 +174,6 @@ export const FabricJSCanvas = ({
     lastLoadedRef.current = key;
 
     canvasRef.current.loadFromJSON(slide.canvasObject).then(() => {
-      setCounter((prev) => prev + 1);
       canvasRef.current?.requestRenderAll();
     });
   }, [selectedSlide]);

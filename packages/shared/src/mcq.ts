@@ -35,6 +35,8 @@ export const CreateMcqQuestionSchema = McqQuestionSchema.omit({
   presentationId: z.string(),
 });
 
+export type CreateMcqQuestion = z.infer<typeof CreateMcqQuestionSchema>;
+
 // Update McqQuestionSchema
 export const UpdateMcqQuestionSchema = z
   .object({

@@ -14,24 +14,15 @@ import { FabricJSCanvas } from "@repo/ui/FabricJSCanvas";
 import CanvasToolbar from "./canvasToolbar";
 import { useCurrentUser } from "./context/authContext";
 
-const Presentations = () => {
+const Presentations = ({ presentationId }: { presentationId: string }) => {
   const [speakerNotes, setSpeakerNotes] = useState(false);
   const [editSelected, setEditSelected] = useState<boolean>(false);
   const [commentSelected, setCommentSelected] = useState<boolean>(false);
   const [questionSelected, setQuestionSelected] = useState<boolean>(false);
   const [slides, setSlides] = useState<SlidesState>([]);
-  const [selectedSlide, setSelectedSlide] = useState<string | undefined>(
-    undefined,
-  );
+  const [selectedSlide, setSelectedSlide] = useState<string>("");
   const [tool, setTool] = useState<"text" | "image" | "shapes">("text");
   const { token } = useCurrentUser();
-
-  // Q: What are we trying to do here?
-  useEffect(() => {
-    if (slides && !selectedSlide) {
-      setSelectedSlide(slides[0]?.id);
-    }
-  }, [slides, selectedSlide]);
 
   const handleSpeakerNotes = () => {
     setSpeakerNotes((prev) => !prev);
@@ -59,10 +50,12 @@ const Presentations = () => {
 
   return (
     <div className="relative h-screen overflow-hidden bg-[#F2F1F0]">
+      <p>SELECTED SLIDE: {selectedSlide}</p>
       <PresentationNav slides={slides} />
       <div className="flex flex-col">
         <div className="flex">
           <SlidesSidebar
+            presentationId={presentationId}
             selected={selectedSlide}
             setSelected={setSelectedSlide}
             slides={slides}

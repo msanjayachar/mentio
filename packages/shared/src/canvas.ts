@@ -5,8 +5,11 @@ import z from "zod";
 export const CanvasSlidesSchema = z.object({
   id: z.string(),
   type: z.literal("canvas_slide"),
-  // Q: Shouldn't this be an object
-  canvasObject: z.any().nullable().optional(),
+  canvasObject: z.object({
+    objects: z.array(z.unknown()).optional(),
+    version: z.string().optional(),
+    background: z.string().optional(),
+  }),
   presentationId: z.string(),
   createdAt: z.string().datetime(),
 });
@@ -19,12 +22,20 @@ export const CanvasesSlidesSchema = z.array(CanvasSlidesSchema);
 // Create. Canvas Slide Schema
 export const CreateCanvasSlideSchema = z.object({
   presentationId: z.string(),
-  canvasObject: z.any().nullable().optional(),
+  canvasObject: z.object({
+    objects: z.array(z.unknown()).optional(),
+    version: z.string().optional(),
+    background: z.string().optional(),
+  }),
 });
 
 // Update. Canvas Slide Schema
 export const UpdateCanvasSlideSchema = z.object({
-  canvasObject: z.any().nullable().optional(),
+  canvasObject: z.object({
+    objects: z.array(z.unknown()).optional(),
+    version: z.string().optional(),
+    background: z.string().optional(),
+  }),
 });
 
 /////////////////////////
@@ -34,7 +45,11 @@ export const UpdateCanvasSlideSchema = z.object({
 // DBQuery Single Canvas Slide
 export const DBQueryCanvasSchema = z.object({
   id: z.string(),
-  canvas_object: z.any().nullable().optional(),
+  canvas_object: z.object({
+    objects: z.array(z.unknown()).optional(),
+    version: z.string().optional(),
+    background: z.string().optional(),
+  }),
   presentation_id: z.string(),
   created_at: z.date(),
 });

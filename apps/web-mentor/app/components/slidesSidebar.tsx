@@ -14,13 +14,15 @@ import {
 } from "@shared/api/canvas";
 
 const SlidesSidebar = ({
+  presentationId,
   selected,
   setSelected,
   slides,
   setSlides,
 }: {
+  presentationId: string;
   selected: string | undefined;
-  setSelected: Dispatch<SetStateAction<string | undefined>>;
+  setSelected: Dispatch<SetStateAction<string>>;
   slides: SlidesState;
   setSlides: Dispatch<SetStateAction<SlidesState>>;
 }) => {
@@ -30,11 +32,20 @@ const SlidesSidebar = ({
   if (!token) return null;
 
   useEffect(() => {
+    const presentationSlides = slides.filter(
+      (slide) => slide.presentationId === presentationId,
+    );
+
+    if (presentationSlides && !selected && presentationSlides[0]) {
+      setSelected(presentationSlides[0]?.id);
+    }
+  }, [slides, selected]);
+
+  useEffect(() => {
     const loadSlides = async () => {
       const response_mcq = await fetchSlides(token);
       const result_mcq = await response_mcq.json();
 
-      // TODO: API Response Schema parse
       const response_canvas = await fetchCanvasSlides(token);
       const result_canvas = await response_canvas.json();
 
@@ -118,50 +129,52 @@ const SlidesSidebar = ({
         {slides ? (
           <div className="ml-2 flex flex-col gap-4">
             {Array.isArray(slides) &&
-              slides.map((slide) =>
-                slide.type === "canvas_slide" ? (
-                  <div
-                    onClick={() => setSelected(slide.id)}
-                    key={slide.id}
-                    className="flex cursor-pointer"
-                  >
-                    {/* <span className="text-[12px]">{item.id}</span> */}
-                    <div className="flex flex-col gap-2 p-2">
-                      <span className="text-sm text-red-800">
-                        {slide.id.slice(0, 4)}...{slide.id.slice(-3)}
-                      </span>
-                    </div>
-
-                    {/* <span className="text-sm text-red-800">{selected}</span> */}
+              slides
+                .filter((slide) => slide.presentationId === presentationId)
+                .map((slide) =>
+                  slide.type === "canvas_slide" ? (
                     <div
-                      className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected === slide.id ? "ring ring-blue-700" : ""}`}
+                      onClick={() => setSelected(slide.id)}
+                      key={slide.id}
+                      className="flex cursor-pointer"
                     >
-                      <span>{slide.type}</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    onClick={() => setSelected(slide.id)}
-                    // key={slide.id}
-                    key={crypto.randomUUID()}
-                    className="flex cursor-pointer"
-                  >
-                    {/* <span className="text-[12px]">{item.id}</span> */}
-                    <div className="flex flex-col gap-2 p-2">
-                      <span className="text-sm text-red-800">
-                        {slide.id.slice(0, 4)}...{slide.id.slice(-3)}
-                      </span>
-                    </div>
+                      {/* <span className="text-[12px]">{item.id}</span> */}
+                      <div className="flex flex-col gap-2 p-2">
+                        <span className="text-sm text-red-800">
+                          {slide.id.slice(0, 4)}...{slide.id.slice(-3)}
+                        </span>
+                      </div>
 
-                    {/* <span className="text-sm text-red-800">{selected}</span> */}
-                    <div
-                      className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected === slide.id ? "ring ring-blue-700" : ""}`}
-                    >
-                      <span>{slide.type}</span>
+                      {/* <span className="text-sm text-red-800">{selected}</span> */}
+                      <div
+                        className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected === slide.id ? "ring ring-blue-700" : ""}`}
+                      >
+                        <span>{slide.type}</span>
+                      </div>
                     </div>
-                  </div>
-                ),
-              )}
+                  ) : (
+                    <div
+                      onClick={() => setSelected(slide.id)}
+                      // key={slide.id}
+                      key={crypto.randomUUID()}
+                      className="flex cursor-pointer"
+                    >
+                      {/* <span className="text-[12px]">{item.id}</span> */}
+                      <div className="flex flex-col gap-2 p-2">
+                        <span className="text-sm text-red-800">
+                          {slide.id.slice(0, 4)}...{slide.id.slice(-3)}
+                        </span>
+                      </div>
+
+                      {/* <span className="text-sm text-red-800">{selected}</span> */}
+                      <div
+                        className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected === slide.id ? "ring ring-blue-700" : ""}`}
+                      >
+                        <span>{slide.type}</span>
+                      </div>
+                    </div>
+                  ),
+                )}
           </div>
         ) : (
           <div>No slides</div>

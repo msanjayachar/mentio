@@ -1,6 +1,6 @@
 import { request } from "../setup";
 import { SignupUser, LoginUser } from "@shared/types";
-import { McqQuestion } from "@shared/mcq";
+import { CreateMcqQuestion, McqQuestion } from "@shared/mcq";
 
 export const signUpUserFn = async (user: SignupUser) => {
   const result = await request.post("/api/auth/signup").send(user);
@@ -22,7 +22,10 @@ export const me = async (token: string) => {
   return result;
 };
 
-export const createSlides = async (mcqQuestion: McqQuestion, token: string) => {
+export const createSlides = async (
+  mcqQuestion: CreateMcqQuestion,
+  token: string,
+) => {
   const result = await request
     .post("/slides")
     .send(mcqQuestion)

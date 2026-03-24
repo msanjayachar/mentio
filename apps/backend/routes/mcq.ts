@@ -20,8 +20,6 @@ import { ErrorCodes } from "@shared/types";
 
 const mcqSlidesRouter = Router();
 
-// STARTER_TASK: get created_at from both slides. we need it to arrange the slides in the slidesSidebar
-
 mcqSlidesRouter.post("/", async (req, res) => {
   const body = req.body;
   const { userId } = req.user;

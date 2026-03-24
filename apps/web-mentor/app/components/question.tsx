@@ -1,12 +1,19 @@
 "use client";
 
-import { ChangeEvent, Dispatch, SetStateAction, useRef } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+} from "react";
 import type { McqOption, McqQuestion } from "@shared/mcq";
 import type { CanvasSlide } from "@shared/canvas";
 import { SlidesState } from "@shared/types";
 import { FabricJSCanvas } from "@repo/ui/FabricJSCanvas";
 import { updateSlide } from "@/lib/utils";
 import { useCurrentUser } from "./context/authContext";
+import { PresentationApiResponseSchema } from "@shared/api/presentation";
 
 const Question = ({
   tool,
@@ -19,7 +26,7 @@ const Question = ({
   tool: "text" | "image" | "shapes";
   slides: SlidesState;
   setSlides: Dispatch<SetStateAction<SlidesState>>;
-  selectedSlide: string | undefined;
+  selectedSlide: string;
   handleQuestionSelect: () => void;
   handleEdit: () => void;
 }) => {
@@ -41,8 +48,13 @@ const Question = ({
     "bg-red-800",
   ];
 
-  const updateCanvasSlide = async (canvasSlide: CanvasSlide) => {
-    const url = `http://localhost:8000/canvas/${canvasSlide.id}`;
+  const updateCanvasSlide = async (
+    canvasSlide: CanvasSlide,
+    canvasId: string,
+  ) => {
+    // const url = `http://localhost:8000/canvas/${canvasSlide.id}`;
+    const url = `http://localhost:8000/canvas/${selectedSlide}`;
+    const presentation_id = canvasSlide.presentationId;
 
     const response = await fetch(url, {
       method: "PATCH",
@@ -50,7 +62,10 @@ const Question = ({
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ canvasObject: canvasSlide.canvasObject }),
+      body: JSON.stringify({
+        canvasObject: canvasSlide.canvasObject,
+        id: canvasId,
+      }),
     });
 
     return response;

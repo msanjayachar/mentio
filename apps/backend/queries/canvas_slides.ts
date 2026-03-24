@@ -28,7 +28,7 @@ export async function getCanvasSlide(canvasSlideId: string, userId: string) {
   return result.rows[0];
 }
 
-export async function updateCanvasSlides(
+export async function updateCanvasSlide(
   id: string,
   userId: string,
   canvasObject: Object,

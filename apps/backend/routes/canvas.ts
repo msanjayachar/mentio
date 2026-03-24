@@ -3,13 +3,14 @@ import {
   createCanvasSlides,
   getCanvasSlides,
   getCanvasSlide,
-  updateCanvasSlides,
+  updateCanvasSlide,
 } from "../queries/canvas_slides";
 import {
   CanvasSlidesSchema,
   CreateCanvasSlideSchema,
   DBQueryCanvasesSchema,
   DBQueryCanvasSchema,
+  UpdateCanvasSlideSchema,
 } from "@shared/canvas";
 import { ErrorCodes } from "@shared/types";
 import { ZodError } from "zod";
@@ -19,11 +20,14 @@ const canvasSlidesRouter = Router();
 canvasSlidesRouter.post("/", async (req, res) => {
   const { userId } = req.user;
   const body = req.body;
-  const { presentationId, object } = body;
+  const { presentationId, canvasObject } = body;
 
   let finalCanvas;
   try {
-    const parsed = CreateCanvasSlideSchema.parse({ presentationId, object });
+    const parsed = CreateCanvasSlideSchema.parse({
+      presentationId,
+      canvasObject,
+    });
 
     const dbQueryRes = await createCanvasSlides(
       userId,
@@ -154,21 +158,21 @@ canvasSlidesRouter.get("/:id", async (req, res) => {
   });
 });
 
-canvasSlidesRouter.patch("/:presentationId", async (req, res) => {
-  const { presentationId } = req.params;
+canvasSlidesRouter.patch("/:canvasId", async (req, res) => {
+  // const { presentationId } = req.params;
+  const { canvasId } = req.params;
   const { userId } = req.user;
   const body = req.body;
-  const { canvasObject } = body;
+  const { id, canvasObject } = body;
 
   let canvasSlide;
   try {
-    const parsed = CanvasSlidesSchema.parse({
-      presentationId,
+    const parsed = UpdateCanvasSlideSchema.parse({
       canvasObject,
     });
 
-    const dbQueryRes = await updateCanvasSlides(
-      parsed.id,
+    const dbQueryRes = await updateCanvasSlide(
+      canvasId,
       userId,
       parsed.canvasObject,
     );

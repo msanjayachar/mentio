@@ -1,5 +1,5 @@
 import type { SignupUser, LoginUser } from "@shared/types";
-import type { McqQuestion } from "@shared/mcq";
+import type { CreateMcqQuestion, McqQuestion } from "@shared/mcq";
 
 export const signUpUser: SignupUser = {
   name: "John Cena",
@@ -12,9 +12,7 @@ export const loginUser: LoginUser = {
   password: "password",
 };
 
-export const mcqQuestion: McqQuestion = {
-  id: "one",
-  type: "multiple_choice",
+export const mcqQuestion: CreateMcqQuestion = {
   question: "What is the capital of karnataka",
   options: [
     { id: "one", text: "Bengaluru", isCorrect: true },
@@ -23,4 +21,5 @@ export const mcqQuestion: McqQuestion = {
     { id: "four", text: "Mysuru", isCorrect: false },
   ],
   allowMultiple: false,
+  presentationId: "string",
 };

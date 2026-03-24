@@ -40,8 +40,9 @@ const NewSlide = ({
   };
 
   const emptyCanvasSlide = {
-    id: "one",
-    object: {},
+    canvasObject: {
+      objects: [],
+    },
   };
 
   const createSlide = async (
@@ -106,7 +107,7 @@ const NewSlide = ({
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...canvas, presentationId }),
+      body: JSON.stringify({ presentationId, canvasObject: canvas }),
     });
 
     const result = await response.json();
