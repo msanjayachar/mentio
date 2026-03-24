@@ -8,44 +8,53 @@ import {
   updateMcqSlides,
 } from "../queries/mcq_slides";
 import { Request, Response } from "express";
-import { CreateMcqQuestionSchema, UpdateMcqQuestionSchema } from "@shared/mcq";
+import {
+  CreateMcqQuestionSchema,
+  DBQueryMcqQuestionSchema,
+  DBQueryMcqQuestionsSchema,
+  McqQuestionSchema,
+  UpdateMcqQuestionSchema,
+} from "@shared/mcq";
 import { ZodError } from "zod";
 import { ErrorCodes } from "@shared/types";
 
 const mcqSlidesRouter = Router();
 
+// STARTER_TASK: get created_at from both slides. we need it to arrange the slides in the slidesSidebar
+
 mcqSlidesRouter.post("/", async (req, res) => {
   const body = req.body;
   const { userId } = req.user;
-  const {
-    id,
-    type,
-    question,
-    options,
-    correctAnswers,
-    allowMultiple,
-    presentationId,
-  } = body;
+  const { question, options, allowMultiple, presentationId } = body;
 
-  let slide;
+  let finalSlide;
   try {
     const parsed = CreateMcqQuestionSchema.parse({
-      type,
       question,
       options,
-      correctAnswers,
       allowMultiple,
       presentationId,
     });
 
-    slide = await createMcqSlides(
+    const result = await createMcqSlides(
       userId,
       parsed.question,
       parsed.options,
-      parsed.correctAnswers,
       parsed.allowMultiple,
       parsed.presentationId,
     );
+
+    const slide = DBQueryMcqQuestionSchema.parse(result);
+
+    finalSlide = {
+      id: slide.id,
+      type: "multiple_choice",
+      question: slide.question,
+      options: slide.options,
+      allowMultiple: slide.allow_multiple,
+      presentationId: slide.presentation_id,
+      createdAt: slide.created_at,
+    };
   } catch (error) {
     if (error instanceof ZodError) {
       return res.status(400).json({
@@ -58,7 +67,149 @@ mcqSlidesRouter.post("/", async (req, res) => {
     console.error("Create MCQ failed", {
       userId,
       presentationId,
-      type,
+      error,
+    });
+
+    return res.status(500).json({
+      success: false,
+      data: null,
+      error: ErrorCodes.INTERNAL_SERVER_ERROR,
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: finalSlide,
+    error: null,
+  });
+});
+
+mcqSlidesRouter.get("/", async (req: Request, res: Response) => {
+  const { userId } = req.user;
+
+  let slidesWithType;
+  try {
+    const result = await getMcqSlides(userId);
+    const slides = DBQueryMcqQuestionsSchema.parse(result);
+
+    slidesWithType = slides.map((slide) => ({
+      id: slide.id,
+      type: "multiple_choice",
+      question: slide.question,
+      options: slide.options,
+      allowMultiple: slide.allow_multiple,
+      presentationId: slide.presentation_id,
+      createdAt: slide.created_at,
+    }));
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: ErrorCodes.INVALID_REQUEST,
+      });
+    }
+
+    console.error("Get MCQ Slides failed", {
+      userId,
+      error,
+    });
+
+    return res.status(500).json({
+      success: false,
+      data: null,
+      error: ErrorCodes.INTERNAL_SERVER_ERROR,
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: slidesWithType,
+    error: null,
+  });
+});
+
+// VERIFY: Shouldn't we be passing the user_id as well here?
+mcqSlidesRouter.get("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  let finalSlide;
+  try {
+    const result = await getMcqSlideById(id);
+
+    const slide = DBQueryMcqQuestionSchema.parse(result);
+
+    finalSlide = {
+      id: slide.id,
+      type: "multiple_choice",
+      question: slide.question,
+      options: slide.options,
+      allowMultiple: slide.allow_multiple,
+      presentationId: slide.presentation_id,
+      createdAt: slide.created_at,
+    };
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: ErrorCodes.INVALID_REQUEST,
+      });
+    }
+
+    console.error("Get MCQ by id failed", {
+      id,
+      error,
+    });
+
+    return res.status(500).json({
+      success: false,
+      data: null,
+      error: ErrorCodes.INTERNAL_SERVER_ERROR,
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: finalSlide,
+    error: null,
+  });
+});
+
+mcqSlidesRouter.patch("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.user;
+  const body = req.body;
+  const { question, options, allowMultiple } = body;
+
+  let slide;
+  try {
+    const parsed = UpdateMcqQuestionSchema.parse({
+      question,
+      options,
+      allowMultiple,
+    });
+
+    const result = await updateMcqSlides(
+      id,
+      userId,
+      parsed.question,
+      parsed.options,
+      parsed.allowMultiple,
+    );
+
+    slide = DBQueryMcqQuestionSchema.parse(result);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: ErrorCodes.INVALID_REQUEST,
+      });
+    }
+
+    console.error("Update MCQ failed", {
+      id,
       error,
     });
 
@@ -74,137 +225,8 @@ mcqSlidesRouter.post("/", async (req, res) => {
     type: "multiple_choice",
     question: slide.question,
     options: slide.options,
-    correrctAnswers: slide.correct_answers,
     allowMultiple: slide.allow_multiple,
     presentationId: slide.presentation_id,
-    createdAt: slide.created_at,
-  };
-
-  return res.status(200).json({
-    success: true,
-    data: finalSlide,
-    error: null,
-  });
-});
-
-mcqSlidesRouter.get("/", async (req: Request, res: Response) => {
-  const { userId } = req.user;
-
-  let slides;
-  try {
-    slides = await getMcqSlides(userId);
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      data: null,
-      error: "FAILED_TO_FETCH_SLIDES",
-    });
-  }
-
-  const slidesWithType = slides.map((slide) => ({
-    id: slide.id,
-    type: "multiple_choice",
-    userId: slide.user_id,
-    question: slide.question,
-    options: slide.options,
-    correctAnswers: slide.correct_answers,
-    allowMultiple: slide.allow_multiple,
-    createdAt: slide.created_at,
-  }));
-
-  return res.status(200).json({
-    success: true,
-    data: {
-      slides: slidesWithType,
-    },
-    error: null,
-  });
-});
-
-mcqSlidesRouter.get("/:id", async (req, res) => {
-  const { id } = req.params;
-
-  let slide;
-  try {
-    slide = await getMcqSlideById(id);
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      data: null,
-      error: "FAILED_TO_GET_SLIDE",
-    });
-  }
-
-  if (!slide) return;
-
-  const finalSlide = {
-    id: slide.id,
-    type: "multiple_choice",
-    userId: slide.user_id,
-    question: slide.question,
-    options: slide.options,
-    correctAnswers: slide.correct_answers,
-    allowMultiple: slide.allow_multiple,
-    createdAt: slide.created_at,
-  };
-
-  return res.status(200).json({
-    success: true,
-    data: finalSlide,
-    error: null,
-  });
-});
-
-mcqSlidesRouter.patch("/:id", async (req, res) => {
-  const { id } = req.params;
-  const { userId } = req.user;
-  const body = req.body;
-  const { question, options, correctAnswers, allowMultiple } = body;
-
-  let parsed;
-  try {
-    parsed = UpdateMcqQuestionSchema.parse({
-      question,
-      options,
-      correctAnswers,
-      allowMultiple,
-    });
-  } catch (error) {
-    console.log("error: ", error);
-    return res.status(400).json({
-      success: false,
-      data: null,
-      error: "INVALID_REQUEST",
-    });
-  }
-
-  let slide;
-  try {
-    slide = await updateMcqSlides(
-      id,
-      userId,
-      parsed.question,
-      parsed.options,
-      parsed.correctAnswers,
-      parsed.allowMultiple,
-    );
-  } catch (error) {
-    console.log("error: ", error);
-    return res.status(400).json({
-      success: false,
-      data: null,
-      error: "FAILED_TO_UPDATE_SLIDE",
-    });
-  }
-
-  const finalSlide = {
-    id: slide.id,
-    type: "multiple_choice",
-    userId: slide.user_id,
-    question: slide.question,
-    options: slide.options,
-    correctAnswers: slide.correct_answers,
-    allowMultiple: slide.allow_multiple,
     createdAt: slide.created_at,
   };
 

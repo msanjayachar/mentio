@@ -54,10 +54,6 @@ presentationsRouter.post("/", async (req, res) => {
     endedAt: result.ended_at,
   };
 
-  console.log("*************************");
-  console.log("presentation: ", presentation);
-  console.log("*************************");
-
   return res.status(200).json({
     success: true,
     data: presentation,

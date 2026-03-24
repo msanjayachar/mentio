@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import Logo from "./logo";
 import { useCurrentUser } from "./context/authContext";
@@ -14,6 +14,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const { login } = useCurrentUser();
 
   const testUserLogin = async () => {
@@ -108,6 +109,10 @@ const Login = () => {
     }
   };
 
+  useEffect(() => {
+    buttonRef.current?.focus();
+  }, []);
+
   return (
     <div>
       <div className="flex items-center justify-center gap-2 py-4 text-center">
@@ -128,6 +133,7 @@ const Login = () => {
         </button>
 
         <button
+          ref={buttonRef}
           onClick={() => testUserLogin()}
           className="cursor-pointer rounded-md border-2 border-black bg-red-400 py-2 text-xl"
         >

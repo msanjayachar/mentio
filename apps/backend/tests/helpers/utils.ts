@@ -52,7 +52,6 @@ export const updateSlideById = async (
   token: string,
   question?: string,
   options?: string[],
-  correctAnswers?: string[],
   allowMultiple?: boolean,
 ) => {
   const result = await request
@@ -61,7 +60,6 @@ export const updateSlideById = async (
     .send({
       question,
       options,
-      correctAnswers,
       allowMultiple,
     });
 

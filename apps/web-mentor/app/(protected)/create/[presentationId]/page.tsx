@@ -7,7 +7,6 @@ import Presentations from "@/app/components/presentations";
 export default function Page() {
   const params = useParams<{ presentationId: string }>();
 
-  // THREAD:
   useEffect(() => {
     const getPresentation = () => {};
   }, []);

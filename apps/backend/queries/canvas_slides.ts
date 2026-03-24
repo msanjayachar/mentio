@@ -5,7 +5,7 @@ export async function createCanvasSlides(
   presentationId: string,
   object: Record<string, unknown>,
 ) {
-  const query = `INSERT INTO canvas_slides (user_id, presentation_id, canvas_object) VALUES ($1, $2, $3) RETURNING *`;
+  const query = `INSERT INTO canvas_slides (user_id, presentation_id, canvas_object) VALUES ($1, $2, $3) RETURNING id, canvas_object, presentation_id, created_at`;
 
   const result = await pool.query(query, [userId, presentationId, object]);
 
@@ -13,7 +13,7 @@ export async function createCanvasSlides(
 }
 
 export async function getCanvasSlides(userId: string) {
-  const query = `SELECT * FROM canvas_slides WHERE user_id = ($1);`;
+  const query = `SELECT id, canvas_object, presentation_id, created_at FROM canvas_slides WHERE user_id = ($1);`;
 
   const result = await pool.query(query, [userId]);
 
@@ -21,7 +21,7 @@ export async function getCanvasSlides(userId: string) {
 }
 
 export async function getCanvasSlide(canvasSlideId: string, userId: string) {
-  const query = `SELECT * FROM canvas_slides WHERE id = $1 AND user_id = $2;`;
+  const query = `SELECT id, canvas_object, presentation_id, created_at FROM canvas_slides WHERE id = $1 AND user_id = $2;`;
 
   const result = await pool.query(query, [canvasSlideId, userId]);
 
@@ -33,7 +33,7 @@ export async function updateCanvasSlides(
   userId: string,
   canvasObject: Object,
 ) {
-  const query = `UPDATE canvas_slides SET canvas_object = $3 WHERE user_id = $2 AND id = $1 RETURNING *;`;
+  const query = `UPDATE canvas_slides SET canvas_object = $3 WHERE user_id = $2 AND id = $1 RETURNING id, canvas_object, presentation_id, created_at;`;
   const result = await pool.query(query, [id, userId, canvasObject]);
 
   return result.rows[0];

@@ -1,10 +1,16 @@
 import z from "zod";
-import { McqQuestionSchema } from "../mcq";
+import { McqQuestionSchema, McqQuestionsPublicSchema } from "../mcq";
 import { ErrorCodes } from "../types";
 
 const McqApiSuccessSchema = z.object({
   success: z.literal(true),
   data: McqQuestionSchema,
+  error: z.null(),
+});
+
+const McqsApiSuccessSchema = z.object({
+  success: z.literal(true),
+  data: McqQuestionsPublicSchema,
   error: z.null(),
 });
 
@@ -21,5 +27,10 @@ const McqApiErrorSchema = z.object({
 
 export const McqApiResponseSchema = z.discriminatedUnion("success", [
   McqApiSuccessSchema,
+  McqApiErrorSchema,
+]);
+
+export const McqsApiResponseSchema = z.discriminatedUnion("success", [
+  McqsApiSuccessSchema,
   McqApiErrorSchema,
 ]);

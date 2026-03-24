@@ -1,17 +1,12 @@
 "use client";
 
-import {
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useRef } from "react";
 import type { McqOption, McqQuestion } from "@shared/mcq";
 import type { CanvasSlide } from "@shared/canvas";
 import { SlidesState } from "@shared/types";
 import { FabricJSCanvas } from "@repo/ui/FabricJSCanvas";
+import { updateSlide } from "@/lib/utils";
+import { useCurrentUser } from "./context/authContext";
 
 const Question = ({
   tool,
@@ -28,8 +23,10 @@ const Question = ({
   handleQuestionSelect: () => void;
   handleEdit: () => void;
 }) => {
-  const [token, setToken] = useState<string | null>(null);
+  const { token } = useCurrentUser();
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  if (!token) return;
 
   // Getting the slide (mcq or canvas) thats selected right now
   const slide = Array.isArray(slides)
@@ -59,26 +56,6 @@ const Question = ({
     return response;
   };
 
-  useEffect(() => {
-    const tkn = localStorage.getItem("token");
-    setToken(tkn);
-  }, []);
-
-  const updateSlide = async (slide: McqQuestion) => {
-    const url = `http://localhost:8000/slides/${slide!.id}`;
-
-    const response = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(slide),
-    });
-
-    return response;
-  };
-
   const handleUpdate = (e: ChangeEvent<HTMLInputElement>) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -93,7 +70,7 @@ const Question = ({
     };
 
     timeoutRef.current = setTimeout(() => {
-      updateSlide(updatedSlide);
+      updateSlide(updatedSlide, token);
     }, 600);
 
     // VERIFY: whether this works as intended

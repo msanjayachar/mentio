@@ -3,11 +3,14 @@
 import { useCurrentUser } from "@/app/components/context/authContext";
 import Present from "@/app/components/present";
 import { fetchCanvasSlides, fetchSlides, getEpochSeconds } from "@/lib/utils";
+import { CanvasesApiResponseSchema } from "@shared/api/canvas";
+import { McqsApiResponseSchema } from "@shared/api/mcq";
 import { PresentationType } from "@shared/presentation";
-import { SlidesState, SlideState } from "@shared/types";
+import { ERROR_MESSAGES, SlidesState, SlideState } from "@shared/types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function Page() {
   const [presentation, setPresentation] = useState<PresentationType | null>(
@@ -29,23 +32,62 @@ export default function Page() {
 
   useEffect(() => {
     const loadSlides = async () => {
-      const response = await fetchSlides(token);
-      const result = await response.json();
+      const response_mcq = await fetchSlides(token);
+      const result_mcq = await response_mcq.json();
 
-      const response_two = await fetchCanvasSlides(token);
-      const result_two = await response_two.json();
+      // TODO: API Response Schema parse
+      const response_canvas = await fetchCanvasSlides(token);
+      const result_canvas = await response_canvas.json();
 
-      setSlides(
-        [...result.data.slides, ...result_two.data.slides].sort((a, b) => {
-          const timeA = getEpochSeconds(a.createdAt);
-          const timeB = getEpochSeconds(b.createdAt);
+      const parsed_mcq = McqsApiResponseSchema.safeParse(result_mcq);
+      const parsed_canvas = CanvasesApiResponseSchema.safeParse(result_canvas);
 
-          if (timeA === null) return 1;
-          if (timeB === null) return -1;
+      if (!parsed_mcq.success || !parsed_canvas.success) {
+        toast.error("Unexpected server response four", {
+          position: "top-center",
+          style: {
+            background: "red",
+            color: "white",
+          },
+        });
 
-          return timeA - timeB;
-        }),
-      );
+        return;
+      }
+
+      const res_mcq = parsed_mcq.data;
+      const res_canvas = parsed_canvas.data;
+
+      if (res_mcq.success && res_canvas.success) {
+        setSlides([...res_mcq.data, ...res_canvas.data]);
+
+        toast.success("Mcq Slide", {
+          position: "top-center",
+          style: {
+            background: "green",
+            color: "white",
+          },
+        });
+      } else {
+        if (res_mcq.error) {
+          toast.error(ERROR_MESSAGES[res_mcq.error] ?? "Unexpected error", {
+            position: "top-center",
+            style: {
+              background: "red",
+              color: "white",
+            },
+          });
+        }
+
+        if (res_canvas.error) {
+          toast.error(ERROR_MESSAGES[res_canvas.error] ?? "Unexpected error", {
+            position: "top-center",
+            style: {
+              background: "red",
+              color: "white",
+            },
+          });
+        }
+      }
     };
 
     loadSlides();

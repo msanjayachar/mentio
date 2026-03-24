@@ -3,14 +3,15 @@
 import { Plus } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import NewSlide from "./newSlide";
-import { SlidesState } from "@shared/types";
-import {
-  fetchCanvasSlides,
-  fetchSlides,
-  formatTime,
-  getEpochSeconds,
-} from "@/lib/utils";
+import { ERROR_MESSAGES, SlidesState } from "@shared/types";
+import { fetchCanvasSlides, fetchSlides } from "@/lib/utils";
 import { useCurrentUser } from "./context/authContext";
+import { McqApiResponseSchema, McqsApiResponseSchema } from "@shared/api/mcq";
+import { toast } from "sonner";
+import {
+  CanvasApiResponseSchema,
+  CanvasesApiResponseSchema,
+} from "@shared/api/canvas";
 
 const SlidesSidebar = ({
   selected,
@@ -26,29 +27,66 @@ const SlidesSidebar = ({
   const [showSlideOption, setShowSlideOption] = useState<boolean>(false);
   const { token } = useCurrentUser();
 
-  // VERIFY:
   if (!token) return null;
 
-  // NOTE: This is where we fetch the slides on page load
   useEffect(() => {
     const loadSlides = async () => {
-      const response = await fetchSlides(token);
-      const result = await response.json();
+      const response_mcq = await fetchSlides(token);
+      const result_mcq = await response_mcq.json();
 
-      const response_two = await fetchCanvasSlides(token);
-      const result_two = await response_two.json();
+      // TODO: API Response Schema parse
+      const response_canvas = await fetchCanvasSlides(token);
+      const result_canvas = await response_canvas.json();
 
-      setSlides(
-        [...result.data.slides, ...result_two.data.slides].sort((a, b) => {
-          const timeA = getEpochSeconds(a.createdAt);
-          const timeB = getEpochSeconds(b.createdAt);
+      const parsed_mcq = McqsApiResponseSchema.safeParse(result_mcq);
+      const parsed_canvas = CanvasesApiResponseSchema.safeParse(result_canvas);
 
-          if (timeA === null) return 1;
-          if (timeB === null) return -1;
+      if (!parsed_mcq.success || !parsed_canvas.success) {
+        toast.error("Unexpected server response FOUR", {
+          position: "top-center",
+          style: {
+            background: "red",
+            color: "white",
+          },
+        });
 
-          return timeA - timeB;
-        }),
-      );
+        return;
+      }
+
+      const res_mcq = parsed_mcq.data;
+      const res_canvas = parsed_canvas.data;
+
+      if (res_mcq.success && res_canvas.success) {
+        setSlides([...res_mcq.data, ...res_canvas.data]);
+
+        toast.success("Mcq Slide", {
+          position: "top-center",
+          style: {
+            background: "green",
+            color: "white",
+          },
+        });
+      } else {
+        if (res_mcq.error) {
+          toast.error(ERROR_MESSAGES[res_mcq.error] ?? "Unexpected error", {
+            position: "top-center",
+            style: {
+              background: "red",
+              color: "white",
+            },
+          });
+        }
+
+        if (res_canvas.error) {
+          toast.error(ERROR_MESSAGES[res_canvas.error] ?? "Unexpected error", {
+            position: "top-center",
+            style: {
+              background: "red",
+              color: "white",
+            },
+          });
+        }
+      }
     };
 
     loadSlides();
@@ -92,9 +130,6 @@ const SlidesSidebar = ({
                       <span className="text-sm text-red-800">
                         {slide.id.slice(0, 4)}...{slide.id.slice(-3)}
                       </span>
-                      <span className="text-sm text-red-800">
-                        {formatTime(slide.createdAt)}
-                      </span>
                     </div>
 
                     {/* <span className="text-sm text-red-800">{selected}</span> */}
@@ -115,9 +150,6 @@ const SlidesSidebar = ({
                     <div className="flex flex-col gap-2 p-2">
                       <span className="text-sm text-red-800">
                         {slide.id.slice(0, 4)}...{slide.id.slice(-3)}
-                      </span>
-                      <span className="text-sm text-red-800">
-                        {formatTime(slide.createdAt)}
                       </span>
                     </div>
 

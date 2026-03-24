@@ -1,10 +1,16 @@
 import z from "zod";
 import { ErrorCodes } from "../types";
-import { CanvasSlideResponseSchema } from "../canvas";
+import { CanvasesSlidesSchema, CanvasSlidesSchema } from "../canvas";
 
 const CanvasApiSuccessSchema = z.object({
   success: z.literal(true),
-  data: CanvasSlideResponseSchema,
+  data: CanvasSlidesSchema,
+  error: z.null(),
+});
+
+const CanvasesApiSuccessSchema = z.object({
+  success: z.literal(true),
+  data: CanvasesSlidesSchema,
   error: z.null(),
 });
 
@@ -21,5 +27,10 @@ const CanvasApiErrorSchema = z.object({
 
 export const CanvasApiResponseSchema = z.discriminatedUnion("success", [
   CanvasApiSuccessSchema,
+  CanvasApiErrorSchema,
+]);
+
+export const CanvasesApiResponseSchema = z.discriminatedUnion("success", [
+  CanvasesApiSuccessSchema,
   CanvasApiErrorSchema,
 ]);

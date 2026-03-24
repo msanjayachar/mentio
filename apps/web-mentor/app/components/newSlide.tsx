@@ -36,7 +36,6 @@ const NewSlide = ({
         isCorrect: false,
       },
     ],
-    correctAnswers: [],
     allowMultiple: false,
   };
 
@@ -46,7 +45,7 @@ const NewSlide = ({
   };
 
   const createSlide = async (
-    slide: Omit<McqQuestion, "id" | "type" | "createdAt" | "presentationId">,
+    slide: Omit<McqQuestion, "id" | "type" | "presentationId" | "createdAt">,
   ) => {
     const url = "http://localhost:8000/slides";
 
@@ -63,7 +62,7 @@ const NewSlide = ({
     const parsed = McqApiResponseSchema.safeParse(result);
 
     if (!parsed.success) {
-      toast.error("Unexpected server response", {
+      toast.error("Unexpected server response one.", {
         position: "top-center",
         style: {
           background: "red",
@@ -114,7 +113,7 @@ const NewSlide = ({
     const parsed = CanvasApiResponseSchema.safeParse(result);
 
     if (!parsed.success) {
-      toast.error("Unexpected server response", {
+      toast.error("Unexpected server response.", {
         position: "top-center",
         style: {
           background: "red",

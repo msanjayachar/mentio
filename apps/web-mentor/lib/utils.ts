@@ -1,3 +1,4 @@
+import { McqQuestion } from "@shared/mcq";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -39,6 +40,21 @@ export const fetchCanvasSlides = async (token: string) => {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
+  });
+
+  return response;
+};
+
+export const updateSlide = async (slide: McqQuestion, token: string) => {
+  const url = `http://localhost:8000/slides/${slide!.id}`;
+
+  const response = await fetch(url, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(slide),
   });
 
   return response;

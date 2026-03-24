@@ -18,5 +18,4 @@ export const DBQueryUserSchema = z.object({
   name: z.string(),
   email: z.email(),
   password: z.string(),
-  created_at: z.date(),
 });

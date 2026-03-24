@@ -30,8 +30,10 @@ authRouter.get("/me", middleware, async (req: Request, res: Response) => {
         error: "UNAUTHORIZED",
       });
     }
-
-    const parsedUser = DBQueryUserSchema.parse(user);
+    const PartialUser = DBQueryUserSchema.omit({
+      password: true,
+    });
+    const parsedUser = PartialUser.parse(user);
 
     finalUser = {
       userId: parsedUser.id,
@@ -39,6 +41,19 @@ authRouter.get("/me", middleware, async (req: Request, res: Response) => {
       email: parsedUser.email,
     };
   } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: ErrorCodes.INVALID_REQUEST,
+      });
+    }
+
+    console.error("/me failed", {
+      userId,
+      error,
+    });
+
     return res.status(500).json({
       success: false,
       data: null,
@@ -74,13 +89,15 @@ authRouter.post("/signup", async (req, res) => {
     const hashedPassword = await bcrypt.hash(parsed.password, saltRounds);
     const user = await createUser(parsed.name, parsed.email, hashedPassword);
 
-    const parsedQueryResponse = DBQueryUserSchema.parse(user);
+    const PartialUser = DBQueryUserSchema.omit({
+      password: true,
+    });
+    const parsedQueryResponse = PartialUser.parse(user);
 
     finalUser = {
-      id: parsedQueryResponse.id,
+      userId: parsedQueryResponse.id,
       name: parsedQueryResponse.name,
       email: parsedQueryResponse.email,
-      createdAt: parsedQueryResponse.created_at,
     };
   } catch (error) {
     if (error instanceof ZodError) {
@@ -90,6 +107,12 @@ authRouter.post("/signup", async (req, res) => {
         error: ErrorCodes.INVALID_REQUEST,
       });
     }
+
+    console.error("Signup failed", {
+      name,
+      email,
+      error,
+    });
 
     return res.status(500).json({
       success: false,
@@ -122,6 +145,9 @@ authRouter.post("/login", async (req, res) => {
         error: ErrorCodes.INVALID_CREDENTIALS,
       });
     }
+    const PartialUser = DBQueryUserSchema.omit({
+      password: true,
+    });
 
     const parsedUser = DBQueryUserSchema.parse(user);
 
@@ -156,6 +182,12 @@ authRouter.post("/login", async (req, res) => {
         error: ErrorCodes.INVALID_REQUEST,
       });
     }
+
+    console.error("Login failed", {
+      name,
+      email,
+      error,
+    });
 
     return res.status(500).json({
       success: false,

@@ -1,14 +1,13 @@
 import z from "zod";
-import { McqQuestion, McqQuestionSchema } from "./mcq";
-import { CanvasSlide, CanvasSlidesSchema } from "./canvas";
+import { McqQuestion } from "./mcq";
+import { CanvasSlide } from "./canvas";
 import { LoginSchema, SignupSchema } from "./auth";
 
 export type SignupUser = z.infer<typeof SignupSchema>;
 export type LoginUser = z.infer<typeof LoginSchema>;
 
-export type SlideState =
-  | z.infer<typeof McqQuestionSchema>
-  | z.infer<typeof CanvasSlidesSchema>;
+// export type SlideState = z.infer<McqQuestion> | z.infer<CanvasSlide>;
+export type SlideState = McqQuestion | CanvasSlide;
 
 export type SlidesState = (McqQuestion | CanvasSlide)[];
 

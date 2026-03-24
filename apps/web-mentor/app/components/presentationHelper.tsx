@@ -7,6 +7,7 @@ import { ChangeEvent, Dispatch, SetStateAction, useState, useRef } from "react";
 import { SlidesState, SlideState } from "@shared/types";
 import { useParams } from "next/navigation";
 import { useCurrentUser } from "./context/authContext";
+import { updateSlide } from "@/lib/utils";
 
 const PresentationHelper = ({
   selectedSlide,
@@ -30,12 +31,13 @@ const PresentationHelper = ({
   const { presentationId } = useParams<{ presentationId: string }>();
   const { token } = useCurrentUser();
 
+  if (!token) return;
+
   // VERIFY: is this right to do here?
   if (!selectedSlide) return;
 
-  const slide: SlideState | undefined = Array.isArray(slides)
-    ? slides?.find((slide) => slide.id === selectedSlide)
-    : undefined;
+  // THREAD: Slide is unknown because fetch Slides isn't type safe right now.
+  const slide = slides.find((slide) => slide.id === selectedSlide);
 
   const colors = [
     "bg-blue-500",
@@ -67,7 +69,7 @@ const PresentationHelper = ({
     };
 
     timeoutRef.current = setTimeout(() => {
-      updateSlide(updatedSlide);
+      updateSlide(updatedSlide, token);
     }, 600);
 
     const last = slide.type === "multiple_choice" ? slide.options.at(-1) : null;
@@ -90,21 +92,6 @@ const PresentationHelper = ({
           : slide,
       ),
     );
-  };
-
-  const updateSlide = async (slide: McqQuestion) => {
-    const url = `http://localhost:8000/slides/${slide!.id}`;
-
-    const response = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(slide),
-    });
-
-    return response;
   };
 
   const addOption = (slideId: string) => {

@@ -48,7 +48,7 @@ const Signup = () => {
     const result = UserApiResponseSchema.safeParse(json);
 
     if (!result.success) {
-      toast.error("Unexpected server response", {
+      toast.error("Unexpected server response four", {
         position: "top-center",
         style: {
           background: "red",

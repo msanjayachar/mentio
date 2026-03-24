@@ -4,7 +4,7 @@ import { ErrorCodes } from "../types";
 
 const UserApiSuccessSchema = z.object({
   success: z.literal(true),
-  data: UserSchema,
+  data: LoginUserSchema,
   error: z.null(),
 });
 

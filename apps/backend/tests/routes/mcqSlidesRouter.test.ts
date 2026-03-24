@@ -41,7 +41,6 @@ describe("Test mcq slides routes", () => {
 
       expect(res.body.success).toBeTruthy();
       expect(res.body.data.slides[0].question).toEqual(mcqQuestion.question);
-      expect(Array.isArray(res.body.data.slides[0].correct_answers)).toBe(true);
       expect(Array.isArray(res.body.data.slides[0].options)).toBe(true);
       expect(typeof res.body.data.slides[0].allow_multiple).toBe("boolean");
     });

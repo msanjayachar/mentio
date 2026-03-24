@@ -1,4 +1,4 @@
-import type { SignupUser, LoginUser } from "@shared/auth";
+import type { SignupUser, LoginUser } from "@shared/types";
 import type { McqQuestion } from "@shared/mcq";
 
 export const signUpUser: SignupUser = {
@@ -22,7 +22,5 @@ export const mcqQuestion: McqQuestion = {
     { id: "three", text: "Belagavi", isCorrect: false },
     { id: "four", text: "Mysuru", isCorrect: false },
   ],
-  correctAnswers: [{ id: "one", text: "Bengaluru", isCorrect: true }],
-  presentationId: "string",
   allowMultiple: false,
 };

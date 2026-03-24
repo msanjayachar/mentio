@@ -5,7 +5,12 @@ import {
   getCanvasSlide,
   updateCanvasSlides,
 } from "../queries/canvas_slides";
-import { CanvasSlidesSchema } from "@shared/canvas";
+import {
+  CanvasSlidesSchema,
+  CreateCanvasSlideSchema,
+  DBQueryCanvasesSchema,
+  DBQueryCanvasSchema,
+} from "@shared/canvas";
 import { ErrorCodes } from "@shared/types";
 import { ZodError } from "zod";
 
@@ -16,9 +21,25 @@ canvasSlidesRouter.post("/", async (req, res) => {
   const body = req.body;
   const { presentationId, object } = body;
 
-  let canvas;
+  let finalCanvas;
   try {
-    canvas = await createCanvasSlides(userId, presentationId, object);
+    const parsed = CreateCanvasSlideSchema.parse({ presentationId, object });
+
+    const dbQueryRes = await createCanvasSlides(
+      userId,
+      parsed.presentationId,
+      parsed.canvasObject,
+    );
+
+    const canvas = DBQueryCanvasSchema.parse(dbQueryRes);
+
+    finalCanvas = {
+      id: canvas.id,
+      type: "canvas_slide",
+      canvasObject: canvas.canvas_object,
+      presentationId: canvas.presentation_id,
+      createdAt: canvas.created_at,
+    };
   } catch (error) {
     if (error instanceof ZodError) {
       return res.status(400).json({
@@ -27,7 +48,7 @@ canvasSlidesRouter.post("/", async (req, res) => {
         error: ErrorCodes.INVALID_REQUEST,
       });
     }
-    console.error("Create MCQ failed", {
+    console.error("Create Canvas Slide failed", {
       userId,
       presentationId,
       error,
@@ -39,13 +60,6 @@ canvasSlidesRouter.post("/", async (req, res) => {
       error: "FAILED_TO_CREATE_SLIDE",
     });
   }
-
-  const finalCanvas = {
-    id: canvas.id,
-    type: "canvas_slide",
-    canvasObject: canvas.canvas_object,
-    createdAt: canvas.created_at,
-  };
 
   return res.status(200).json({
     success: true,
@@ -59,8 +73,22 @@ canvasSlidesRouter.get("/", async (req, res) => {
 
   let canvasSlides;
   try {
-    canvasSlides = await getCanvasSlides(userId);
+    const dbQueryRes = await getCanvasSlides(userId);
+
+    canvasSlides = DBQueryCanvasesSchema.parse(dbQueryRes);
   } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: ErrorCodes.INVALID_REQUEST,
+      });
+    }
+    console.error("Get Canvas Slide failed", {
+      userId,
+      error,
+    });
+
     return res.status(400).json({
       success: false,
       data: null,
@@ -73,15 +101,14 @@ canvasSlidesRouter.get("/", async (req, res) => {
       id: canvasSlide.id,
       type: "canvas_slide",
       canvasObject: canvasSlide.canvas_object,
+      presentationId: canvasSlide.presentation_id,
       createdAt: canvasSlide.created_at,
     };
   });
 
   return res.status(200).json({
     success: true,
-    data: {
-      slides: finalCanvasSlides,
-    },
+    data: finalCanvasSlides,
     error: null,
   });
 });
@@ -92,12 +119,22 @@ canvasSlidesRouter.get("/:id", async (req, res) => {
 
   let canvasSlide;
   try {
-    canvasSlide = await getCanvasSlide(id, userId);
+    const dbQueryRes = await getCanvasSlide(id, userId);
+
+    canvasSlide = DBQueryCanvasSchema.parse(dbQueryRes);
   } catch (error) {
-    return res.status(400).json({
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: ErrorCodes.INVALID_REQUEST,
+      });
+    }
+
+    return res.status(500).json({
       success: false,
       data: null,
-      error: "FAILED_TO_FETCH_SLIDES",
+      error: ErrorCodes.INTERNAL_SERVER_ERROR,
     });
   }
 
@@ -117,37 +154,43 @@ canvasSlidesRouter.get("/:id", async (req, res) => {
   });
 });
 
-canvasSlidesRouter.patch("/:id", async (req, res) => {
-  const { id } = req.params;
+canvasSlidesRouter.patch("/:presentationId", async (req, res) => {
+  const { presentationId } = req.params;
   const { userId } = req.user;
   const body = req.body;
   const { canvasObject } = body;
 
-  const type = "canvas_slide";
-
-  let parsed;
-  try {
-    parsed = CanvasSlidesSchema.parse({
-      id,
-      type,
-      canvasObject,
-    });
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      data: null,
-      error: "INVALID_REQUEST",
-    });
-  }
-
   let canvasSlide;
   try {
-    canvasSlide = await updateCanvasSlides(id, userId, canvasObject);
+    const parsed = CanvasSlidesSchema.parse({
+      presentationId,
+      canvasObject,
+    });
+
+    const dbQueryRes = await updateCanvasSlides(
+      parsed.id,
+      userId,
+      parsed.canvasObject,
+    );
+
+    canvasSlide = DBQueryCanvasSchema.parse(dbQueryRes);
   } catch (error) {
-    return res.status(400).json({
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        data: null,
+        error: ErrorCodes.INVALID_REQUEST,
+      });
+    }
+    console.error("Update Canvas Slide failed", {
+      userId,
+      error,
+    });
+
+    return res.status(500).json({
       success: false,
       data: null,
-      error: "FAILED_TO_UPDATE_SLIDE",
+      error: ErrorCodes.INTERNAL_SERVER_ERROR,
     });
   }
 

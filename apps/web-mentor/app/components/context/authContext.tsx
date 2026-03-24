@@ -41,7 +41,6 @@ export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
       });
 
       const json = await response.json();
-
       const parsed = LoginUserApiResponseSchema.safeParse(json);
 
       if (!parsed.success) {
@@ -93,7 +92,6 @@ export const CurrentUserProvider = ({ children }: { children: ReactNode }) => {
       });
 
       const json = await response.json();
-
       const parsed = MeApiSchema.safeParse(json);
 
       if (!parsed.success) {
