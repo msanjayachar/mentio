@@ -3,7 +3,14 @@
 import type { McqOption, McqQuestion } from "@shared/mcq";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import Image from "next/image";
-import { ChangeEvent, Dispatch, SetStateAction, useState, useRef } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useState,
+  useRef,
+  useEffect,
+} from "react";
 import { SlidesState, SlideState } from "@shared/types";
 import { useParams } from "next/navigation";
 import { useCurrentUser } from "./context/authContext";
@@ -31,13 +38,12 @@ const PresentationHelper = ({
   const { presentationId } = useParams<{ presentationId: string }>();
   const { token } = useCurrentUser();
 
-  if (!token) return;
-
-  // VERIFY: is this right to do here?
-  if (!selectedSlide) return;
-
   // THREAD: Slide is unknown because fetch Slides isn't type safe right now.
   const slide = slides.find((slide) => slide.id === selectedSlide);
+
+  if (!token || !selectedSlide || !slide) {
+    return null;
+  }
 
   const colors = [
     "bg-blue-500",
@@ -64,7 +70,7 @@ const PresentationHelper = ({
     const updatedSlide: McqQuestion = {
       ...slide,
       options: slide.options.map((option: McqOption) =>
-        option.id === optionId ? { ...option, option: e.target.value } : option,
+        option.id === optionId ? { ...option, text: e.target.value } : option,
       ),
     };
 
@@ -84,7 +90,7 @@ const PresentationHelper = ({
                 option.id === optionId
                   ? {
                       ...option,
-                      option: e.target.value,
+                      text: e.target.value,
                     }
                   : option,
               ),
@@ -95,10 +101,11 @@ const PresentationHelper = ({
   };
 
   const addOption = (slideId: string) => {
-    if (!slide) return null;
     const last = slide.type === "multiple_choice" ? slide.options.at(-1) : null;
 
-    if (!last) return null;
+    if (!last) {
+      return null;
+    }
 
     // Increase the number of options
     setSlides((prev) =>

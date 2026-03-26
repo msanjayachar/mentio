@@ -1,10 +1,10 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import NewSlide from "./newSlide";
 import { ERROR_MESSAGES, SlidesState } from "@shared/types";
-import { fetchCanvasSlides, fetchSlides } from "@/lib/utils";
+import { fetchCanvasSlides, fetchSlides, getEpochSeconds } from "@/lib/utils";
 import { useCurrentUser } from "./context/authContext";
 import { McqApiResponseSchema, McqsApiResponseSchema } from "@shared/api/mcq";
 import { toast } from "sonner";
@@ -27,9 +27,8 @@ const SlidesSidebar = ({
   setSlides: Dispatch<SetStateAction<SlidesState>>;
 }) => {
   const [showSlideOption, setShowSlideOption] = useState<boolean>(false);
+  const isMountedRef = useRef(true);
   const { token } = useCurrentUser();
-
-  if (!token) return null;
 
   useEffect(() => {
     const presentationSlides = slides.filter(
@@ -42,12 +41,20 @@ const SlidesSidebar = ({
   }, [slides, selected]);
 
   useEffect(() => {
-    const loadSlides = async () => {
-      const response_mcq = await fetchSlides(token);
-      const result_mcq = await response_mcq.json();
+    isMountedRef.current = true;
 
-      const response_canvas = await fetchCanvasSlides(token);
-      const result_canvas = await response_canvas.json();
+    const loadSlides = async () => {
+      if (!token) return null;
+
+      const [response_mcq, response_canvas] = await Promise.all([
+        fetchSlides(token),
+        fetchCanvasSlides(token),
+      ]);
+
+      const [result_mcq, result_canvas] = await Promise.all([
+        response_mcq.json(),
+        response_canvas.json(),
+      ]);
 
       const parsed_mcq = McqsApiResponseSchema.safeParse(result_mcq);
       const parsed_canvas = CanvasesApiResponseSchema.safeParse(result_canvas);
@@ -68,7 +75,21 @@ const SlidesSidebar = ({
       const res_canvas = parsed_canvas.data;
 
       if (res_mcq.success && res_canvas.success) {
-        setSlides([...res_mcq.data, ...res_canvas.data]);
+        if (isMountedRef.current) {
+          // setSlides([...res_mcq.data, ...res_canvas.data]);
+
+          setSlides(
+            [...res_mcq.data, ...res_canvas.data].sort((a, b) => {
+              const timeA = getEpochSeconds(a.createdAt);
+              const timeB = getEpochSeconds(b.createdAt);
+
+              if (timeA === null) return 1;
+              if (timeB === null) return -1;
+
+              return timeA - timeB;
+            }),
+          );
+        }
 
         toast.success("Mcq Slide", {
           position: "top-center",
@@ -101,7 +122,13 @@ const SlidesSidebar = ({
     };
 
     loadSlides();
-  }, []);
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, [token]);
+
+  if (!token) return null;
 
   return (
     <div className="hidden lg:block">

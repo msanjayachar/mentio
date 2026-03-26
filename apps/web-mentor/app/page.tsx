@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useCurrentUser } from "./components/context/authContext";
 import Home from "./components/home";
 import Landing from "./components/landing";
