@@ -1,28 +1,21 @@
 import { SlideState } from "@shared/types";
 import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import { socket } from "@shared/socket";
 
 const Present = ({ slide }: { slide: SlideState }) => {
   const [selected, setSelected] = useState<string | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
+  const [participants, setParticipants] = useState(null);
 
   const handleSelect = (option: string) => {
-    console.log("option:", option);
     setSelected(option);
   };
 
   useEffect(() => {
-    console.log("selected: ", selected);
-  }, [selected]);
-
-  useEffect(() => {
-    const socket = io("http://localhost:8000");
-
-    socket.on("connect", () => {
-      console.log("connected:", socket.id);
-
+    // connection happens at import time.
+    if (socket.connected) {
       socket.emit("create-room");
-    });
+    }
 
     socket.on("room-created", (roomId) => {
       console.log("room created: ", roomId);
@@ -33,16 +26,17 @@ const Present = ({ slide }: { slide: SlideState }) => {
 
     socket.on("joined-room", (roomId) => {
       console.log("joined room: ", roomId);
+
+      socket.emit("get-participants", roomId);
     });
 
-    return () => {
-      socket.disconnect();
-    };
+    socket.on("participants", (participants) => {
+      setParticipants(participants);
+    });
   }, []);
 
   if (!slide) return <div>No Slide</div>;
 
-  /* AT_HERE: Design the presentation slides view */
   return (
     <div className="mt-auto flex flex-col">
       <div className="fixed top-12 w-full items-center gap-2">
