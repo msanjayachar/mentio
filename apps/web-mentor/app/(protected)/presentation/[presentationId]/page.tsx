@@ -6,12 +6,14 @@ import { fetchCanvasSlides, fetchSlides, getEpochSeconds } from "@/lib/utils";
 import { CanvasesApiResponseSchema } from "@shared/api/canvas";
 import { McqsApiResponseSchema } from "@shared/api/mcq";
 import { PresentationType } from "@shared/presentation";
+import { socket } from "@shared/socket";
 import { ERROR_MESSAGES, SlidesState, SlideState } from "@shared/types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+// STARTER_TASK: slide is here send it all the other in the room.
 export default function Page() {
   const [presentation, setPresentation] = useState<PresentationType | null>(
     null,
@@ -20,6 +22,8 @@ export default function Page() {
   const [slides, setSlides] = useState<SlidesState | null>(null);
   const [slide, setSlide] = useState<SlideState | null>(null);
   const [index, setIndex] = useState(0);
+  const [roomId, setRoomId] = useState<string | null>(null);
+  const [participants, setParticipants] = useState(null);
   const { token } = useCurrentUser();
 
   if (!token) return null;
@@ -35,6 +39,31 @@ export default function Page() {
   }, [slides, index]);
 
   useEffect(() => {
+    // connection happens at import time.
+    if (socket.connected) {
+      socket.emit("create-room", presentationId);
+    }
+
+    socket.on("room-created", (roomId) => {
+      console.log("room created: ", roomId);
+
+      // AT_HERE: How to persist this room?
+      setRoomId(roomId);
+      socket.emit("join-room", roomId);
+    });
+
+    socket.on("joined-room", (roomId) => {
+      console.log("joined room: ", roomId);
+
+      socket.emit("get-participants", roomId);
+    });
+
+    socket.on("participants", (participants) => {
+      setParticipants(participants);
+
+      // NEXT: Send slide to everyone in the room except the SENDER.
+    });
+
     const loadSlides = async () => {
       const response_mcq = await fetchSlides(token);
       const result_mcq = await response_mcq.json();

@@ -72,7 +72,7 @@ presentationsRouter.get("/", async (req, res) => {
     return res.status(400).json({
       success: false,
       data: null,
-      error: "FAILED_TO_CREATE_PRESENTATION",
+      error: "FAILED_TO_GET_PRESENTATION",
     });
   }
 

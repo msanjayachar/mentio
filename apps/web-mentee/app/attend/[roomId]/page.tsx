@@ -4,12 +4,10 @@ import { socket } from "@shared/socket";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-// STARTER_TASK: Get participants here and log them as list.
 const page = () => {
   const [participants, setParticipants] = useState([]);
   const { roomId } = useParams<{ roomId: string }>();
 
-  /* AT_HERE: get the list of participants.  */
   useEffect(() => {
     socket.on("connect", () => {
       socket.emit("get-participants", roomId);

@@ -27,6 +27,7 @@ io.on("connection", (socket) => {
     socket.emit("room-created", roomId);
   });
 
+  // Q: How to persist this room?
   socket.on("join-room", (roomId) => {
     socket.join(roomId);
 

@@ -12,7 +12,6 @@ export const McqQuestionSchema = z.object({
   id: z.string(),
   type: z.literal("multiple_choice"),
   question: z.string().default(""),
-  // FIX: Because both of these look the same. We don't have to have the second ONE at all.
   options: z.array(OptionSchema).default([]),
   allowMultiple: z.boolean().default(false),
   presentationId: z.string(),

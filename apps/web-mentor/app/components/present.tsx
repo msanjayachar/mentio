@@ -6,34 +6,17 @@ const Present = ({ slide }: { slide: SlideState }) => {
   const [selected, setSelected] = useState<string | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
   const [participants, setParticipants] = useState(null);
+  const [presentation, getPresentation] = useState(null);
 
   const handleSelect = (option: string) => {
     setSelected(option);
   };
 
   useEffect(() => {
-    // connection happens at import time.
-    if (socket.connected) {
-      socket.emit("create-room");
-    }
-
-    socket.on("room-created", (roomId) => {
-      console.log("room created: ", roomId);
-
-      setRoomId(roomId);
-      socket.emit("join-room", roomId);
-    });
-
-    socket.on("joined-room", (roomId) => {
-      console.log("joined room: ", roomId);
-
-      socket.emit("get-participants", roomId);
-    });
-
-    socket.on("participants", (participants) => {
-      setParticipants(participants);
-    });
-  }, []);
+    console.log("*************************");
+    console.log("participants: ", participants);
+    console.log("*************************");
+  }, [participants]);
 
   if (!slide) return <div>No Slide</div>;
 
