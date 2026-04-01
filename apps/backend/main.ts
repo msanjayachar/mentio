@@ -9,6 +9,7 @@ const io = new Server(server, {
     origin: ["http://localhost:3001", "http://localhost:3000"],
   },
 });
+const currentSlide = new Map();
 
 io.on("connection", (socket) => {
   console.log("a user connected");
@@ -29,6 +30,21 @@ io.on("connection", (socket) => {
 
     // socket.emit("participants", participantsArr);
     io.to(roomId).emit("participants", participantsArr);
+  });
+
+  socket.on("send-slide", ({ roomId, slide }) => {
+    currentSlide.set(roomId, slide);
+
+    // send to everyone except sender.
+    socket.to(roomId).emit("receive-slide", slide);
+  });
+
+  socket.on("get-current-slide", (roomId) => {
+    const slide = currentSlide.get(roomId);
+
+    if (slide) {
+      socket.emit("receive-slide", slide);
+    }
   });
 });
 

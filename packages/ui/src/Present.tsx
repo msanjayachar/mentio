@@ -1,4 +1,4 @@
-import { SlideState } from "@shared/types";
+import { SlideState } from "../../shared//src/types";
 import { useState } from "react";
 
 const Present = ({

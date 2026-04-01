@@ -2,7 +2,7 @@
 "use client";
 
 import { useCurrentUser } from "@/app/components/context/authContext";
-import Present from "@/app/components/present";
+import Present from "@ui/Present";
 import { fetchCanvasSlides, fetchSlides, getEpochSeconds } from "@/lib/utils";
 import { CanvasesApiResponseSchema } from "@shared/api/canvas";
 import { McqsApiResponseSchema } from "@shared/api/mcq";
@@ -28,6 +28,9 @@ export default function Page() {
   const { token } = useCurrentUser();
 
   if (!token) return null;
+  const presentationSlides = slides?.filter(
+    (slide) => slide.presentationId === presentationId,
+  );
 
   useEffect(() => {
     const getPresentation = async (id: string) => {
@@ -49,10 +52,6 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    const presentationSlides = slides?.filter(
-      (slide) => slide.presentationId === presentationId,
-    );
-
     if (presentationSlides && presentationSlides[index]) {
       setSlide(presentationSlides[index]);
     }
@@ -72,6 +71,12 @@ export default function Page() {
       socket.off("participants", handleParticipants);
     };
   }, []);
+
+  useEffect(() => {
+    if (!slide || !roomId) return;
+
+    socket.emit("send-slide", { roomId, slide });
+  }, [slide]);
 
   useEffect(() => {
     // connection happens at import time.
