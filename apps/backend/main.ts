@@ -14,22 +14,26 @@ const currentSlide = new Map();
 io.on("connection", (socket) => {
   console.log("a user connected");
 
-  socket.on("create-room", (roomId) => {
-    socket.emit("room-created", roomId);
-  });
-
   socket.on("join-room", (roomId) => {
     socket.join(roomId);
 
-    socket.emit("joined-room", roomId);
-  });
-
-  socket.on("get-participants", async (roomId) => {
     const participants = io.sockets.adapter.rooms.get(roomId);
     const participantsArr = participants ? Array.from(participants) : [];
 
     // socket.emit("participants", participantsArr);
     io.to(roomId).emit("participants", participantsArr);
+  });
+
+  socket.on("disconnecting", () => {
+    for (const roomId of socket.rooms) {
+      if (roomId === socket.id) continue;
+
+      const participants = io.sockets.adapter.rooms.get(roomId);
+      const participantsArr = participants ? Array.from(participants) : [];
+
+      // socket.emit("participants", participantsArr);
+      io.to(roomId).emit("participants", participantsArr);
+    }
   });
 
   socket.on("send-slide", ({ roomId, slide }) => {

@@ -21,15 +21,10 @@ export default function Attend() {
     if (!socket) return;
 
     socket.emit("join-room", roomId);
+    setJoined(true);
   };
 
   useEffect(() => {
-    socket.on("joined-room", (roomId) => {
-      setJoined(true);
-
-      socket.emit("get-participants", roomId);
-    });
-
     socket.on("participants", (participants) => {
       setParticipants(participants);
     });

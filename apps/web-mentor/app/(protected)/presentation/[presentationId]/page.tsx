@@ -97,10 +97,6 @@ export default function Page() {
       socket.emit("join-room", roomId);
     });
 
-    socket.on("joined-room", (roomId) => {
-      socket.emit("get-participants", roomId);
-    });
-
     const loadSlides = async () => {
       const response_mcq = await fetchSlides(token);
       const result_mcq = await response_mcq.json();

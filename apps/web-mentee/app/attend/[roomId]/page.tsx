@@ -33,7 +33,6 @@ const page = () => {
 
       socket.on("joined-room", (roomId) => {
         socket.emit("get-current-slide", roomId);
-        socket.emit("get-participants", roomId);
       });
 
       socket.on("participants", (participants) => {
@@ -48,7 +47,13 @@ const page = () => {
         <p className="text-3xl font-thin text-red-500">{roomId}</p>
       </div>
 
-      <Present slide={slide!} roomId={roomId} />
+      {slide ? (
+        <Present slide={slide} roomId={roomId} />
+      ) : (
+        <div className="flex h-screen w-full items-center justify-center text-2xl font-normal">
+          <h1>Please wait for the host to start the Prsentation...</h1>
+        </div>
+      )}
     </div>
   );
 };
