@@ -25,8 +25,6 @@ export default function Attend() {
 
   useEffect(() => {
     socket.on("joined-room", (roomId) => {
-      console.log("joined room: ", roomId);
-
       setJoined(true);
 
       socket.emit("get-participants", roomId);

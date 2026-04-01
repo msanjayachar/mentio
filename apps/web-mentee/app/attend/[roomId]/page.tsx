@@ -10,23 +10,32 @@ const page = () => {
   const { roomId } = useParams<{ roomId: string }>();
 
   useEffect(() => {
-    socket.on("connect", () => {
-      socket.emit("get-participants", roomId);
-    });
+    if (roomId) {
+      socket.on("connect", () => {
+        socket.emit("join-room", roomId);
+      });
 
-    if (socket.connected) {
-      socket.emit("get-participants", roomId);
+      if (socket.connected) {
+        socket.emit("join-room", roomId);
+      }
+
+      socket.on("joined-room", (roomId) => {
+        socket.emit("get-participants", roomId);
+      });
+
+      socket.on("participants", (participants) => {
+        setParticipants(participants);
+      });
     }
-
-    socket.on("participants", (participants) => {
-      setParticipants(participants);
-    });
-  }, []);
+  }, [roomId]);
 
   return (
     <div className="h-screen w-full bg-white">
-      <p className="text-4xl text-red-500">attend</p>
+      <h1 className="text-4xl text-red-500">attend</h1>
+      <h2 className="text-4xl text-red-500">{socket.id}</h2>
+
       <div>
+        <h3 className="text-3xl text-red-300">List of participants: </h3>
         {participants.length > 0 &&
           participants.map((participant) => (
             <p key={participant} className="text-4xl text-blue-500">

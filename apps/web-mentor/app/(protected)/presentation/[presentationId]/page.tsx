@@ -24,7 +24,7 @@ export default function Page() {
   const [slide, setSlide] = useState<SlideState | null>(null);
   const [index, setIndex] = useState(0);
   const [roomId, setRoomId] = useState<string | null>(null);
-  const [participants, setParticipants] = useState(null);
+  const [participants, setParticipants] = useState([]);
   const { token } = useCurrentUser();
 
   if (!token) return null;
@@ -59,31 +59,41 @@ export default function Page() {
   }, [slides, index]);
 
   useEffect(() => {
+    const handleParticipants = (participants: any) => {
+      setParticipants(participants);
+    };
+
+    socket.on("participants", handleParticipants);
+
+    // NEXT: 2. mentee joining should update the list of participants immediately.
+    // NEXT: 3. Send slide to everyone in the room except the SENDER.
+
+    return () => {
+      socket.off("participants", handleParticipants);
+    };
+  }, []);
+
+  useEffect(() => {
     // connection happens at import time.
+    if (!roomId) return;
+
     if (socket.connected) {
       socket.emit("create-room", roomId);
     }
 
-    // AT_HERE: persisting room id
-    socket.on("room-created", (roomId) => {
-      console.log("room created: ", roomId);
+    const onConnect = () => {
+      socket.emit("create-room", roomId);
+    };
 
-      // NEXT: 1. Persist this room id
+    socket.on("connect", onConnect);
+
+    socket.on("room-created", (roomId) => {
       setRoomId(roomId);
       socket.emit("join-room", roomId);
     });
 
     socket.on("joined-room", (roomId) => {
-      console.log("joined room: ", roomId);
-
       socket.emit("get-participants", roomId);
-    });
-
-    socket.on("participants", (participants) => {
-      setParticipants(participants);
-
-      // NEXT: 2. mentee joining should update the list of participants immediately.
-      // NEXT: 3. Send slide to everyone in the room except the SENDER.
     });
 
     const loadSlides = async () => {
@@ -146,7 +156,11 @@ export default function Page() {
     };
 
     loadSlides();
-  }, []);
+
+    return () => {
+      socket.off("connect", onConnect);
+    };
+  }, [roomId]);
 
   const loadPresentation = async (id: string) => {
     const url = `http://localhost:8000/presentations/${id}`;
@@ -187,6 +201,7 @@ export default function Page() {
 
   return (
     <div className="flex h-screen flex-col bg-slate-100 p-4">
+      <h1 className="text-4xl text-red-500">{socket.id}</h1>
       <Present slide={slide} roomId={roomId} />
 
       {/* FOOTER */}
@@ -215,6 +230,16 @@ export default function Page() {
             End presentation
           </button>
         )}
+      </div>
+
+      <div>
+        <h3 className="text-3xl text-red-300">List of participants: </h3>
+        {participants.length > 0 &&
+          participants.map((participant) => (
+            <p key={participant} className="text-4xl text-blue-500">
+              {participant}
+            </p>
+          ))}
       </div>
     </div>
   );

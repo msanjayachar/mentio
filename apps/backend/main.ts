@@ -17,7 +17,6 @@ io.on("connection", (socket) => {
     socket.emit("room-created", roomId);
   });
 
-  // Q: How to persist this room?
   socket.on("join-room", (roomId) => {
     socket.join(roomId);
 
@@ -28,7 +27,8 @@ io.on("connection", (socket) => {
     const participants = io.sockets.adapter.rooms.get(roomId);
     const participantsArr = participants ? Array.from(participants) : [];
 
-    socket.emit("participants", participantsArr);
+    // socket.emit("participants", participantsArr);
+    io.to(roomId).emit("participants", participantsArr);
   });
 });
 
