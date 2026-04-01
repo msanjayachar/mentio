@@ -69,7 +69,7 @@ const PresentationNav = ({ slides }: { slides: SlidesState }) => {
 
     setPresentation(result.data);
 
-    router.push(`/presentation/${result.data.id}`);
+    router.push(`/join/${presentationId}`);
   };
 
   const updatePresentation = async (title: string) => {
