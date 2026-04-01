@@ -1,3 +1,4 @@
+// mentor view
 "use client";
 
 import { useCurrentUser } from "@/app/components/context/authContext";
@@ -29,6 +30,25 @@ export default function Page() {
   if (!token) return null;
 
   useEffect(() => {
+    const getPresentation = async (id: string) => {
+      const url = `http://localhost:8000/presentations/${id}`;
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      setRoomId(result.data.roomId);
+    };
+
+    getPresentation(presentationId);
+  }, []);
+
+  useEffect(() => {
     const presentationSlides = slides?.filter(
       (slide) => slide.presentationId === presentationId,
     );
@@ -41,13 +61,14 @@ export default function Page() {
   useEffect(() => {
     // connection happens at import time.
     if (socket.connected) {
-      socket.emit("create-room", presentationId);
+      socket.emit("create-room", roomId);
     }
 
+    // AT_HERE: persisting room id
     socket.on("room-created", (roomId) => {
       console.log("room created: ", roomId);
 
-      // AT_HERE: How to persist this room?
+      // NEXT: 1. Persist this room id
       setRoomId(roomId);
       socket.emit("join-room", roomId);
     });
@@ -61,7 +82,8 @@ export default function Page() {
     socket.on("participants", (participants) => {
       setParticipants(participants);
 
-      // NEXT: Send slide to everyone in the room except the SENDER.
+      // NEXT: 2. mentee joining should update the list of participants immediately.
+      // NEXT: 3. Send slide to everyone in the room except the SENDER.
     });
 
     const loadSlides = async () => {
@@ -165,7 +187,7 @@ export default function Page() {
 
   return (
     <div className="flex h-screen flex-col bg-slate-100 p-4">
-      <Present slide={slide} />
+      <Present slide={slide} roomId={roomId} />
 
       {/* FOOTER */}
       <div className="mt-auto ml-12 flex w-fit gap-2 text-sm font-light">

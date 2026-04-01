@@ -42,11 +42,12 @@ export const startPresentation = async (
   id: string,
   title: string,
   userId: string,
+  roomId: string,
 ) => {
   const query =
-    "UPDATE presentations SET started_at = NOW() WHERE id = $1 AND title = $2 AND user_id = $3 RETURNING *";
+    "UPDATE presentations SET title = $2, started_at = NOW(), room_id = COALESCE(room_id, $4) WHERE id = $1 AND user_id = $3 RETURNING *";
 
-  const result = await pool.query(query, [id, title, userId]);
+  const result = await pool.query(query, [id, title, userId, roomId]);
 
   return result.rows[0];
 };

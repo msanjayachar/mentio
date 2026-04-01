@@ -62,7 +62,6 @@ presentationsRouter.post("/", async (req, res) => {
 });
 
 presentationsRouter.get("/", async (req, res) => {
-  const body = req.body;
   const { userId } = req.user;
 
   let result;
@@ -80,6 +79,7 @@ presentationsRouter.get("/", async (req, res) => {
     id: presentation.id,
     userId: presentation.user_id,
     title: presentation.title,
+    roomId: presentation.room_id,
     description: presentation.description,
     createdAt: presentation.created_at,
     startedAt: presentation.started_at,
@@ -112,6 +112,7 @@ presentationsRouter.get("/:id", async (req, res) => {
     id: result.id,
     userId: result.id,
     title: result.title,
+    roomId: result.room_id,
     description: result.description,
     createdAt: result.created_at,
     startedAt: result.started_at,
@@ -129,11 +130,11 @@ presentationsRouter.patch("/start/:id", async (req, res) => {
   const { id } = req.params;
   const { userId } = req.user;
   const body = req.body;
-  const { title } = body;
+  const { title, roomId } = body;
 
   let result;
   try {
-    result = await startPresentation(id, title, userId);
+    result = await startPresentation(id, title, userId, roomId);
   } catch (error) {
     return res.status(400).json({
       success: false,
@@ -146,6 +147,7 @@ presentationsRouter.patch("/start/:id", async (req, res) => {
     id: result.id,
     userId: result.user_id,
     title: result.title,
+    roomId: result.room_id,
     createdAt: result.created_at,
     startedAt: result.started_at,
     endedAt: result.ended_at,

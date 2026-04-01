@@ -1,3 +1,4 @@
+// mentor view
 "use client";
 
 import { ArrowLeft, ChevronDown, Play, Settings, User } from "lucide-react";
@@ -43,8 +44,17 @@ const PresentationNav = ({ slides }: { slides: SlidesState }) => {
     }
   }, [presentationId]);
 
+  const generateId = () => {
+    const randomId = Math.floor(Math.random() * 999999);
+
+    const stringRandomId = randomId.toString();
+
+    return stringRandomId;
+  };
+
   const startPresentation = async (id: string) => {
     const url = `http://localhost:8000/presentations/start/${id}`;
+    const roomId = generateId();
 
     const response = await fetch(url, {
       method: "PATCH",
@@ -52,7 +62,7 @@ const PresentationNav = ({ slides }: { slides: SlidesState }) => {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title: presentationTitle }),
+      body: JSON.stringify({ title: presentationTitle, roomId: roomId }),
     });
 
     const result = await response.json();

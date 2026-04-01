@@ -1,22 +1,18 @@
 import { SlideState } from "@shared/types";
-import { useEffect, useState } from "react";
-import { socket } from "@shared/socket";
+import { useState } from "react";
 
-const Present = ({ slide }: { slide: SlideState }) => {
+const Present = ({
+  slide,
+  roomId,
+}: {
+  slide: SlideState;
+  roomId: string | null;
+}) => {
   const [selected, setSelected] = useState<string | null>(null);
-  const [roomId, setRoomId] = useState<string | null>(null);
-  const [participants, setParticipants] = useState(null);
-  const [presentation, getPresentation] = useState(null);
 
   const handleSelect = (option: string) => {
     setSelected(option);
   };
-
-  useEffect(() => {
-    console.log("*************************");
-    console.log("participants: ", participants);
-    console.log("*************************");
-  }, [participants]);
 
   if (!slide) return <div>No Slide</div>;
 
