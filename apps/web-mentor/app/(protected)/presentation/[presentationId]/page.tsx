@@ -64,9 +64,6 @@ export default function Page() {
 
     socket.on("participants", handleParticipants);
 
-    // NEXT: 2. mentee joining should update the list of participants immediately.
-    // NEXT: 3. Send slide to everyone in the room except the SENDER.
-
     return () => {
       socket.off("participants", handleParticipants);
     };
@@ -79,24 +76,6 @@ export default function Page() {
   }, [slide]);
 
   useEffect(() => {
-    // connection happens at import time.
-    if (!roomId) return;
-
-    if (socket.connected) {
-      socket.emit("create-room", roomId);
-    }
-
-    const onConnect = () => {
-      socket.emit("create-room", roomId);
-    };
-
-    socket.on("connect", onConnect);
-
-    socket.on("room-created", (roomId) => {
-      setRoomId(roomId);
-      socket.emit("join-room", roomId);
-    });
-
     const loadSlides = async () => {
       const response_mcq = await fetchSlides(token);
       const result_mcq = await response_mcq.json();
@@ -157,11 +136,7 @@ export default function Page() {
     };
 
     loadSlides();
-
-    return () => {
-      socket.off("connect", onConnect);
-    };
-  }, [roomId]);
+  }, []);
 
   const loadPresentation = async (id: string) => {
     const url = `http://localhost:8000/presentations/${id}`;

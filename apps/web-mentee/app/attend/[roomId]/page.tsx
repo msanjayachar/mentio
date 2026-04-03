@@ -19,39 +19,58 @@ const page = () => {
     };
 
     socket.on("receive-slide", handleReceive);
+
+    return () => {
+      socket.off("receive-slide", handleReceive);
+    };
   }, []);
 
   useEffect(() => {
-    if (roomId) {
-      socket.on("connect", () => {
-        socket.emit("join-room", roomId);
-      });
+    if (!roomId) return;
 
-      if (socket.connected) {
-        socket.emit("join-room", roomId);
-      }
+    const join = () => {
+      socket.emit("join-room", roomId);
+      socket.emit("get-current-slide", roomId);
+    };
 
-      socket.on("joined-room", (roomId) => {
-        socket.emit("get-current-slide", roomId);
-      });
-
-      socket.on("participants", (participants) => {
-        setParticipants(participants);
-      });
+    if (socket.connected) {
+      join();
     }
+
+    socket.on("connect", join);
+
+    return () => {
+      socket.off("connect", join);
+    };
   }, [roomId]);
 
+  useEffect(() => {
+    const handleParticipants = (participants: any) => {
+      setParticipants(participants);
+    };
+
+    socket.on("participants", handleParticipants);
+
+    return () => {
+      socket.off("participants", handleParticipants);
+    };
+  }, []);
+
   return (
-    <div className="h-screen w-full bg-white">
+    <div className="flex h-screen w-full flex-col bg-slate-100 text-black">
       <div className="w-full bg-red-50 py-4 text-center">
         <p className="text-3xl font-thin text-red-500">{roomId}</p>
       </div>
 
       {slide ? (
-        <Present slide={slide} roomId={roomId} />
+        <div>
+          <Present slide={slide} roomId={roomId} />
+        </div>
       ) : (
-        <div className="flex h-screen w-full items-center justify-center text-2xl font-normal">
-          <h1>Please wait for the host to start the Prsentation...</h1>
+        <div className="flex flex-1 items-center justify-center text-2xl font-normal">
+          <h1 className="text-blue-500">
+            Please wait for the host to start the Presentation...
+          </h1>
         </div>
       )}
     </div>

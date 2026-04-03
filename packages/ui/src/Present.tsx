@@ -18,7 +18,7 @@ const Present = ({
 
   return (
     <div className="mt-auto flex flex-col">
-      <div className="fixed top-12 w-full items-center gap-2">
+      <div className="w-full max-w-xl items-center gap-2">
         <span className="block text-center text-lg">Join Room: </span>
         <h1 className="items-center text-center text-4xl tracking-widest">
           {roomId}
@@ -40,7 +40,7 @@ const Present = ({
                     }`}
                     onClick={() => handleSelect(option.id)}
                   >
-                    <p>{option.text}</p>
+                    <p className="text-black">{option.text}</p>
                   </button>
                 </div>
               ))}
