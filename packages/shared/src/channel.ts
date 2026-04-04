@@ -76,10 +76,10 @@ class PresentationChannel {
   }
 
   // Send events to server
-  sendSlideChange(index: number, slideId: string) {
+  sendSlideChange(index: number, slide: any) {
     socket.emit("send-slide", {
       roomId: this.roomId,
-      slide: { index, slideId },
+      slide,
     });
   }
 

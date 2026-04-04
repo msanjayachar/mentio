@@ -72,7 +72,7 @@ export default function Page() {
 
   useEffect(() => {
     if (!slide || !roomId) return;
-    channel.sendSlideChange(index, slide.id);
+    channel.sendSlideChange(index, slide);
   }, [slide, roomId, index, channel]);
 
   useEffect(() => {
