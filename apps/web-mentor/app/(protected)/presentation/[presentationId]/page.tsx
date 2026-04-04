@@ -3,36 +3,48 @@
 
 import { useCurrentUser } from "@/app/components/context/authContext";
 import Present from "@ui/Present";
-import { fetchCanvasSlides, fetchSlides, getEpochSeconds } from "@/lib/utils";
+import { fetchCanvasSlides, fetchSlides } from "@/lib/utils";
 import { CanvasesApiResponseSchema } from "@shared/api/canvas";
 import { McqsApiResponseSchema } from "@shared/api/mcq";
 import { PresentationType } from "@shared/presentation";
-import { socket } from "@shared/socket";
+import { getChannel } from "@shared/channel";
+import type { AppEvent } from "@shared/events";
 import { ERROR_MESSAGES, SlidesState, SlideState } from "@shared/types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
 
-// STARTER_TASK: slide is here send it all the other in the room.
 export default function Page() {
+  const { presentationId } = useParams<{ presentationId: string }>();
   const [presentation, setPresentation] = useState<PresentationType | null>(
     null,
   );
-  const { presentationId } = useParams<{ presentationId: string }>();
   const [slides, setSlides] = useState<SlidesState | null>(null);
   const [slide, setSlide] = useState<SlideState | null>(null);
   const [index, setIndex] = useState(0);
   const [roomId, setRoomId] = useState<string | null>(null);
-  const [participants, setParticipants] = useState([]);
-  const { token } = useCurrentUser();
+  const [participants, setParticipants] = useState<
+    { id: string; name: string }[]
+  >([]);
+  const [loading, setLoading] = useState(true);
 
-  if (!token) return null;
-  const presentationSlides = slides?.filter(
-    (slide) => slide.presentationId === presentationId,
+  const { token, loading: tokenLoading } = useCurrentUser();
+  const channel = getChannel();
+
+  const presentationSlides = useMemo(
+    () => slides?.filter((s) => s.presentationId === presentationId) ?? [],
+    [slides, presentationId],
   );
 
   useEffect(() => {
+    if (tokenLoading || !token || !presentationId) return;
+    setLoading(false);
+  }, [token, tokenLoading, presentationId]);
+
+  useEffect(() => {
+    if (!token || !presentationId) return;
+
     const getPresentation = async (id: string) => {
       const url = `http://localhost:8000/presentations/${id}`;
 
@@ -49,38 +61,27 @@ export default function Page() {
     };
 
     getPresentation(presentationId);
-  }, []);
+  }, [token, presentationId]);
 
   useEffect(() => {
-    if (presentationSlides && presentationSlides[index]) {
-      setSlide(presentationSlides[index]);
-    }
-  }, [slides, index]);
-
-  useEffect(() => {
-    const handleParticipants = (participants: any) => {
-      setParticipants(participants);
-    };
-
-    socket.on("participants", handleParticipants);
-
-    return () => {
-      socket.off("participants", handleParticipants);
-    };
-  }, []);
+    if (!presentationSlides.length || index >= presentationSlides.length)
+      return;
+    const currentSlide = presentationSlides[index];
+    if (currentSlide) setSlide(currentSlide);
+  }, [presentationSlides, index]);
 
   useEffect(() => {
     if (!slide || !roomId) return;
-
-    socket.emit("send-slide", { roomId, slide });
-  }, [slide]);
+    channel.sendSlideChange(index, slide.id);
+  }, [slide, roomId, index, channel]);
 
   useEffect(() => {
+    if (!token) return;
+
     const loadSlides = async () => {
       const response_mcq = await fetchSlides(token);
       const result_mcq = await response_mcq.json();
 
-      // TODO: API Response Schema parse
       const response_canvas = await fetchCanvasSlides(token);
       const result_canvas = await response_canvas.json();
 
@@ -88,14 +89,10 @@ export default function Page() {
       const parsed_canvas = CanvasesApiResponseSchema.safeParse(result_canvas);
 
       if (!parsed_mcq.success || !parsed_canvas.success) {
-        toast.error("Unexpected server response four", {
+        toast.error("Unexpected server response", {
           position: "top-center",
-          style: {
-            background: "red",
-            color: "white",
-          },
+          style: { background: "red", color: "white" },
         });
-
         return;
       }
 
@@ -104,63 +101,84 @@ export default function Page() {
 
       if (res_mcq.success && res_canvas.success) {
         setSlides([...res_mcq.data, ...res_canvas.data]);
-
-        toast.success("Mcq Slide", {
+        toast.success("Slides loaded", {
           position: "top-center",
-          style: {
-            background: "green",
-            color: "white",
-          },
+          style: { background: "green", color: "white" },
         });
       } else {
         if (res_mcq.error) {
           toast.error(ERROR_MESSAGES[res_mcq.error] ?? "Unexpected error", {
             position: "top-center",
-            style: {
-              background: "red",
-              color: "white",
-            },
+            style: { background: "red", color: "white" },
           });
         }
-
         if (res_canvas.error) {
           toast.error(ERROR_MESSAGES[res_canvas.error] ?? "Unexpected error", {
             position: "top-center",
-            style: {
-              background: "red",
-              color: "white",
-            },
+            style: { background: "red", color: "white" },
           });
         }
       }
     };
 
     loadSlides();
-  }, []);
-
-  const loadPresentation = async (id: string) => {
-    const url = `http://localhost:8000/presentations/${id}`;
-
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    const result = await response.json();
-
-    setPresentation(result.data);
-  };
+  }, [token]);
 
   useEffect(() => {
-    if (presentationId) {
-      loadPresentation(presentationId);
-    }
-  }, [presentationId]);
+    if (!presentationId || !token) return;
 
-  // VERIFY: if this is the right way to handle this
+    const loadPresentation = async () => {
+      const url = `http://localhost:8000/presentations/${presentationId}`;
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const result = await response.json();
+      setPresentation(result.data);
+    };
+    loadPresentation();
+  }, [presentationId, token]);
+
+  useEffect(() => {
+    if (!roomId) return;
+
+    channel.join(roomId);
+
+    const unsubscribe = channel.subscribe((event: AppEvent) => {
+      switch (event.type) {
+        case "ROOM_JOINED":
+          setParticipants(event.participants);
+          break;
+        case "PARTICIPANT_JOINED":
+          setParticipants((prev) => [...prev, event.participant]);
+          break;
+        case "PARTICIPANT_LEFT":
+          setParticipants((prev) =>
+            prev.filter((p) => p.id !== event.participantId),
+          );
+          break;
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      channel.leave();
+    };
+  }, [roomId, channel]);
+
+  if (loading || tokenLoading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <h1>Loading...</h1>
+      </div>
+    );
+  }
+
   if (!presentation) return null;
+  if (!slide) return <div>No slide</div>;
+  if (!slides) return <div>Loading slides...</div>;
 
   const nextSlide = () => {
     if (slides && slides.length - 1 > index) {
@@ -172,35 +190,34 @@ export default function Page() {
     if (slides && index >= 0) setIndex((prev) => prev - 1);
   };
 
-  if (!slide) return <div>No slide</div>;
-  if (!slides) return <div>No slide</div>;
-
   return (
     <div className="flex h-screen flex-col bg-slate-100 p-4">
-      <h1 className="text-4xl text-red-500">{socket.id}</h1>
+      <h1 className="text-4xl text-red-500">Room: {roomId}</h1>
       <Present slide={slide} roomId={roomId} />
 
-      {/* FOOTER */}
       <div className="mt-auto ml-12 flex w-fit gap-2 text-sm font-light">
         <button
+          type="button"
           className="flex cursor-pointer rounded-full bg-gray-300/30 p-2"
-          onClick={() => prevSlide()}
-          disabled={index == 0}
+          onClick={prevSlide}
+          disabled={index === 0}
         >
           <ArrowLeft size={18} strokeWidth={1.2} />
         </button>
-        {slides && index < slides?.length - 1 ? (
+        {slides && index < slides.length - 1 ? (
           <button
+            type="button"
             className="flex cursor-pointer items-center gap-2 rounded-full bg-gray-300/30 p-2 text-[12px]"
-            onClick={() => nextSlide()}
+            onClick={nextSlide}
           >
             <ArrowRight size={18} strokeWidth={1.2} />
             Next Slide
           </button>
         ) : (
           <button
+            type="button"
             className="flex cursor-pointer items-center gap-2 rounded-full bg-gray-300/30 p-2 text-[12px]"
-            onClick={() => nextSlide()}
+            onClick={nextSlide}
           >
             <ArrowRight size={18} strokeWidth={1.2} />
             End presentation
@@ -212,8 +229,8 @@ export default function Page() {
         <h3 className="text-3xl text-red-300">List of participants: </h3>
         {participants.length > 0 &&
           participants.map((participant) => (
-            <p key={participant} className="text-4xl text-blue-500">
-              {participant}
+            <p key={participant.id} className="text-4xl text-blue-500">
+              {participant.name}
             </p>
           ))}
       </div>
