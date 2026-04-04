@@ -3,58 +3,35 @@
 
 import { socket } from "@shared/socket";
 import { SlideState } from "@shared/types";
+import { getChannel } from "@shared/channel";
+import type { AppEvent } from "@shared/events";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Present from "@ui/Present";
 
 const page = () => {
-  // TODO: Use participants for animating the other mentee responses
-  const [participants, setParticipants] = useState([]);
   const [slide, setSlide] = useState<SlideState | null>(null);
+  const [isPresenting, setIsPresenting] = useState(false);
   const { roomId } = useParams<{ roomId: string }>();
-
-  useEffect(() => {
-    const handleReceive = (slide: any) => {
-      setSlide(slide);
-    };
-
-    socket.on("receive-slide", handleReceive);
-
-    return () => {
-      socket.off("receive-slide", handleReceive);
-    };
-  }, []);
+  const channel = getChannel();
 
   useEffect(() => {
     if (!roomId) return;
 
-    const join = () => {
-      socket.emit("join-room", roomId);
-      socket.emit("get-current-slide", roomId);
+    const handleReceive = (receivedSlide: any) => {
+      setSlide(receivedSlide);
+      setIsPresenting(true);
     };
 
-    if (socket.connected) {
-      join();
-    }
+    socket.on("receive-slide", handleReceive);
 
-    socket.on("connect", join);
+    channel.join(roomId);
 
     return () => {
-      socket.off("connect", join);
+      socket.off("receive-slide", handleReceive);
+      channel.leave();
     };
-  }, [roomId]);
-
-  useEffect(() => {
-    const handleParticipants = (participants: any) => {
-      setParticipants(participants);
-    };
-
-    socket.on("participants", handleParticipants);
-
-    return () => {
-      socket.off("participants", handleParticipants);
-    };
-  }, []);
+  }, [roomId, channel]);
 
   return (
     <div className="flex h-screen w-full flex-col bg-slate-100 text-black">
@@ -62,7 +39,7 @@ const page = () => {
         <p className="text-3xl font-thin text-red-500">{roomId}</p>
       </div>
 
-      {slide ? (
+      {isPresenting && slide ? (
         <div>
           <Present slide={slide} roomId={roomId} />
         </div>

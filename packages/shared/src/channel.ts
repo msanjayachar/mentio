@@ -17,60 +17,36 @@ class PresentationChannel {
     if (this.initialized) return;
     this.initialized = true;
 
-    socket.on(EventNames.ROOM_JOINED, (data: any) => {
+    // Listen for participants list from server
+    socket.on("participants", (participants: string[]) => {
       this.emit({
         type: "ROOM_JOINED",
-        roomId: data.roomId,
-        participants: data.participants || [],
+        roomId: this.roomId || "",
+        participants: participants.map((id, idx) => ({
+          id,
+          name: `User ${idx + 1}`,
+        })),
       });
     });
 
-    socket.on(EventNames.PARTICIPANT_JOINED, (data: any) => {
-      this.emit({ type: "PARTICIPANT_JOINED", participant: data.participant });
-    });
-
-    socket.on(EventNames.PARTICIPANT_LEFT, (data: any) => {
-      this.emit({
-        type: "PARTICIPANT_LEFT",
-        participantId: data.participantId,
-      });
-    });
-
-    socket.on(EventNames.SLIDE_CHANGED, (data: any) => {
+    // Listen for slide changes from mentor
+    socket.on("receive-slide", (slide: any) => {
       this.emit({
         type: "SLIDE_CHANGE",
-        index: data.index,
-        slideId: data.slideId,
+        index: 0,
+        slideId: slide?.id || "",
       });
     });
 
-    socket.on(EventNames.CANVAS_STROKE_RECEIVED, (data: any) => {
-      this.emit({
-        type: "CANVAS_STROKE",
-        slideId: data.slideId,
-        stroke: data.stroke,
-      });
-    });
-
-    socket.on(EventNames.ANSWER_RECEIVED, (data: any) => {
-      this.emit({
-        type: "ANSWER_SUBMITTED",
-        slideId: data.slideId,
-        questionId: data.questionId,
-        answer: data.answer,
-        participantId: data.participantId,
-      });
-    });
-
-    socket.on(EventNames.CONNECTION_LOST, () => {
-      this.emit({ type: "CONNECTION_LOST" });
-    });
-
-    socket.io.on("reconnect", () => {
+    socket.on("connect", () => {
       this.emit({ type: "RECONNECTED" });
       if (this.roomId) {
-        socket.emit(EventNames.JOIN_ROOM, { roomId: this.roomId });
+        socket.emit("join-room", this.roomId);
       }
+    });
+
+    socket.on("disconnect", () => {
+      this.emit({ type: "CONNECTION_LOST" });
     });
   }
 
@@ -89,22 +65,21 @@ class PresentationChannel {
 
   join(roomId: string) {
     this.roomId = roomId;
-    socket.emit(EventNames.JOIN_ROOM, { roomId });
+    socket.emit("join-room", roomId);
   }
 
   leave() {
     if (this.roomId) {
-      socket.emit(EventNames.LEAVE_ROOM, { roomId: this.roomId });
+      socket.emit("leave-room", this.roomId);
       this.roomId = null;
     }
   }
 
   // Send events to server
   sendSlideChange(index: number, slideId: string) {
-    socket.emit(EventNames.SLIDE_CHANGE, {
+    socket.emit("send-slide", {
       roomId: this.roomId,
-      index,
-      slideId,
+      slide: { index, slideId },
     });
   }
 
