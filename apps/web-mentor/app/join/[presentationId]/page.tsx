@@ -1,7 +1,7 @@
 "use client";
 
 import Participants from "@/app/components/participants";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getChannel } from "@shared/channel";
 import type { AppEvent } from "@shared/events";
@@ -9,11 +9,11 @@ import { useCurrentUser } from "@/app/components/context/authContext";
 
 const page = () => {
   const { presentationId } = useParams<{ presentationId: string }>();
+  const router = useRouter();
   const [roomId, setRoomId] = useState<string | null>(null);
   const [participants, setParticipants] = useState<
     { id: string; name: string }[]
   >([]);
-  const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0);
   const { token } = useCurrentUser();
 
   useEffect(() => {
@@ -55,9 +55,6 @@ const page = () => {
             prev.filter((p) => p.id !== event.participantId),
           );
           break;
-        case "SLIDE_CHANGE":
-          setCurrentSlideIndex(event.index);
-          break;
       }
     });
 
@@ -67,17 +64,30 @@ const page = () => {
     };
   }, [roomId]);
 
+  const handleStart = () => {
+    router.push(`/presentation/${presentationId}`);
+  };
+
   return (
     <div>
       <h1 className="w-full bg-red-100 text-center text-3xl font-thin text-red-300">
         RoomID: {roomId}
       </h1>
-      <p>Current slide: {currentSlideIndex}</p>
 
       <Participants
         presentationId={presentationId}
         participants={participants}
       />
+
+      <div className="mt-8 flex justify-center">
+        <button
+          type="button"
+          onClick={handleStart}
+          className="rounded bg-blue-500 px-6 py-3 text-white hover:bg-blue-600"
+        >
+          Start Presentation
+        </button>
+      </div>
     </div>
   );
 };
