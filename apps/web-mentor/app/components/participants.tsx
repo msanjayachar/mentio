@@ -6,19 +6,20 @@ const Participants = ({
   participants,
   presentationId,
 }: {
-  participants: string[];
+  participants: { id: string; name: string }[];
   presentationId: string;
 }) => {
   const router = useRouter();
 
-  const data = participants;
-
   return (
     <div className="flex flex-col items-center justify-center">
       <ol className="flex w-full flex-col items-center justify-center py-10 text-center">
-        {data.map((participant) => (
-          <li className="text-2xl font-light text-blue-500" key={participant}>
-            {participant}
+        {participants.map((participant) => (
+          <li
+            className="text-2xl font-light text-blue-500"
+            key={participant.id}
+          >
+            {participant.name}
           </li>
         ))}
       </ol>
