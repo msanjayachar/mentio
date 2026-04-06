@@ -8,6 +8,7 @@ import { CanvasesApiResponseSchema } from "@shared/api/canvas";
 import { McqsApiResponseSchema } from "@shared/api/mcq";
 import { PresentationType } from "@shared/presentation";
 import { getChannel } from "@shared/channel";
+import { socket } from "@shared/socket";
 import type { AppEvent } from "@shared/events";
 import { ERROR_MESSAGES, SlidesState, SlideState } from "@shared/types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -28,6 +29,9 @@ export default function Page() {
     { id: string; name: string }[]
   >([]);
   const [loading, setLoading] = useState(true);
+  const [answers, setAnswers] = useState<
+    Record<string, { participantId: string; answer: string }[]>
+  >({});
 
   const { token, loading: tokenLoading } = useCurrentUser();
   const channel = getChannel();
@@ -168,6 +172,32 @@ export default function Page() {
     };
   }, [roomId, channel]);
 
+  useEffect(() => {
+    if (!roomId) return;
+
+    const handleAnswerSubmitted = (data: {
+      questionId: string;
+      answer: string;
+      participantId: string;
+    }) => {
+      setAnswers((prev) => ({
+        ...prev,
+        [data.questionId]: [
+          ...(prev[data.questionId] || []),
+          { participantId: data.participantId, answer: data.answer },
+        ],
+      }));
+    };
+
+    socket.on("answer-submitted", handleAnswerSubmitted);
+
+    return () => {
+      socket.off("answer-submitted", handleAnswerSubmitted);
+    };
+  }, [roomId]);
+
+  const currentAnswers = slide?.id ? answers[slide.id] || [] : [];
+
   if (loading || tokenLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
@@ -193,7 +223,7 @@ export default function Page() {
   return (
     <div className="flex h-screen flex-col bg-slate-100 p-4">
       <h1 className="text-4xl text-red-500">Room: {roomId}</h1>
-      <Present slide={slide} roomId={roomId} />
+      <Present slide={slide} roomId={roomId} readOnly />
 
       <div className="mt-auto ml-12 flex w-fit gap-2 text-sm font-light">
         <button
@@ -234,6 +264,19 @@ export default function Page() {
             </p>
           ))}
       </div>
+
+      {currentAnswers.length > 0 && (
+        <div className="mt-4 rounded bg-green-100 p-4">
+          <h3 className="text-xl font-bold">Answers received:</h3>
+          <ul>
+            {currentAnswers.map((a, i) => (
+              <li key={i}>
+                Participant {a.participantId.slice(0, 8)}: {a.answer}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
