@@ -140,6 +140,7 @@ export const EventNames = {
   ANSWER_RECEIVED: "answer-received",
   CONNECTION_LOST: "connection-lost",
   RECONNECTED: "reconnected",
+  PRESENTATION_ENDED: "presentation-ended",
 } as const;
 
 export type EventName = (typeof EventNames)[keyof typeof EventNames];

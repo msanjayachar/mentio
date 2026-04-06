@@ -220,6 +220,11 @@ export default function Page() {
     if (slides && index >= 0) setIndex((prev) => prev - 1);
   };
 
+  const endPresentation = () => {
+    console.log("Presentation Ended");
+    channel.sendPresentationEnd();
+  };
+
   return (
     <div className="flex h-screen flex-col bg-slate-100 p-4">
       <h1 className="text-4xl text-red-500">Room: {roomId}</h1>
@@ -234,7 +239,7 @@ export default function Page() {
         >
           <ArrowLeft size={18} strokeWidth={1.2} />
         </button>
-        {slides && index < slides.length - 1 ? (
+        {presentationSlides && index < presentationSlides.length - 1 ? (
           <button
             type="button"
             className="flex cursor-pointer items-center gap-2 rounded-full bg-gray-300/30 p-2 text-[12px]"
@@ -247,7 +252,7 @@ export default function Page() {
           <button
             type="button"
             className="flex cursor-pointer items-center gap-2 rounded-full bg-gray-300/30 p-2 text-[12px]"
-            onClick={nextSlide}
+            onClick={endPresentation}
           >
             <ArrowRight size={18} strokeWidth={1.2} />
             End presentation
