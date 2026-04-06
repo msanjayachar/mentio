@@ -50,6 +50,14 @@ io.on("connection", (socket) => {
       socket.emit("receive-slide", slide);
     }
   });
+
+  socket.on("submit-answer", ({ roomId, questionId, answer }) => {
+    io.to(roomId).emit("answer-submitted", {
+      questionId,
+      answer,
+      participantId: socket.id,
+    });
+  });
 });
 
 server.listen(port, () => {

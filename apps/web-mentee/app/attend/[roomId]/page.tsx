@@ -12,8 +12,16 @@ import Present from "@ui/Present";
 const page = () => {
   const [slide, setSlide] = useState<SlideState | null>(null);
   const [isPresenting, setIsPresenting] = useState(false);
+  const [submittedAnswers, setSubmittedAnswers] = useState<Set<string>>(
+    new Set(),
+  );
   const { roomId } = useParams<{ roomId: string }>();
   const channel = getChannel();
+
+  const handleSubmitAnswer = (questionId: string, answer: string) => {
+    socket.emit("submit-answer", { roomId, questionId, answer });
+    setSubmittedAnswers((prev) => new Set(prev).add(questionId));
+  };
 
   useEffect(() => {
     if (!roomId) return;
@@ -21,6 +29,7 @@ const page = () => {
     const handleReceive = (receivedSlide: any) => {
       setSlide(receivedSlide);
       setIsPresenting(true);
+      setSubmittedAnswers(new Set());
     };
 
     socket.on("receive-slide", handleReceive);
@@ -33,6 +42,9 @@ const page = () => {
     };
   }, [roomId, channel]);
 
+  const slideType = (slide as { type?: string })?.type;
+  const canInteract = slideType === "multiple_choice";
+
   return (
     <div className="flex h-screen w-full flex-col bg-slate-100 text-black">
       <div className="w-full bg-red-50 py-4 text-center">
@@ -41,7 +53,12 @@ const page = () => {
 
       {isPresenting && slide ? (
         <div>
-          <Present slide={slide} roomId={roomId} />
+          <Present
+            slide={slide}
+            roomId={roomId}
+            onSubmitAnswer={handleSubmitAnswer}
+            readOnly={submittedAnswers.has(slide.id)}
+          />
         </div>
       ) : (
         <div className="flex flex-1 items-center justify-center text-2xl font-normal">
