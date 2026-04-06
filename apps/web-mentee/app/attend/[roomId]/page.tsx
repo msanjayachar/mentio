@@ -16,23 +16,37 @@ const page = () => {
     new Set(),
   );
   const { roomId } = useParams<{ roomId: string }>();
+  const [presentationEnded, setPresentationEnded] = useState(false);
   const channel = getChannel();
+
+  useEffect(() => {
+    console.log("*************************");
+    console.log("channel: ", channel);
+    console.log("*************************");
+  }, []);
 
   const handleSubmitAnswer = (questionId: string, answer: string) => {
     socket.emit("submit-answer", { roomId, questionId, answer });
     setSubmittedAnswers((prev) => new Set(prev).add(questionId));
   };
 
+  const handlePresentationEnd = () => {
+    console.log("presentation-ended");
+    setPresentationEnded(true);
+  };
+
   useEffect(() => {
     if (!roomId) return;
 
     const handleReceive = (receivedSlide: any) => {
+      console.log("received slide");
       setSlide(receivedSlide);
       setIsPresenting(true);
       setSubmittedAnswers(new Set());
     };
 
     socket.on("receive-slide", handleReceive);
+    socket.on("presentation-ended", handlePresentationEnd);
 
     channel.join(roomId);
 
@@ -51,7 +65,11 @@ const page = () => {
         <p className="text-3xl font-thin text-red-500">{roomId}</p>
       </div>
 
-      {isPresenting && slide ? (
+      {presentationEnded ? (
+        <div className="flex flex-1 items-center justify-center text-2xl font-normal">
+          <h1 className="text-blue-500">Presentation Ended</h1>
+        </div>
+      ) : isPresenting && slide ? (
         <div>
           <Present
             slide={slide}

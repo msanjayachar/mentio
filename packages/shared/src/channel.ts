@@ -38,6 +38,12 @@ class PresentationChannel {
       });
     });
 
+    socket.on("presentation-ended", (slide: any) => {
+      this.emit({
+        type: "PRESENTATION_ENDED",
+      });
+    });
+
     socket.on("connect", () => {
       this.emit({ type: "RECONNECTED" });
       if (this.roomId) {

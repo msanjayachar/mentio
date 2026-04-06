@@ -58,6 +58,10 @@ io.on("connection", (socket) => {
       participantId: socket.id,
     });
   });
+
+  socket.on("presentation-end", ({ roomId }) => {
+    socket.to(roomId).emit("presentation-ended");
+  });
 });
 
 server.listen(port, () => {
