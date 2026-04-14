@@ -37,6 +37,10 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("timer", (timer) => {
+    console.log("timer: ", timer);
+  });
+
   socket.on("send-slide", ({ roomId, slide }) => {
     currentSlide.set(roomId, slide);
 

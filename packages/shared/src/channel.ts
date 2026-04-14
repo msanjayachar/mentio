@@ -89,6 +89,12 @@ class PresentationChannel {
     });
   }
 
+  sendTimer(timer: number) {
+    socket.emit("timer", {
+      timer,
+    });
+  }
+
   sendSlideAdded(slide: any, index: number) {
     socket.emit(EventNames.SLIDE_ADDED, { roomId: this.roomId, slide, index });
   }

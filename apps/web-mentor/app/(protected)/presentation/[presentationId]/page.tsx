@@ -88,6 +88,11 @@ export default function Page() {
     if (currentSlide) setSlide(currentSlide);
   }, [presentationSlides, index]);
 
+  // AT_HERE: Separate event for sending timer
+  useEffect(() => {
+    channel.sendTimer(timer);
+  }, [timer]);
+
   useEffect(() => {
     if (!slide || !roomId) return;
     channel.sendSlideChange(index, slide);
