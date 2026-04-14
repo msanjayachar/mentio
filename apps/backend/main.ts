@@ -10,6 +10,7 @@ const io = new Server(server, {
   },
 });
 const currentSlide = new Map();
+const menteeResponses = new Map();
 
 io.on("connection", (socket) => {
   console.log("a user connected");
@@ -51,13 +52,30 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("submit-answer", ({ roomId, questionId, answer }) => {
-    io.to(roomId).emit("answer-submitted", {
-      questionId,
-      answer,
-      participantId: socket.id,
-    });
-  });
+  socket.on(
+    "submit-answer",
+    ({ presentationId, menteeId, roomId, questionId, answer }) => {
+      const presentationData = menteeResponses.get(presentationId) || {};
+
+      const menteeData = presentationData[menteeId] || {};
+
+      menteeData[questionId] = { roomId, answer };
+
+      presentationData[menteeId] = menteeData;
+
+      menteeResponses.set(presentationId, presentationData);
+
+      console.log("*************************");
+      console.log("menteeResponses: ", menteeResponses);
+      console.log("*************************");
+
+      io.to(roomId).emit("answer-submitted", {
+        questionId,
+        answer,
+        participantId: socket.id,
+      });
+    },
+  );
 
   socket.on("presentation-end", ({ roomId }) => {
     socket.to(roomId).emit("presentation-ended");
