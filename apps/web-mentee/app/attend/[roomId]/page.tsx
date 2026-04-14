@@ -19,12 +19,6 @@ const page = () => {
   const [presentationEnded, setPresentationEnded] = useState(false);
   const channel = getChannel();
 
-  useEffect(() => {
-    console.log("*************************");
-    console.log("channel: ", channel);
-    console.log("*************************");
-  }, []);
-
   const handleSubmitAnswer = (questionId: string, answer: string) => {
     socket.emit("submit-answer", { roomId, questionId, answer });
     setSubmittedAnswers((prev) => new Set(prev).add(questionId));

@@ -3,6 +3,16 @@ import { McqQuestion } from "./mcq";
 import { CanvasSlide } from "./canvas";
 import { LoginSchema, SignupSchema } from "./auth";
 
+export type Presentation = {
+  id: string;
+  userIid: string;
+  title: string;
+  roomId: string;
+  createdAt: string;
+  startedAt: string | null;
+  endedAt: string | null;
+};
+
 export type SignupUser = z.infer<typeof SignupSchema>;
 export type LoginUser = z.infer<typeof LoginSchema>;
 
