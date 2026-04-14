@@ -82,7 +82,8 @@ export type MentorEvent =
   | { type: "QUESTION_SHOWN"; slideId: string; questionId: string }
   | { type: "QUESTION_HIDDEN"; slideId: string; questionId: string }
   | { type: "QUESTION_RESULT"; slideId: string; result: MCQResult }
-  | { type: "QUESTION_TIME_UP"; slideId: string; questionId: string };
+  | { type: "QUESTION_TIME_UP"; slideId: string; questionId: string }
+  | { type: "TIMER_TICK"; timer: number };
 
 // Events emitted by mentee
 export type MenteeEvent =
