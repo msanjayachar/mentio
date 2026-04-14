@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createPresentation,
   getPresentationById,
+  getPresentationByRoomId,
   getPresentations,
   startPresentation,
   updatePresentationTitle,
@@ -9,10 +10,11 @@ import {
 import { CreatePresentationSchema } from "@shared/presentation";
 import { ErrorCodes } from "@shared/types";
 import { ZodError } from "zod";
+import { middleware } from "../middleware/auth";
 
 const presentationsRouter = Router();
 
-presentationsRouter.post("/", async (req, res) => {
+presentationsRouter.post("/", middleware, async (req, res) => {
   const body = req.body;
   const { userId } = req.user;
   const { title } = body;
@@ -61,7 +63,7 @@ presentationsRouter.post("/", async (req, res) => {
   });
 });
 
-presentationsRouter.get("/", async (req, res) => {
+presentationsRouter.get("/", middleware, async (req, res) => {
   const { userId } = req.user;
 
   let result;
@@ -93,8 +95,8 @@ presentationsRouter.get("/", async (req, res) => {
   });
 });
 
-presentationsRouter.get("/:id", async (req, res) => {
-  const { id } = req.params;
+presentationsRouter.get("/:id", middleware, async (req, res) => {
+  const { id } = req.params as { id: string };
   const { userId } = req.user;
 
   let result;
@@ -126,8 +128,8 @@ presentationsRouter.get("/:id", async (req, res) => {
   });
 });
 
-presentationsRouter.patch("/start/:id", async (req, res) => {
-  const { id } = req.params;
+presentationsRouter.patch("/start/:id", middleware, async (req, res) => {
+  const { id } = req.params as { id: string };
   const { userId } = req.user;
   const body = req.body;
   const { title, roomId } = body;
@@ -160,8 +162,8 @@ presentationsRouter.patch("/start/:id", async (req, res) => {
   });
 });
 
-presentationsRouter.patch("/:id", async (req, res) => {
-  const { id } = req.params;
+presentationsRouter.patch("/:id", middleware, async (req, res) => {
+  const { id } = req.params as { id: string };
   const { userId } = req.user;
   const body = req.body;
   const { title } = body;
@@ -181,6 +183,38 @@ presentationsRouter.patch("/:id", async (req, res) => {
     id: result.id,
     userId: result.user_id,
     title: result.title,
+    createdAt: result.created_at,
+    startedAt: result.started_at,
+    endedAt: result.ended_at,
+  };
+
+  return res.status(200).json({
+    success: true,
+    data: presentation,
+    error: null,
+  });
+});
+
+presentationsRouter.get("/room/:roomId", async (req, res) => {
+  const { roomId } = req.params;
+
+  let result;
+  try {
+    result = await getPresentationByRoomId(roomId);
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      error: "FAILED_TO_GET_PRESENTATION",
+    });
+  }
+
+  const presentation = {
+    id: result.id,
+    userId: result.id,
+    title: result.title,
+    roomId: result.room_id,
+    description: result.description,
     createdAt: result.created_at,
     startedAt: result.started_at,
     endedAt: result.ended_at,

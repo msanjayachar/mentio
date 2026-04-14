@@ -51,3 +51,11 @@ export const startPresentation = async (
 
   return result.rows[0];
 };
+
+export const getPresentationByRoomId = async (roomId: string) => {
+  const query = "SELECT * FROM presentations WHERE room_id = $1";
+
+  const result = await pool.query(query, [roomId]);
+
+  return result.rows[0];
+};

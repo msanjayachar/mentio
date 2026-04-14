@@ -5,13 +5,19 @@ import cors from "cors";
 import { middleware } from "./middleware/auth";
 import canvasSlidesRouter from "./routes/canvas";
 import presentationsRouter from "./routes/presentations";
+import menteesRouter from "./routes/mentees";
 
 export const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.send("Hello world");
+});
+
 app.use("/api/auth", authRouter);
 app.use("/slides", middleware, mcqSlidesRouter);
 app.use("/canvas", middleware, canvasSlidesRouter);
-app.use("/presentations", middleware, presentationsRouter);
+app.use("/presentations", presentationsRouter);
+app.use("/mentees", menteesRouter);
