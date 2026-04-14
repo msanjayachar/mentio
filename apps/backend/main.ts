@@ -65,10 +65,6 @@ io.on("connection", (socket) => {
 
       menteeResponses.set(presentationId, presentationData);
 
-      console.log("*************************");
-      console.log("menteeResponses: ", menteeResponses);
-      console.log("*************************");
-
       io.to(roomId).emit("answer-submitted", {
         questionId,
         answer,
