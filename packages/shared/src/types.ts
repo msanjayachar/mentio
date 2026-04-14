@@ -13,6 +13,12 @@ export type Presentation = {
   endedAt: string | null;
 };
 
+export type Mentee = {
+  id: string;
+  presentationId: string;
+  createdAt: string;
+};
+
 export type SignupUser = z.infer<typeof SignupSchema>;
 export type LoginUser = z.infer<typeof LoginSchema>;
 

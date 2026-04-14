@@ -13,35 +13,16 @@ export default function Attend() {
   const [joined, setJoined] = useState<boolean>(false);
   const router = useRouter();
   const [participants, setParticipants] = useState([]);
-  const [presentationId, setPresentationId] = useState<string | null>(null);
-  const [presentation, setPresentation] = useState<Presentation | null>(null);
 
   const handleUpdate = (e: ChangeEvent<HTMLInputElement>) => {
     setRoomId(e.target.value);
   };
-
-  useEffect(() => {
-    const createMentee = async () => {
-      if (presentation) {
-        await fetch("http://localhost:8000/mentees", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ presentationId: presentation.id }),
-        });
-      }
-    };
-
-    createMentee();
-  }, [presentation]);
 
   const joinRoom = async () => {
     if (!socket) return;
 
     socket.emit("join-room", roomId);
     setJoined(true);
-
-    // AT_HERE: How to get the presentationId here?
-    // Does this request has to be made from here?
   };
 
   useEffect(() => {
@@ -60,21 +41,6 @@ export default function Attend() {
           color: "white",
         },
       });
-
-      // AT_HERE: get the presentationId using the roomId here.
-      const loadPresentation = async () => {
-        const response = await fetch(
-          `http://localhost:8000/presentations/room/${roomId}`,
-        );
-
-        const result = await response.json();
-
-        if (result) {
-          setPresentation(result.data);
-        }
-      };
-
-      loadPresentation();
     }
   }, [joined]);
 
