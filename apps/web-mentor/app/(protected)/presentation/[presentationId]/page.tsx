@@ -15,6 +15,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
+import { format } from "path";
 
 export default function Page() {
   const { presentationId } = useParams<{ presentationId: string }>();
@@ -32,6 +33,7 @@ export default function Page() {
   const [answers, setAnswers] = useState<
     Record<string, { participantId: string; answer: string }[]>
   >({});
+  const [timer, setTimer] = useState(30);
 
   const { token, loading: tokenLoading } = useCurrentUser();
   const channel = getChannel();
@@ -40,6 +42,18 @@ export default function Page() {
     () => slides?.filter((s) => s.presentationId === presentationId) ?? [],
     [slides, presentationId],
   );
+
+  useEffect(() => {
+    if (timer <= 0) return;
+
+    const interval = setInterval(() => {
+      setTimer((time) => {
+        return time - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timer]);
 
   useEffect(() => {
     if (tokenLoading || !token || !presentationId) return;
@@ -211,6 +225,7 @@ export default function Page() {
   if (!slides) return <div>Loading slides...</div>;
 
   const nextSlide = () => {
+    setTimer(30);
     if (slides && slides.length - 1 > index) {
       setIndex((prev) => prev + 1);
     }
@@ -228,6 +243,11 @@ export default function Page() {
   return (
     <div className="flex h-screen flex-col bg-slate-100 p-4">
       <h1 className="text-4xl text-red-500">Room: {roomId}</h1>
+
+      <div>
+        <h1>{timer == 0 ? "Time's up." : timer}</h1>
+      </div>
+
       <Present slide={slide} roomId={roomId} readOnly />
 
       <div className="mt-auto ml-12 flex w-fit gap-2 text-sm font-light">

@@ -79,12 +79,6 @@ const page = () => {
   }, []);
 
   useEffect(() => {
-    console.log("*************************");
-    console.log("mentee: ", mentee);
-    console.log("*************************");
-  }, [mentee]);
-
-  useEffect(() => {
     const createMentee = async () => {
       if (presentation) {
         const response = await fetch("http://localhost:8000/mentees", {
