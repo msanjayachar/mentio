@@ -91,7 +91,8 @@ class PresentationChannel {
 
   sendTimer(timer: number) {
     socket.emit("timer", {
-      timer,
+      roomId: this.roomId,
+      timer: timer,
     });
   }
 
