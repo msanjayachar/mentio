@@ -21,6 +21,7 @@ const page = () => {
   );
   const [mentee, setMentee] = useState<Mentee | undefined>(undefined);
   const [timer, setTimer] = useState(30);
+  const [result, setResult] = useState<boolean | undefined>(undefined);
   const channel = getChannel();
 
   const handleSubmitAnswer = (questionId: string, answer: string) => {
@@ -53,9 +54,14 @@ const page = () => {
       setTimer(receivedTimer);
     };
 
+    const handleResult = (result: boolean) => {
+      setResult(result);
+    };
+
     socket.on("receive-slide", handleReceive);
     socket.on("presentation-ended", handlePresentationEnd);
     socket.on("slide-timer", handleTimer);
+    socket.on("result", handleResult);
 
     channel.join(roomId);
 
@@ -112,6 +118,12 @@ const page = () => {
   return (
     <div className="flex h-screen w-full flex-col bg-slate-100 text-black">
       <h1>{timer == 0 ? "Time's up." : timer}</h1>
+
+      {result !== undefined && (
+        <h2 className="text-2xl text-red-500">
+          Result: {result ? "Right Answer" : "Wrong Answer"}
+        </h2>
+      )}
 
       <div className="w-full bg-red-50 py-4 text-center">
         <p className="text-3xl font-thin text-red-500">{roomId}</p>

@@ -152,6 +152,13 @@ class PresentationChannel {
     });
   }
 
+  sendResult(result: boolean) {
+    socket.emit(EventNames.SEND_RESULT, {
+      roomId: this.roomId,
+      result: result,
+    });
+  }
+
   sendPresentationEnd() {
     socket.emit(EventNames.PRESENTATION_END, { roomId: this.roomId });
   }

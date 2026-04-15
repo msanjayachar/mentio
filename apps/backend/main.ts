@@ -77,6 +77,10 @@ io.on("connection", (socket) => {
     },
   );
 
+  socket.on("send-result", ({ roomId, result }) => {
+    socket.to(roomId).emit("result", result);
+  });
+
   socket.on("presentation-end", ({ roomId }) => {
     socket.to(roomId).emit("presentation-ended");
   });

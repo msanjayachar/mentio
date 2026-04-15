@@ -11,11 +11,17 @@ import { getChannel } from "@shared/channel";
 import { socket } from "@shared/socket";
 import type { AppEvent } from "@shared/events";
 import { ERROR_MESSAGES, SlidesState, SlideState } from "@shared/types";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, LucideToggleRight } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
 import { format } from "path";
+
+type Answer = {
+  participantId: string;
+  answer: string;
+};
+type QuestionId = string;
 
 export default function Page() {
   const { presentationId } = useParams<{ presentationId: string }>();
@@ -26,13 +32,12 @@ export default function Page() {
   const [slide, setSlide] = useState<SlideState | null>(null);
   const [index, setIndex] = useState(0);
   const [roomId, setRoomId] = useState<string | null>(null);
+  const [result, setResult] = useState<boolean>(false);
   const [participants, setParticipants] = useState<
     { id: string; name: string }[]
   >([]);
   const [loading, setLoading] = useState(true);
-  const [answers, setAnswers] = useState<
-    Record<string, { participantId: string; answer: string }[]>
-  >({});
+  const [answers, setAnswers] = useState<Record<QuestionId, Answer[]>>({});
   const [timer, setTimer] = useState(30);
 
   const { token, loading: tokenLoading } = useCurrentUser();
@@ -81,6 +86,7 @@ export default function Page() {
     getPresentation(presentationId);
   }, [token, presentationId]);
 
+  // We set slide here.
   useEffect(() => {
     if (!presentationSlides.length || index >= presentationSlides.length)
       return;
@@ -88,7 +94,6 @@ export default function Page() {
     if (currentSlide) setSlide(currentSlide);
   }, [presentationSlides, index]);
 
-  // AT_HERE: Separate event for sending timer
   useEffect(() => {
     channel.sendTimer(timer);
   }, [timer]);
@@ -199,6 +204,17 @@ export default function Page() {
       answer: string;
       participantId: string;
     }) => {
+      // AT_HERE: result. Show the result of each slide response to the mentee
+      const result =
+        slide?.type === "multiple_choice"
+          ? slide.options.find((opt) => opt.id === data.answer)
+          : null;
+
+      // VERIFY:
+      if (!result) return;
+
+      setResult(result.isCorrect);
+
       setAnswers((prev) => ({
         ...prev,
         [data.questionId]: [
@@ -213,7 +229,7 @@ export default function Page() {
     return () => {
       socket.off("answer-submitted", handleAnswerSubmitted);
     };
-  }, [roomId]);
+  }, [roomId, slide]);
 
   const currentAnswers = slide?.id ? answers[slide.id] || [] : [];
 
@@ -245,6 +261,10 @@ export default function Page() {
     channel.sendPresentationEnd();
   };
 
+  const handleResult = () => {
+    channel.sendResult(result);
+  };
+
   return (
     <div className="flex h-screen flex-col bg-slate-100 p-4">
       <h1 className="text-4xl text-red-500">Room: {roomId}</h1>
@@ -252,6 +272,13 @@ export default function Page() {
       <div>
         <h1>{timer == 0 ? "Time's up." : timer}</h1>
       </div>
+
+      <button
+        className="h-12 w-full cursor-pointer rounded-lg bg-blue-500"
+        onClick={() => handleResult()}
+      >
+        Show Result
+      </button>
 
       <Present slide={slide} roomId={roomId} readOnly />
 
