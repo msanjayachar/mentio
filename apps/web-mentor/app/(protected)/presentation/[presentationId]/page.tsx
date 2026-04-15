@@ -262,6 +262,7 @@ export default function Page() {
   };
 
   const handleResult = () => {
+    setTimer(0);
     channel.sendResult(result);
   };
 

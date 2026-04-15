@@ -34,12 +34,15 @@ const PresentationHelper = ({
   const [visualizationType, setVisualizationType] = useState<
     "bar" | "pie" | "split" | "dots" | null
   >(null);
+  const [selectionsPerParticipant, setSelectionsPerParticipant] = useState(2);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
   const { presentationId } = useParams<{ presentationId: string }>();
   const { token } = useCurrentUser();
 
-  // THREAD: Slide is unknown because fetch Slides isn't type safe right now.
+  // THREAD: Slide is unknown because fetch Slides isn't type safe right now .
   const slide = slides.find((slide) => slide.id === selectedSlide);
+
+  if (!selectedSlide) return;
 
   if (!token || !selectedSlide || !slide) {
     return null;
@@ -140,6 +143,77 @@ const PresentationHelper = ({
           : slide,
       ),
     );
+
+    if (slide.type !== "multiple_choice") return;
+    const updatedSlide: McqQuestion = {
+      ...slide,
+      options: slide.options.filter(
+        (option: McqOption) => option.id !== optionId,
+      ),
+    };
+
+    updateSlide(updatedSlide, token);
+  };
+
+  const handleCheckbox = (e: ChangeEvent<HTMLInputElement>, opt: any) => {
+    // AT_HERE: select multiple. only the perParticipant count
+    if (selectMultiple) {
+      console.log("select Multiple");
+      setSlides((slides) =>
+        slides.map((slide) =>
+          slide.id === selectedSlide && slide.type === "multiple_choice"
+            ? {
+                ...slide,
+                options: slide.options.map((option) =>
+                  option.id === opt.id
+                    ? {
+                        ...option,
+                        isCorrect: checked,
+                      }
+                    : option,
+                ),
+              }
+            : slide,
+        ),
+      );
+    } else {
+      console.log("select one");
+      setSlides((slides) =>
+        slides.map((slide) =>
+          slide.id === selectedSlide && slide.type === "multiple_choice"
+            ? {
+                ...slide,
+                options: slide.options.map((option) =>
+                  option.id === opt.id
+                    ? {
+                        ...option,
+                        isCorrect: checked,
+                      }
+                    : { ...option, isCorrect: false },
+                ),
+              }
+            : slide,
+        ),
+      );
+    }
+
+    const checked = e.target.checked;
+    if (slide.type !== "multiple_choice") return;
+
+    const updatedSlide: McqQuestion = {
+      ...slide,
+      options: slide.options.map((option: McqOption) =>
+        selectMultiple
+          ? option.id === opt.id
+            ? { ...option, isCorrect: checked }
+            : option
+          : option.id === opt.id
+            ? { ...option, isCorrect: checked }
+            : { ...option, isCorrect: false },
+      ),
+    };
+
+    updateSlide(updatedSlide, token);
   };
 
   return (
@@ -224,7 +298,11 @@ const PresentationHelper = ({
                       {/* Real checkbox (invisible but functional) */}
                       <input
                         type="checkbox"
+                        checked={option.isCorrect === true}
                         className="peer absolute h-0 w-0 opacity-0"
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                          handleCheckbox(e, option)
+                        }
                       />
 
                       {/* Custom box */}
@@ -299,6 +377,7 @@ const PresentationHelper = ({
               </div>
             </div>
 
+            {/* TODO: Handle multipe options as well. */}
             <label className="relative inline-flex cursor-pointer items-center">
               <input
                 type="checkbox"
@@ -336,10 +415,11 @@ const PresentationHelper = ({
             <input
               type="number"
               min="2"
-              max="3"
+              max={slide.type === "multiple_choice" ? slide.options.length : 3}
               step="1"
               defaultValue="2"
               className="h-10 w-20 rounded-lg bg-gray-300 px-2 text-sm font-light"
+              onChange={() => setSelectionsPerParticipant((prev) => prev + 1)}
             />
           </div>
         </div>
