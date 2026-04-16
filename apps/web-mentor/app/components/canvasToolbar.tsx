@@ -11,22 +11,27 @@ const CanvasToolbar = ({
 }) => {
   return (
     <div className="mx-8 flex justify-between gap-2 px-8">
-      <div>Selected Tool: {tool}</div>
-
+      {/* <div>Selected Tool: {tool}</div> */}
       <button
-        className="h-8 w-24 cursor-pointer rounded-sm bg-slate-200 px-2"
+        className={`h-8 w-24 cursor-pointer rounded-sm px-2 ${
+          tool === "text" ? "bg-blue-500 text-white" : "bg-slate-200"
+        }`}
         onClick={() => setTool("text")}
       >
         Text
       </button>
       <button
-        className="h-8 w-24 cursor-pointer rounded-sm bg-slate-200 px-2"
+        className={`h-8 w-24 cursor-pointer rounded-sm px-2 ${
+          tool === "shapes" ? "bg-blue-500 text-white" : "bg-slate-200"
+        }`}
         onClick={() => setTool("shapes")}
       >
         Shapes
       </button>
       <button
-        className="h-8 w-24 cursor-pointer rounded-sm bg-slate-200 px-2"
+        className={`h-8 w-24 cursor-pointer rounded-sm px-2 ${
+          tool === "image" ? "bg-blue-500 text-white" : "bg-slate-200"
+        }`}
         onClick={() => setTool("image")}
       >
         Image

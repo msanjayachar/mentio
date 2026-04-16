@@ -13,7 +13,6 @@ export default function Page() {
 
   return (
     <div>
-      <h1>PRESENTATION ID: {params.presentationId}</h1>
       <Presentations presentationId={params.presentationId} />
     </div>
   );

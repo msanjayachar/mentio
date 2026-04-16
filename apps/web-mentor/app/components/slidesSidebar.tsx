@@ -76,8 +76,6 @@ const SlidesSidebar = ({
 
       if (res_mcq.success && res_canvas.success) {
         if (isMountedRef.current) {
-          // setSlides([...res_mcq.data, ...res_canvas.data]);
-
           setSlides(
             [...res_mcq.data, ...res_canvas.data].sort((a, b) => {
               const timeA = getEpochSeconds(a.createdAt);
@@ -165,14 +163,6 @@ const SlidesSidebar = ({
                       key={slide.id}
                       className="flex cursor-pointer"
                     >
-                      {/* <span className="text-[12px]">{item.id}</span> */}
-                      <div className="flex flex-col gap-2 p-2">
-                        <span className="text-sm text-red-800">
-                          {slide.id.slice(0, 4)}...{slide.id.slice(-3)}
-                        </span>
-                      </div>
-
-                      {/* <span className="text-sm text-red-800">{selected}</span> */}
                       <div
                         className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected === slide.id ? "ring ring-blue-700" : ""}`}
                       >
@@ -182,18 +172,9 @@ const SlidesSidebar = ({
                   ) : (
                     <div
                       onClick={() => setSelected(slide.id)}
-                      // key={slide.id}
-                      key={crypto.randomUUID()}
+                      key={slide.id}
                       className="flex cursor-pointer"
                     >
-                      {/* <span className="text-[12px]">{item.id}</span> */}
-                      <div className="flex flex-col gap-2 p-2">
-                        <span className="text-sm text-red-800">
-                          {slide.id.slice(0, 4)}...{slide.id.slice(-3)}
-                        </span>
-                      </div>
-
-                      {/* <span className="text-sm text-red-800">{selected}</span> */}
                       <div
                         className={`mx-auto h-20 w-36 cursor-pointer rounded-md border-2 border-transparent bg-white hover:border-gray-300 focus:border-2 focus:border-blue-800 ${selected === slide.id ? "ring ring-blue-700" : ""}`}
                       >

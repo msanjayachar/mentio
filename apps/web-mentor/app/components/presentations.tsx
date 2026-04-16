@@ -24,6 +24,8 @@ const Presentations = ({ presentationId }: { presentationId: string }) => {
   const [tool, setTool] = useState<"text" | "image" | "shapes">("text");
   const { token } = useCurrentUser();
 
+  const slide = slides.find((slide) => slide.id === selectedSlide);
+
   const handleSpeakerNotes = () => {
     setSpeakerNotes((prev) => !prev);
   };
@@ -50,7 +52,6 @@ const Presentations = ({ presentationId }: { presentationId: string }) => {
 
   return (
     <div className="relative h-screen overflow-hidden bg-[#F2F1F0]">
-      <p>SELECTED SLIDE: {selectedSlide}</p>
       <PresentationNav slides={slides} />
       <div className="flex flex-col">
         <div className="flex">
@@ -65,7 +66,9 @@ const Presentations = ({ presentationId }: { presentationId: string }) => {
           {/* <PresentationStarters /> */}
           {/* Canvas Input  */}
           <div className="mb-4 flex min-w-0 flex-1 flex-col justify-between">
-            <CanvasToolbar tool={tool} setTool={setTool} />
+            {slide?.type === "canvas_slide" && (
+              <CanvasToolbar tool={tool} setTool={setTool} />
+            )}
             <Question
               tool={tool}
               slides={slides}
