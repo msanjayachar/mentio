@@ -5,6 +5,9 @@ import { FabricImage } from "fabric";
 import { CanvasSlide } from "../../shared/src/canvas";
 import { FabricObject } from "fabric";
 
+const BASE_WIDTH = 800;
+const BASE_HEIGHT = 600;
+
 export const FabricJSCanvas = ({
   tool,
   backgroundColor,
@@ -29,6 +32,7 @@ export const FabricJSCanvas = ({
   const toolRef = useRef(tool);
   const canvasRef = useRef<Canvas | null>(null);
   const selectedCanvasSlide = useRef<CanvasSlide | undefined>(undefined);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
   const updateCanvasContext = (canvas: Canvas | null) => {};
 
@@ -63,6 +67,23 @@ export const FabricJSCanvas = ({
     toolRef.current = tool;
   }, [tool]);
 
+  const resizeCanvas = (container: HTMLDivElement, canvas: Canvas) => {
+    if (!container || !canvas) return;
+
+    const { width, height } = container.getBoundingClientRect();
+    const newWidth = Math.floor(width) - 4;
+    const newHeight = Math.floor(height) - 4;
+
+    canvas.setDimensions({ width: newWidth, height: newHeight });
+
+    const scaleX = newWidth / BASE_WIDTH;
+    const scaleY = newHeight / BASE_HEIGHT;
+    const scale = Math.min(scaleX, scaleY);
+
+    canvas.setViewportTransform([scale, 0, 0, scale, 0, 0]);
+    canvas.renderAll();
+  };
+
   useEffect(() => {
     if (!canvasEl.current) return;
 
@@ -84,6 +105,8 @@ export const FabricJSCanvas = ({
     };
 
     const canvas = new Canvas(canvasEl.current, {
+      width: BASE_WIDTH,
+      height: BASE_HEIGHT,
       backgroundColor: "rgb(255, 255, 255)",
       selectionColor: "blue",
       selectionLineWidth: 2,
@@ -135,29 +158,24 @@ export const FabricJSCanvas = ({
     canvas.on("object:removed", save);
     canvas.on("text:changed", save);
 
-    const resizeCanvas = () => {
-      if (!canvasEl.current) return;
-
-      // const parent = canvasEl.current.parentElement;
-      const parent = containerRef.current;
-      if (!parent) return;
-
-      const { width, height } = parent.getBoundingClientRect();
-
-      canvas.setDimensions({
-        width: Math.floor(width) - 4,
-        height: Math.floor(height) - 4,
-      });
-      canvas.renderAll();
-    };
-
-    // make the fabric.Canvas instance available to your app
     updateCanvasContext(canvas);
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
+
+    if (containerRef.current) {
+      resizeCanvas(containerRef.current, canvas);
+
+      resizeObserverRef.current = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          resizeCanvas(entry.target as HTMLDivElement, canvas);
+        }
+      });
+
+      resizeObserverRef.current.observe(containerRef.current);
+    }
 
     return () => {
-      window.removeEventListener("resize", resizeCanvas);
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+      }
       updateCanvasContext(null);
       canvas.dispose();
     };
@@ -175,14 +193,14 @@ export const FabricJSCanvas = ({
 
     canvasRef.current.loadFromJSON(slide.canvasObject).then(() => {
       canvasRef.current?.requestRenderAll();
+      if (canvasRef.current && containerRef.current) {
+        resizeCanvas(containerRef.current, canvasRef.current);
+      }
     });
   }, [selectedSlide]);
 
   return (
-    <div
-      ref={containerRef}
-      style={{ width: "100%", height: "100%", border: "2px solid black" }}
-    >
+    <div ref={containerRef} className="h-full w-full border-2 border-black">
       <canvas ref={canvasEl} />
     </div>
   );

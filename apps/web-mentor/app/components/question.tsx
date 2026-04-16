@@ -148,7 +148,7 @@ const Question = ({
 
       <div className="flex flex-col gap-6 px-4">
         {slide.type === "canvas_slide" && (
-          <div className="h-[600px] px-4 py-2">
+          <div className="h-[250px] w-full px-2 py-2 md:h-[300px] md:px-4 lg:h-[400px] xl:h-[600px]">
             <FabricJSCanvas
               tool={tool}
               backgroundColor="red"

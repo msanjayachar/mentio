@@ -65,7 +65,7 @@ const Presentations = ({ presentationId }: { presentationId: string }) => {
 
           {/* <PresentationStarters /> */}
           {/* Canvas Input  */}
-          <div className="mb-4 flex min-w-0 flex-1 flex-col justify-between">
+          <div className="mb-4 flex w-full min-w-0 flex-1 flex-col justify-between p-2 md:p-4">
             {slide?.type === "canvas_slide" && (
               <CanvasToolbar tool={tool} setTool={setTool} />
             )}
