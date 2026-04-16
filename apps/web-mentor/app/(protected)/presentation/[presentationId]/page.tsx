@@ -204,7 +204,6 @@ export default function Page() {
       answer: string;
       participantId: string;
     }) => {
-      // AT_HERE: result. Show the result of each slide response to the mentee
       const result =
         slide?.type === "multiple_choice"
           ? slide.options.find((opt) => opt.id === data.answer)

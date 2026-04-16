@@ -16,6 +16,12 @@ import { useParams } from "next/navigation";
 import { useCurrentUser } from "./context/authContext";
 import { updateSlide } from "@/lib/utils";
 
+type Option = {
+  id: string;
+  text: string;
+  isCorrect: boolean;
+};
+
 const PresentationHelper = ({
   selectedSlide,
   slides,
@@ -155,29 +161,65 @@ const PresentationHelper = ({
     updateSlide(updatedSlide, token);
   };
 
-  const handleCheckbox = (e: ChangeEvent<HTMLInputElement>, opt: any) => {
-    // AT_HERE: select multiple. only the perParticipant count
+  const handleCheckbox = (e: ChangeEvent<HTMLInputElement>, opt: Option) => {
+    // Function to check the number of options that have true. This has be equal to the setSelectionsPerParticipant
+    const selectionsPerParticipantFn = () => {
+      if (slide.type !== "multiple_choice") return 0;
+
+      const rightAnswers = slide.options.filter(
+        (option) => option.isCorrect === true,
+      );
+
+      return rightAnswers.length;
+    };
+
+    const rightAnswers = selectionsPerParticipantFn();
+
+    const filteredOptions =
+      slide.type === "multiple_choice"
+        ? slide.options.filter(
+            (option) => option.id !== opt.id && option.isCorrect == true,
+          )
+        : [];
+
+    const randomOption =
+      filteredOptions[Math.floor(Math.random() * filteredOptions.length)];
+
+    const checked = e.target.checked;
     if (selectMultiple) {
-      console.log("select Multiple");
       setSlides((slides) =>
         slides.map((slide) =>
           slide.id === selectedSlide && slide.type === "multiple_choice"
-            ? {
-                ...slide,
-                options: slide.options.map((option) =>
-                  option.id === opt.id
-                    ? {
-                        ...option,
-                        isCorrect: checked,
-                      }
-                    : option,
-                ),
-              }
+            ? rightAnswers < selectionsPerParticipant
+              ? {
+                  ...slide,
+                  options: slide.options.map((option) =>
+                    option.id === opt.id
+                      ? {
+                          ...option,
+                          isCorrect: checked,
+                        }
+                      : option,
+                  ),
+                }
+              : // Uncheck random option to false
+                {
+                  ...slide,
+                  options: slide.options.map((option) =>
+                    option.id === opt.id
+                      ? {
+                          ...option,
+                          isCorrect: checked,
+                        }
+                      : option.id === randomOption?.id
+                        ? { ...option, isCorrect: false }
+                        : option,
+                  ),
+                }
             : slide,
         ),
       );
     } else {
-      console.log("select one");
       setSlides((slides) =>
         slides.map((slide) =>
           slide.id === selectedSlide && slide.type === "multiple_choice"
@@ -197,7 +239,6 @@ const PresentationHelper = ({
       );
     }
 
-    const checked = e.target.checked;
     if (slide.type !== "multiple_choice") return;
 
     const updatedSlide: McqQuestion = {
