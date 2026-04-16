@@ -16,9 +16,9 @@ const Home = () => {
   };
 
   return (
-    <div>
+    <div className="flex min-h-screen flex-col">
       <Homenavbar />
-      <div className="flex">
+      <div className="flex flex-1 flex-col lg:flex-row">
         <aside className="hidden w-72 shrink-0 lg:block">
           <Sidebar
             isOpen={true}
@@ -27,7 +27,7 @@ const Home = () => {
           />
         </aside>
 
-        <div className="flex w-full flex-col gap-12">
+        <main className="flex w-full flex-col gap-8 p-4 md:gap-12 md:p-6 lg:p-8">
           <div className="w-full min-w-0">
             <Create />
           </div>
@@ -40,7 +40,7 @@ const Home = () => {
           <div className="min-w-0">
             <Features />
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

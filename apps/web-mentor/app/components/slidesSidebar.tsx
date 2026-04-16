@@ -129,10 +129,10 @@ const SlidesSidebar = ({
   if (!token) return null;
 
   return (
-    <div className="hidden lg:block">
+    <div className="hidden w-48 shrink-0 lg:block xl:w-56">
       <div className="relative inline-block">
         <button
-          className="mx-auto flex h-12 cursor-pointer items-center gap-2 rounded-full bg-black px-8 text-center text-sm font-light text-white sm:w-44"
+          className="mx-auto flex h-12 w-full cursor-pointer items-center gap-2 rounded-full bg-black px-4 text-center text-sm font-light text-white xl:w-44"
           onClick={() => setShowSlideOption((prev) => !prev)}
         >
           <Plus size={20} strokeWidth={1} />
@@ -140,7 +140,7 @@ const SlidesSidebar = ({
         </button>
 
         {showSlideOption && (
-          <div className="absolute mt-2 w-80">
+          <div className="absolute left-0 z-20 mt-2 w-64">
             <NewSlide
               slides={slides}
               setSlides={setSlides}
@@ -150,7 +150,7 @@ const SlidesSidebar = ({
         )}
       </div>
 
-      <div className="flex h-[calc(100vh-80px)] w-48 flex-col gap-4 overflow-auto pt-4">
+      <div className="flex h-[calc(100vh-80px)] flex-col gap-4 overflow-auto p-2 pt-4">
         {slides ? (
           <div className="ml-2 flex flex-col gap-4">
             {Array.isArray(slides) &&

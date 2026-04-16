@@ -1,4 +1,4 @@
-import { FilePlus, Home, Inbox, User, Users } from "lucide-react";
+import { FilePlus, Home, Inbox, User, Users, X } from "lucide-react";
 
 const Sidebar = ({
   isOpen,
@@ -12,42 +12,58 @@ const Sidebar = ({
   const sidebarClass = isOpen ? "sidebar open" : "sidebar";
 
   return (
-    <div
-      className={`mt-5 flex h-[calc(100vh-80px)] flex-col justify-start gap-16 p-8 text-sm font-light ${sidebarClass}`}
-    >
-      <div className="flex flex-col gap-4">
-        <span className="flex cursor-pointer items-center gap-2">
-          <Home size={20} />
-          Home
-        </span>
-        <span className="flex cursor-pointer items-center gap-2">
-          <User size={20} />
-          My Presentations
-        </span>
-        <span className="flex cursor-pointer items-center gap-2">
-          <Inbox size={20} />
-          Shared with me
-        </span>
-      </div>
-      <div className="flex flex-col gap-4">
-        <span className="text-sm text-gray-400">Workspace</span>
-        <span className="flex cursor-pointer items-center gap-2">
-          <Users size={20} /> Workspace presentations
-        </span>
-        <span className="flex cursor-pointer items-center gap-2">
-          <FilePlus size={20} />
-          Shared templates
-        </span>
-      </div>
-      {page !== "home" && (
-        <button
-          onClick={toggleSidebar}
-          className="sidebar-toggle cursor-pointer bg-red-200"
-        >
-          Toggle Sidebar
-        </button>
+    <>
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
+          onClick={() => toggleSidebar?.()}
+        />
       )}
-    </div>
+      <div
+        className={`mt-5 flex h-[calc(100vh-80px)] flex-col justify-start gap-16 bg-white p-8 text-sm font-light ${sidebarClass} lg:mt-0 lg:h-full lg:bg-transparent`}
+      >
+        <div className="flex flex-col gap-4">
+          <span className="flex cursor-pointer items-center gap-2">
+            <Home size={20} />
+            Home
+          </span>
+          <span className="flex cursor-pointer items-center gap-2">
+            <User size={20} />
+            My Presentations
+          </span>
+          <span className="flex cursor-pointer items-center gap-2">
+            <Inbox size={20} />
+            Shared with me
+          </span>
+        </div>
+        <div className="flex flex-col gap-4">
+          <span className="text-sm text-gray-400">Workspace</span>
+          <span className="flex cursor-pointer items-center gap-2">
+            <Users size={20} /> Workspace presentations
+          </span>
+          <span className="flex cursor-pointer items-center gap-2">
+            <FilePlus size={20} />
+            Shared templates
+          </span>
+        </div>
+        {page !== "home" && (
+          <button
+            onClick={toggleSidebar}
+            className="sidebar-toggle cursor-pointer bg-red-200"
+          >
+            Toggle Sidebar
+          </button>
+        )}
+        {isOpen && page === "home" && (
+          <button
+            onClick={toggleSidebar}
+            className="absolute top-4 right-4 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-200 lg:hidden"
+          >
+            <X size={20} />
+          </button>
+        )}
+      </div>
+    </>
   );
 };
 

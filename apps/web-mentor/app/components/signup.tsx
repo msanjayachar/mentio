@@ -83,15 +83,17 @@ const Signup = () => {
   };
 
   return (
-    <div>
+    <div className="min-h-screen w-full px-4 py-8 md:px-8 lg:px-16">
       <div className="flex items-center justify-center gap-2 py-4 text-center">
         <Logo />
-        <h1 className="text-center text-4xl">Mentio</h1>
+        <h1 className="text-center text-3xl md:text-4xl">Mentio</h1>
       </div>
-      <div className="flex h-auto w-120 flex-col gap-8 rounded-md bg-blue-100 px-12 py-16">
-        <h1 className="text-center text-2xl">Create a free account</h1>
+      <div className="mx-auto flex h-auto w-full max-w-md flex-col gap-6 rounded-md bg-blue-100 p-6 md:gap-8 md:p-10 lg:p-16">
+        <h1 className="text-center text-xl md:text-2xl">
+          Create a free account
+        </h1>
 
-        <button className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-full border-2 border-black text-lg">
+        <button className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-full border-2 border-black text-base md:text-lg">
           <Image
             src="/icons/google-logo.png"
             alt="google-logo"
@@ -107,27 +109,28 @@ const Signup = () => {
 
         <input
           placeholder="Enter your name here."
-          className="text-md rounded-md border-2 border-gray-300 bg-gray-200 p-2 font-light hover:border-blue-900"
+          className="w-full rounded-md border-2 border-gray-300 bg-gray-200 p-2 font-light hover:border-blue-900 md:text-base"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
 
         <input
           placeholder="Enter your email here."
-          className="text-md rounded-md border-2 border-gray-300 bg-gray-200 p-2 font-light hover:border-blue-900"
+          className="w-full rounded-md border-2 border-gray-300 bg-gray-200 p-2 font-light hover:border-blue-900 md:text-base"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
           placeholder="Enter your password here."
-          className="text-md rounded-md border-2 border-gray-300 bg-gray-200 p-2 font-light hover:border-blue-900"
+          type="password"
+          className="w-full rounded-md border-2 border-gray-300 bg-gray-200 p-2 font-light hover:border-blue-900 md:text-base"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
         <button
-          className="text-md h-12 cursor-pointer rounded-full bg-black text-white"
+          className="h-12 w-full cursor-pointer rounded-full bg-black text-white md:text-base"
           onClick={() => {
             handleSignup();
           }}
@@ -142,7 +145,7 @@ const Signup = () => {
         </p>
       </div>
 
-      <div className="mt-4 text-center text-lg">
+      <div className="text-center text-base md:text-lg">
         <h2>
           Already have an account ?{" "}
           <span

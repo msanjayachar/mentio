@@ -12,14 +12,14 @@ const Homenavbar = () => {
   const { currentUser } = useCurrentUser();
 
   return (
-    <div className="flex justify-between">
-      <div className="flex w-86 items-center justify-start pl-6">
+    <div className="flex w-full items-center justify-between bg-gray-500 px-4 py-3 md:px-6 lg:px-12">
+      <div className="flex items-center justify-start">
         <Logo />
       </div>
 
-      <div className="flex w-full items-center justify-between py-6 pr-12">
+      <div className="flex items-center gap-4">
         <div className="hidden lg:block">
-          <div className="flex h-10 w-120 items-center gap-2 rounded-sm bg-[#F2F1F0] px-4">
+          <div className="flex h-10 w-64 items-center gap-2 rounded-sm bg-[#F2F1F0] px-4 xl:w-120">
             <Search size={18} strokeWidth={1.5} />
             <input
               placeholder="Search presentations, folders, and pages "
@@ -28,39 +28,35 @@ const Homenavbar = () => {
           </div>
         </div>
 
-        <div className="hidden lg:block">
-          <div className="flex cursor-pointer items-center gap-4">
-            {currentUser && (
-              <div className="rounded-full border bg-gray-100 p-2">
-                <Bell size={18} strokeWidth={2} />
-              </div>
-            )}
+        <div className="hidden cursor-pointer items-center gap-4 lg:flex">
+          {currentUser && (
+            <div className="rounded-full border bg-gray-100 p-2">
+              <Bell size={18} strokeWidth={2} />
+            </div>
+          )}
 
-            {currentUser ? (
-              <Profile />
-            ) : (
-              <div className="flex gap-2">
-                <button
-                  className="cursor-pointer underline"
-                  onClick={() => router.push("/signup")}
-                >
-                  Signup
-                </button>
-                <button
-                  className="cursor-pointer underline"
-                  onClick={() => router.push("/login")}
-                >
-                  Login
-                </button>
-              </div>
-            )}
-          </div>
+          {currentUser ? (
+            <Profile />
+          ) : (
+            <div className="flex gap-2">
+              <button
+                className="cursor-pointer underline"
+                onClick={() => router.push("/signup")}
+              >
+                Signup
+              </button>
+              <button
+                className="cursor-pointer underline"
+                onClick={() => router.push("/login")}
+              >
+                Login
+              </button>
+            </div>
+          )}
         </div>
 
-        <div className="flex w-full lg:hidden">
-          <div className="ml-auto">
-            <Menudrawer />
-          </div>
+        <div className="flex lg:hidden">
+          <Menudrawer />
         </div>
       </div>
     </div>

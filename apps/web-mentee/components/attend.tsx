@@ -45,30 +45,30 @@ export default function Attend() {
   }, [joined]);
 
   return (
-    <div className="relative flex h-screen w-full flex-col items-center justify-center bg-gray-500">
-      <div className="absolute top-48">
-        <div className="flex w-84 flex-col items-center gap-2">
-          <h1 className="text-3xl">Mentio</h1>
-          <h2 className="text-2xl">Enter the code to join</h2>
-          <p className="text-md mb-8 text-gray-300">
+    <div className="relative flex h-screen w-full flex-col items-center justify-center bg-gray-500 p-4">
+      <div className="absolute top-1/2 -translate-y-1/2">
+        <div className="flex w-full max-w-84 flex-col items-center gap-2">
+          <h1 className="text-2xl md:text-3xl">Mentio</h1>
+          <h2 className="text-xl md:text-2xl">Enter the code to join</h2>
+          <p className="mb-4 text-sm text-gray-300 md:mb-8 md:text-base">
             It&apos;s on the screen in front of you
           </p>
         </div>
-        <div className="flex flex-col items-center gap-8">
+        <div className="flex w-full flex-col items-center gap-6 md:gap-8">
           <input
             onChange={(e) => handleUpdate(e)}
             placeholder="1234 5678"
-            className="h-16 w-full rounded-xl border-2 border-transparent bg-gray-200 px-4 text-black ring-4 ring-transparent ring-offset-6 ring-offset-gray-500 duration-75 outline-none hover:border-blue-400 focus:border-blue-400 focus:ring-blue-200"
+            className="h-14 w-full max-w-xs rounded-xl border-2 border-transparent bg-gray-200 px-4 text-center text-lg text-black ring-4 ring-transparent ring-offset-4 ring-offset-gray-500 duration-75 outline-none hover:border-blue-400 focus:border-blue-400 focus:ring-blue-200 md:h-16"
           />
           <button
-            className="h-12 w-20 cursor-pointer rounded-full bg-red-400"
+            className="h-12 w-32 cursor-pointer rounded-full bg-red-400 px-6"
             onClick={() => joinRoom()}
           >
             Join
           </button>
         </div>
       </div>
-      <div className="absolute bottom-0 mb-12">
+      <div className="absolute bottom-0 mb-8 text-center text-sm md:text-base">
         Create your own Presentation at{" "}
         <Link className="bg-gray-500 underline" target="_blank" href="/mentor">
           mentio.com
