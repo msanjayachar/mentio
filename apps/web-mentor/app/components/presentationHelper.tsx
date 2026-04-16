@@ -45,7 +45,6 @@ const PresentationHelper = ({
   const { presentationId } = useParams<{ presentationId: string }>();
   const { token } = useCurrentUser();
 
-  // THREAD: Slide is unknown because fetch Slides isn't type safe right now .
   const slide = slides.find((slide) => slide.id === selectedSlide);
 
   if (!selectedSlide) return;
@@ -418,7 +417,6 @@ const PresentationHelper = ({
               </div>
             </div>
 
-            {/* TODO: Handle multipe options as well. */}
             <label className="relative inline-flex cursor-pointer items-center">
               <input
                 type="checkbox"

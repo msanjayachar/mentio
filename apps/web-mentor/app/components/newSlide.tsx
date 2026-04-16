@@ -153,8 +153,6 @@ const NewSlide = ({
     <div className="z-50 flex h-full w-full flex-col justify-around gap-2 rounded-lg border-2 border-gray-300 bg-white p-2">
       <button
         className="flex-1 cursor-pointer rounded-md border-2 border-black"
-        // TODO: - use a single function to create slide. "pass the slide type as argument."
-        // onClick={() => createSlide("multiple_choice")}
         onClick={() => createSlide(emptyMcqSlide)}
       >
         <div className="flex items-center">

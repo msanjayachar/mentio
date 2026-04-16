@@ -127,13 +127,13 @@ mcqSlidesRouter.get("/", async (req: Request, res: Response) => {
   });
 });
 
-// VERIFY: Shouldn't we be passing the user_id as well here?
 mcqSlidesRouter.get("/:id", async (req, res) => {
   const { id } = req.params;
+  const { userId } = req.user;
 
   let finalSlide;
   try {
-    const result = await getMcqSlideById(id);
+    const result = await getMcqSlideById(id, userId);
 
     const slide = DBQueryMcqQuestionSchema.parse(result);
 

@@ -209,7 +209,6 @@ export default function Page() {
           ? slide.options.find((opt) => opt.id === data.answer)
           : null;
 
-      // VERIFY:
       if (!result) return;
 
       setResult(result.isCorrect);

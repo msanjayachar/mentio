@@ -138,7 +138,6 @@ const PresentationNav = ({ slides }: { slides: SlidesState }) => {
         <div className="flex items-center">
           <div className="hidden [@media(min-width:1000px)]:block">
             <div className="flex items-center gap-4">
-              {/* TODO: Two tabs */}
               <div>Create</div>
               <div className="flex items-center gap-2">
                 <span>Results</span>

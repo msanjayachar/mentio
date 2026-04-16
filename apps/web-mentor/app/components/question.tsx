@@ -88,7 +88,6 @@ const Question = ({
       updateSlide(updatedSlide, token);
     }, 600);
 
-    // VERIFY: whether this works as intended
     setSlides((slides) =>
       slides.map((slide) =>
         slide.id === selectedSlide

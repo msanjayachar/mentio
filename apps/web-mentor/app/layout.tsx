@@ -23,8 +23,6 @@ export default function RootLayout({
     <html lang="en">
       <body className={geist.className}>
         <Providers>
-          {/* TODO: This should only show up on the landing page */}
-          {/* <Navbar /> */}
           {children}
           <Toaster />
         </Providers>

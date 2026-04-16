@@ -22,15 +22,9 @@ export type Mentee = {
 export type SignupUser = z.infer<typeof SignupSchema>;
 export type LoginUser = z.infer<typeof LoginSchema>;
 
-// export type SlideState = z.infer<McqQuestion> | z.infer<CanvasSlide>;
 export type SlideState = McqQuestion | CanvasSlide;
 
 export type SlidesState = (McqQuestion | CanvasSlide)[];
-
-// TODO: Use this
-// type ApiResponse<T> =
-//   | { success: true; data: T; error: null }
-//   | { success: false; data: null; error: ErrorCode };
 
 export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   INVALID_REQUEST: "Invalid input. Check your data.",

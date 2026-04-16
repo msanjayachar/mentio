@@ -30,12 +30,12 @@ export async function getMcqSlides(userId: string) {
   return result.rows;
 }
 
-export async function getMcqSlideById(slidesId: string) {
-  const query = `SELECT id, question, options, allow_multiple, presentation_id, created_at from mcq_slides WHERE id = ($1);`;
+export async function getMcqSlideById(slidesId: string, userId: string) {
+  const query = `SELECT id, question, options, allow_multiple, presentation_id, created_at from mcq_slides WHERE id = $1 AND user_id = $2;`;
 
-  const result = await pool.query(query, [slidesId]);
+  const result = await pool.query(query, [slidesId, userId]);
 
-  if (!result.rows) {
+  if (result.rows.length === 0) {
     return null;
   }
 

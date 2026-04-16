@@ -2,10 +2,11 @@ import Image from "next/image";
 
 const Features = () => {
   return (
-    <div className="mt-8 ml-4 flex h-80 w-auto max-w-[1500px] flex-col gap-4 rounded-lg py-8">
+    <div className="m-4 flex h-80 w-auto max-w-[1500px] flex-col gap-4 rounded-lg py-8">
+      <h1 className="w-full text-sm font-medium text-black">
+        Popular features
+      </h1>
       <div className="flex flex-wrap items-center justify-start gap-10 rounded-xl bg-blue-100 px-8 py-8 text-black sm:flex-nowrap sm:justify-between md:justify-start lg:justify-between">
-        {/* TODO: Fix this  */}
-        {/* <h1 className="w-full pl-8 font-medium text-black">Popular features</h1> */}
         {/* Feature One */}
         <div className="flex cursor-pointer flex-col items-center gap-2">
           <div className="size-28 rounded-lg border-2 border-transparent bg-gray-100 hover:border-blue-900 sm:size-22 md:h-auto md:w-auto md:max-w-40 lg:max-h-36 lg:max-w-36 2xl:max-h-44 2xl:max-w-44">
