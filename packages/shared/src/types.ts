@@ -43,3 +43,38 @@ export const ErrorCodes = {
 } as const;
 
 export type ErrorCode = keyof typeof ErrorCodes;
+
+export type VisualizationProps = {
+  count: number;
+  totalResponse: number;
+  height?: number;
+  color?: string;
+};
+
+export type BarChartProps = {
+  items: {
+    label: string;
+    value: number;
+    color: string | undefined;
+  }[];
+  height?: number;
+};
+
+export type PieChartProps = {
+  items: {
+    label: string;
+    value: number;
+    color: string | undefined;
+  }[];
+  size?: number;
+};
+
+export type DonutChartProps = {
+  items: {
+    label: string;
+    value: number;
+    color: string | undefined;
+  }[];
+  size?: number;
+  strokeWidth?: number;
+};

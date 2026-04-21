@@ -28,18 +28,21 @@ const PresentationHelper = ({
   setSlides,
   editSelected,
   handleEdit,
+  visualizationType,
+  setVisualizationType,
 }: {
   selectedSlide: string | undefined;
   slides: SlidesState;
   setSlides: Dispatch<SetStateAction<SlidesState>>;
   editSelected: boolean;
   handleEdit: () => void;
+  visualizationType: "bar" | "pie" | "split" | "dots";
+  setVisualizationType: Dispatch<
+    SetStateAction<"bar" | "pie" | "split" | "dots">
+  >;
 }) => {
   const [selectMultiple, setSelectMultiple] = useState<boolean>(false);
   const [setCorrectAnswer, setSetCorrectAnswer] = useState<boolean>(false);
-  const [visualizationType, setVisualizationType] = useState<
-    "bar" | "pie" | "split" | "dots" | null
-  >(null);
   const [selectionsPerParticipant, setSelectionsPerParticipant] = useState(2);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
   const { presentationId } = useParams<{ presentationId: string }>();
@@ -256,9 +259,14 @@ const PresentationHelper = ({
     updateSlide(updatedSlide, token);
   };
 
+  // THREAD: Visualization with dummy values
+  const handleVisualization = (type: string) => {
+    // "bar" | "pie" | "split" | "dots";
+  };
+
   return (
     <div className={`${editSelected ? "block" : "hidden"} `}>
-      <div className="mx-auto my-8 h-[calc(100vh-8rem)] w-full max-w-[360px] overflow-y-auto rounded-xl border-2 border-gray-200 bg-white px-4 pb-4 md:px-8">
+      <div className="mx-auto my-8 h-[calc(100vh-8rem)] w-full max-w-90 overflow-y-auto rounded-xl border-2 border-gray-200 bg-white px-4 pb-4 md:px-8">
         <div className="sticky top-0 z-10 mb-8 flex h-auto w-auto items-center justify-between bg-white py-4">
           <div className="flex items-center gap-4">
             <ArrowLeft size={16} />

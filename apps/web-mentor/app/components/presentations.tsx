@@ -22,6 +22,10 @@ const Presentations = ({ presentationId }: { presentationId: string }) => {
   const [slides, setSlides] = useState<SlidesState>([]);
   const [selectedSlide, setSelectedSlide] = useState<string>("");
   const [tool, setTool] = useState<"text" | "image" | "shapes">("text");
+  const [visualizationType, setVisualizationType] = useState<
+    "bar" | "pie" | "split" | "dots"
+  >("bar");
+
   const { token } = useCurrentUser();
 
   const slide = slides.find((slide) => slide.id === selectedSlide);
@@ -76,6 +80,8 @@ const Presentations = ({ presentationId }: { presentationId: string }) => {
               selectedSlide={selectedSlide}
               handleEdit={handleEdit}
               handleQuestionSelect={handleQuestionSelect}
+              visualizationType={visualizationType}
+              setVisualizationType={setVisualizationType}
             />
 
             <button
@@ -96,6 +102,8 @@ const Presentations = ({ presentationId }: { presentationId: string }) => {
               setSlides={setSlides}
               handleEdit={handleEdit}
               editSelected={editSelected}
+              visualizationType={visualizationType}
+              setVisualizationType={setVisualizationType}
             />
             <Comments
               handleComment={handleComment}

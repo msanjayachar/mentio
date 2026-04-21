@@ -14,7 +14,7 @@ const CanvasToolbar = ({
       {/* <div>Selected Tool: {tool}</div> */}
       <button
         className={`h-8 w-24 cursor-pointer rounded-sm px-2 ${
-          tool === "text" ? "bg-blue-500 text-white" : "bg-slate-200"
+          tool === "text" ? "bg-[#5768e7] text-white" : "bg-slate-200"
         }`}
         onClick={() => setTool("text")}
       >
@@ -22,7 +22,7 @@ const CanvasToolbar = ({
       </button>
       <button
         className={`h-8 w-24 cursor-pointer rounded-sm px-2 ${
-          tool === "shapes" ? "bg-blue-500 text-white" : "bg-slate-200"
+          tool === "shapes" ? "bg-[#5768e7] text-white" : "bg-slate-200"
         }`}
         onClick={() => setTool("shapes")}
       >
@@ -30,7 +30,7 @@ const CanvasToolbar = ({
       </button>
       <button
         className={`h-8 w-24 cursor-pointer rounded-sm px-2 ${
-          tool === "image" ? "bg-blue-500 text-white" : "bg-slate-200"
+          tool === "image" ? "bg-[#5768e7] text-white" : "bg-slate-200"
         }`}
         onClick={() => setTool("image")}
       >

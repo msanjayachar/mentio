@@ -14,6 +14,10 @@ import { FabricJSCanvas } from "@repo/ui/FabricJSCanvas";
 import { updateSlide } from "@/lib/utils";
 import { useCurrentUser } from "./context/authContext";
 import { PresentationApiResponseSchema } from "@shared/api/presentation";
+import Visualization from "./visualization/visualization";
+import BarChart from "./visualization/bars";
+
+type ResponseType = Record<string, { participantId: string; answer: string }[]>;
 
 const Question = ({
   tool,
@@ -22,6 +26,8 @@ const Question = ({
   selectedSlide,
   handleQuestionSelect,
   handleEdit,
+  visualizationType,
+  setVisualizationType,
 }: {
   tool: "text" | "image" | "shapes";
   slides: SlidesState;
@@ -29,11 +35,39 @@ const Question = ({
   selectedSlide: string;
   handleQuestionSelect: () => void;
   handleEdit: () => void;
+  visualizationType: "bar" | "pie" | "split" | "dots";
+  setVisualizationType: Dispatch<
+    SetStateAction<"bar" | "pie" | "split" | "dots">
+  >;
 }) => {
   const { token } = useCurrentUser();
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   if (!token) return;
+
+  const responses: ResponseType = {
+    "a12f9c3e-7b21-4d1a-bc91-9f3e2a7d5c10": [
+      { participantId: "Xk92LmQaPzTnF1aBc", answer: "2" },
+      { participantId: "Qw8ErTyUiOp123Zx", answer: "3" },
+    ],
+    "b77de4a1-2c9f-4e8d-91ab-6f3c0d2e4b55": [
+      { participantId: "Mn45OpQrStUvWxYz", answer: "4" },
+      { participantId: "AaBbCcDdEeFfGgHh", answer: "1" },
+      { participantId: "ZzYyXxWwVvUuTtSs", answer: "2" },
+    ],
+    "c9e44b82-5d31-4f6a-8b3e-2c1d7a9e0f22": [
+      { participantId: "PpOoIiUuYyTtRrEe", answer: "3" },
+    ],
+    "d3a7f1c9-8b22-4c6e-9a11-0d5e2f8b7c33": [
+      { participantId: "LkJhGfDsAaQwErTy", answer: "1" },
+      { participantId: "UiOpAsDfGhJkLzXc", answer: "4" },
+    ],
+    "e5b2c8a7-1f90-4d2e-a6c4-3b7d9e1f0a66": [
+      { participantId: "VvBbNnMmQqWwEeRr", answer: "2" },
+      { participantId: "TtYyUuIiOoPpAaSs", answer: "3" },
+      { participantId: "DdFfGgHhJjKkLlZz", answer: "4" },
+    ],
+  };
 
   // Getting the slide (mcq or canvas) thats selected right now
   const slide = Array.isArray(slides)
@@ -47,6 +81,12 @@ const Question = ({
     "bg-indigo-900",
     "bg-red-800",
   ];
+
+  useEffect(() => {
+    console.log("*************************");
+    console.log("slide:", slide);
+    console.log("*************************");
+  }, [slide]);
 
   const updateCanvasSlide = async (
     canvasSlide: CanvasSlide,
@@ -102,6 +142,17 @@ const Question = ({
 
   if (!slide) return null;
 
+  const dummyData = {
+    items: [
+      { label: "JavaScript", value: 80, color: "#f7df1e" },
+      { label: "Python", value: 70, color: "#3776ab" },
+      { label: "Java", value: 60, color: "#f89820" },
+      { label: "C++", value: 50, color: "#00599c" },
+      { label: "Go", value: 40, color: "#00add8" },
+    ],
+    height: 300,
+  };
+
   return (
     <div className="m-8 h-[700px] w-auto rounded-md border-2 bg-white hover:border-blue-800">
       <span className="flex justify-end pt-4 pr-4">Mentio</span>
@@ -123,20 +174,24 @@ const Question = ({
               className={`mx-8 flex ${slide.type === "multiple_choice" ? "h-[480px]" : "h-[600px]"} w-full cursor-pointer items-end justify-between gap-x-2 rounded-md border-2 px-12 pb-8 hover:border-blue-800`}
               onClick={() => handleEdit()}
             >
+              {/* TODO: Add visualization graph here. */}
+              <Visualization
+                items={dummyData.items}
+                height={dummyData.height}
+                visualizationType={visualizationType}
+              />
+
               {slide &&
                 slide.options.map((opt: McqOption, idx: number) => (
                   <div
                     key={opt.id}
                     className="flex w-full flex-col items-center gap-2"
                   >
-                    <span className="flex w-full justify-start pl-2 text-2xl font-light">
-                      0
-                    </span>
+                    {/* Initial View */}
                     <div
                       className={`h-2 w-full max-w-64 min-w-28 rounded-md ${colors[idx]}`}
-                    />
-                    <span className="flex w-full justify-start text-2xl font-light">
-                      {/* Option {opt.id} */}
+                    ></div>
+                    <span className="w-full text-start text-2xl font-light">
                       {opt.text !== undefined ? opt.text : `Option ${idx}`}
                     </span>
                   </div>
@@ -148,7 +203,7 @@ const Question = ({
 
       <div className="flex flex-col gap-6 px-4">
         {slide.type === "canvas_slide" && (
-          <div className="h-[250px] w-full px-2 py-2 md:h-[300px] md:px-4 lg:h-[400px] xl:h-[600px]">
+          <div className="h-62.5 w-full px-2 py-2 md:h-75 md:px-4 lg:h-100 xl:h-150">
             <FabricJSCanvas
               tool={tool}
               backgroundColor="red"

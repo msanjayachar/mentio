@@ -10,12 +10,23 @@ import { PresentationType } from "@shared/presentation";
 import { getChannel } from "@shared/channel";
 import { socket } from "@shared/socket";
 import type { AppEvent } from "@shared/events";
-import { ERROR_MESSAGES, SlidesState, SlideState } from "@shared/types";
+import {
+  BarChartProps,
+  ERROR_MESSAGES,
+  SlidesState,
+  SlideState,
+} from "@shared/types";
 import { ArrowLeft, ArrowRight, LucideToggleRight } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
 import { format } from "path";
+import { umask } from "process";
+import Visualization from "@/app/components/visualization/visualization";
+import BarChart from "@/app/components/visualization/bars";
+import PieChart from "@/app/components/visualization/pie";
+import DotChart from "@/app/components/visualization/dots";
+import DonutChart from "@/app/components/visualization/donut";
 
 type Answer = {
   participantId: string;
@@ -39,6 +50,7 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState<Record<QuestionId, Answer[]>>({});
   const [timer, setTimer] = useState(30);
+  const [visualization, setVisualization] = useState(false);
 
   const { token, loading: tokenLoading } = useCurrentUser();
   const channel = getChannel();
@@ -47,6 +59,12 @@ export default function Page() {
     () => slides?.filter((s) => s.presentationId === presentationId) ?? [],
     [slides, presentationId],
   );
+
+  useEffect(() => {
+    console.log("*************************");
+    console.log("slide: ", slide);
+    console.log("*************************");
+  }, [slide]);
 
   useEffect(() => {
     if (timer <= 0) return;
@@ -229,7 +247,19 @@ export default function Page() {
     };
   }, [roomId, slide]);
 
+  useEffect(() => {
+    console.log("*************************");
+    console.log("answers: ", answers);
+    console.log("*************************");
+  }, [answers]);
+
   const currentAnswers = slide?.id ? answers[slide.id] || [] : [];
+
+  useEffect(() => {
+    console.log("*************************");
+    console.log("currentAnswers: ", currentAnswers);
+    console.log("*************************");
+  }, [answers]);
 
   if (loading || tokenLoading) {
     return (
@@ -260,9 +290,35 @@ export default function Page() {
   };
 
   const handleResult = () => {
+    setVisualization(true);
     setTimer(0);
     channel.sendResult(result);
   };
+
+  const colors = [
+    "bg-blue-500",
+    "bg-rose-400",
+    "bg-indigo-300",
+    "bg-indigo-900",
+    "bg-red-800",
+  ];
+
+  const data =
+    slide.type === "multiple_choice"
+      ? slide.options.map((opt, idx) => {
+          const count = currentAnswers.filter(
+            (ans) => ans.answer === opt.id,
+          ).length;
+
+          return {
+            label: opt.text,
+            value: count,
+            color: colors[idx],
+          };
+        })
+      : [];
+
+  const dummyDataTwo = { items: data, height: 300 };
 
   return (
     <div className="flex h-screen flex-col bg-slate-100 p-4">
@@ -279,7 +335,14 @@ export default function Page() {
         Show Result
       </button>
 
-      <Present slide={slide} roomId={roomId} readOnly />
+      {visualization ? (
+        // <BarChart items={dummyDataTwo.items} height={dummyDataTwo.height} />
+        // <PieChart items={dummyDataTwo.items} size={dummyDataTwo.height} />
+        //<DotChart items={dummyDataTwo.items} />
+        <DonutChart items={dummyDataTwo.items} />
+      ) : (
+        <Present slide={slide} roomId={roomId} readOnly />
+      )}
 
       <div className="mt-auto ml-12 flex w-fit gap-2 text-sm font-light">
         <button
