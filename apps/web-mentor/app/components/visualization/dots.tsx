@@ -33,7 +33,7 @@ function generateDots(count: number) {
 
 export default function DotChart({ items }: DotChartProps) {
   return (
-    <div className="flex justify-between gap-10">
+    <div className="mb-8 flex w-full items-end justify-between gap-10">
       {items.map((item, i) => (
         <div key={i} className="flex flex-col items-center">
           <div className="relative h-24 w-24">

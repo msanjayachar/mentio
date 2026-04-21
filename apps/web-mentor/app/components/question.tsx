@@ -82,12 +82,6 @@ const Question = ({
     "bg-red-800",
   ];
 
-  useEffect(() => {
-    console.log("*************************");
-    console.log("slide:", slide);
-    console.log("*************************");
-  }, [slide]);
-
   const updateCanvasSlide = async (
     canvasSlide: CanvasSlide,
     canvasId: string,
@@ -142,19 +136,26 @@ const Question = ({
 
   if (!slide) return null;
 
+  // TODO: Build the dummy data with the slide that we are working with right now
+
   const dummyData = {
     items: [
-      { label: "JavaScript", value: 80, color: "#f7df1e" },
-      { label: "Python", value: 70, color: "#3776ab" },
-      { label: "Java", value: 60, color: "#f89820" },
-      { label: "C++", value: 50, color: "#00599c" },
-      { label: "Go", value: 40, color: "#00add8" },
+      { label: "JavaScript", value: 80, color: colors[0] },
+
+      { label: "Python", value: 70, color: colors[1] },
+
+      { label: "Java", value: 60, color: colors[2] },
+
+      { label: "C++", value: 50, color: colors[3] },
+
+      { label: "Go", value: 40, color: colors[4] },
     ],
+
     height: 300,
   };
 
   return (
-    <div className="m-8 h-[700px] w-auto rounded-md border-2 bg-white hover:border-blue-800">
+    <div className="m-8 h-175 w-auto rounded-md border-2 bg-white hover:border-blue-800">
       <span className="flex justify-end pt-4 pr-4">Mentio</span>
       <div className="flex flex-col gap-6 px-4">
         {slide.type === "multiple_choice" && (
@@ -171,31 +172,34 @@ const Question = ({
               placeholder="Ask your question here..."
             />
             <div
-              className={`mx-8 flex ${slide.type === "multiple_choice" ? "h-[480px]" : "h-[600px]"} w-full cursor-pointer items-end justify-between gap-x-2 rounded-md border-2 px-12 pb-8 hover:border-blue-800`}
+              className={`mx-8 flex ${slide.type === "multiple_choice" ? "h-120" : "h-150"} w-full cursor-pointer items-end justify-between gap-x-2 rounded-md border-2 px-12 pb-8 hover:border-blue-800`}
               onClick={() => handleEdit()}
             >
               {/* TODO: Add visualization graph here. */}
               <Visualization
                 items={dummyData.items}
                 height={dummyData.height}
+                size={dummyData.height}
                 visualizationType={visualizationType}
               />
 
-              {slide &&
-                slide.options.map((opt: McqOption, idx: number) => (
-                  <div
-                    key={opt.id}
-                    className="flex w-full flex-col items-center gap-2"
-                  >
-                    {/* Initial View */}
-                    <div
-                      className={`h-2 w-full max-w-64 min-w-28 rounded-md ${colors[idx]}`}
-                    ></div>
-                    <span className="w-full text-start text-2xl font-light">
-                      {opt.text !== undefined ? opt.text : `Option ${idx}`}
-                    </span>
-                  </div>
-                ))}
+              {/* <> */}
+              {/*   {slide && */}
+              {/*     slide.options.map((opt: McqOption, idx: number) => ( */}
+              {/*       <div */}
+              {/*         key={opt.id} */}
+              {/*         className="flex w-full flex-col items-center gap-2" */}
+              {/*       > */}
+              {/*         {/* Initial View */}
+              {/*         <div */}
+              {/*           className={`h-2 w-full max-w-64 min-w-28 rounded-md ${colors[idx]}`} */}
+              {/*         ></div> */}
+              {/*         <span className="w-full text-start text-2xl font-light"> */}
+              {/*           {opt.text !== undefined ? opt.text : `Option ${idx}`} */}
+              {/*         </span> */}
+              {/*       </div> */}
+              {/*     ))} */}
+              {/* </> */}
             </div>
           </div>
         )}
